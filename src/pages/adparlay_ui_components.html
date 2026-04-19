@@ -1,0 +1,377 @@
+
+<style>
+  .ap-root { display: flex; flex-direction: column; gap: 48px; padding: 24px 0 40px; }
+  .ap-section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-tertiary); margin-bottom: 14px; }
+  .ap-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .ap-card-header { padding: 16px 20px; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 10px; }
+  .ap-icon { width: 28px; height: 28px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ap-icon svg { width: 14px; height: 14px; }
+  .ap-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .ap-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 1px; }
+  .ap-badge { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 999px; margin-left: auto; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 4px; animation: livepulse 2s ease-in-out infinite; }
+  @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .ap-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ap-three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+</style>
+
+<div class="ap-root">
+  <h2 class="sr-only">AdParlay UI components — smart forms, activity feed, and collaboration views for design reference</h2>
+
+  <!-- ══════════ 1. SMART FORM BUILDER ══════════ -->
+  <div>
+    <div class="ap-section-label">01 — Smart form builder with conditional logic</div>
+    <div class="ap-two-col">
+
+      <!-- Left panel: form editor -->
+      <div class="ap-card">
+        <div class="ap-card-header">
+          <div class="ap-icon" style="background:var(--color-background-secondary)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 12h4"/></svg>
+          </div>
+          <div><div class="ap-title">Product lead form</div><div class="ap-sub">4 fields · 2 conditions</div></div>
+          <div class="ap-badge" style="background:var(--color-background-info);color:var(--color-text-info)">Live</div>
+        </div>
+
+        <div style="padding:16px 20px;display:flex;flex-direction:column;gap:6px;">
+
+          <!-- Field 1: name -->
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;display:flex;align-items:center;gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <div style="flex:1">
+              <div style="font-size:11px;color:var(--color-text-tertiary)">Full name</div>
+              <div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px">Short text · Required</div>
+            </div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#22c55e"></div>
+          </div>
+
+          <!-- Field 2: role — trigger -->
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;display:flex;align-items:center;gap:8px;border-left:2px solid #8b5cf6;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.5"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            <div style="flex:1">
+              <div style="font-size:11px;color:#8b5cf6;font-weight:500">Role / job title</div>
+              <div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px">Dropdown · Triggers logic</div>
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+
+          <!-- Condition block -->
+          <div style="margin-left:16px;border-left:1.5px dashed var(--color-border-secondary);padding-left:12px;display:flex;flex-direction:column;gap:5px;">
+
+            <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;display:flex;align-items:center;gap:8px;border:0.5px solid var(--color-border-tertiary);">
+              <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500;min-width:20px">IF</span>
+              <span style="font-size:11px;background:var(--color-background-info);color:var(--color-text-info);padding:2px 7px;border-radius:999px;">role = Manager</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+              <span style="font-size:11px;color:var(--color-text-secondary)">Show budget field</span>
+            </div>
+
+            <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;border-left:2px solid #8b5cf6;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;display:flex;align-items:center;gap:8px;border:0.5px solid var(--color-border-tertiary);margin-left:4px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <div style="flex:1">
+                <div style="font-size:11px;color:#8b5cf6;font-weight:500">Budget range</div>
+                <div style="font-size:11px;color:var(--color-text-tertiary)">Shown only for managers</div>
+              </div>
+              <div style="font-size:10px;background:var(--color-background-secondary);color:var(--color-text-tertiary);padding:2px 6px;border-radius:4px;border:0.5px solid var(--color-border-tertiary)">conditional</div>
+            </div>
+
+            <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;display:flex;align-items:center;gap:8px;border:0.5px solid var(--color-border-tertiary);">
+              <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:500;min-width:20px">ELSE</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+              <span style="font-size:11px;color:var(--color-text-secondary)">Skip to company size</span>
+            </div>
+          </div>
+
+          <!-- Field 3: company size -->
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;display:flex;align-items:center;gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <div style="flex:1">
+              <div style="font-size:11px;color:var(--color-text-tertiary)">Company size</div>
+              <div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px">Multiple choice · Required</div>
+            </div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#22c55e"></div>
+          </div>
+
+          <!-- Submit -->
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;display:flex;align-items:center;gap:8px;opacity:0.5;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div style="flex:1">
+              <div style="font-size:11px;color:var(--color-text-tertiary)">Submit + contact</div>
+              <div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px">Always shown · Final step</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right panel: live preview -->
+      <div class="ap-card">
+        <div class="ap-card-header">
+          <div class="ap-icon" style="background:var(--color-background-secondary)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div><div class="ap-title">Live preview</div><div class="ap-sub">Updates as you build</div></div>
+          <div style="display:flex;gap:5px;margin-left:auto">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary)"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary)"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#8b5cf6"></div>
+          </div>
+        </div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:5px;font-weight:500">Full name</div>
+            <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;color:var(--color-text-tertiary)">e.g. Tunde Adeyemi</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:5px;font-weight:500">Role / job title</div>
+            <div style="background:var(--color-background-secondary);border:0.5px solid #8b5cf6;border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;color:#8b5cf6;display:flex;justify-content:space-between;align-items:center">
+              Manager
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div style="background:var(--color-background-info);border-radius:var(--border-radius-md);padding:10px 12px;border:0.5px solid var(--color-border-info);">
+            <div style="font-size:11px;color:var(--color-text-info);font-weight:500;margin-bottom:5px">Budget range <span style="font-weight:400;opacity:0.7">· shown because role = Manager</span></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <div style="font-size:11px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:999px;padding:3px 10px;color:var(--color-text-secondary)">&lt; ₦500k</div>
+              <div style="font-size:11px;background:#ede9fe;border:1.5px solid #8b5cf6;border-radius:999px;padding:3px 10px;color:#6d28d9;font-weight:500">₦500k–2M</div>
+              <div style="font-size:11px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:999px;padding:3px 10px;color:var(--color-text-secondary)">&gt; ₦2M</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:5px;font-weight:500">Company size</div>
+            <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;color:var(--color-text-tertiary)">Select one</div>
+          </div>
+          <button style="width:100%;background:#8b5cf6;color:#fff;border:none;border-radius:var(--border-radius-md);padding:9px;font-size:13px;font-weight:500;cursor:pointer;margin-top:4px">Submit →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ 2. LEAD ACTIVITY FEED ══════════ -->
+  <div>
+    <div class="ap-section-label">02 — Lead activity feed</div>
+    <div class="ap-card">
+      <div class="ap-card-header">
+        <div class="ap-icon" style="background:var(--color-background-secondary)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div>
+          <div class="ap-title">Lead activity feed</div>
+          <div class="ap-sub"><span class="live-dot"></span>Live · updating now</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <div style="font-size:11px;color:var(--color-text-tertiary)">Today</div>
+          <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:3px 10px;font-size:11px;color:var(--color-text-secondary);cursor:pointer">Filter ↓</div>
+        </div>
+      </div>
+
+      <div id="feed-rows" style="display:flex;flex-direction:column;">
+
+        <div class="feed-row" style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:0.5px solid var(--color-border-tertiary);">
+          <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;margin-top:4px;flex-shrink:0;box-shadow:0 0 0 3px rgba(34,197,94,0.15)"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--color-text-info);flex-shrink:0">EO</div>
+          <div style="flex:1">
+            <div style="font-size:13px;color:var(--color-text-primary);font-weight:500">Emeka Okafor <span style="font-weight:400;color:var(--color-text-secondary)">submitted Product Lead Form</span></div>
+            <div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">
+              <span style="font-size:11px;background:var(--color-background-success);color:var(--color-text-success);padding:2px 7px;border-radius:999px;">Manager</span>
+              <span style="font-size:11px;background:var(--color-background-secondary);color:var(--color-text-tertiary);padding:2px 7px;border-radius:999px;border:0.5px solid var(--color-border-tertiary)">₦500k–2M</span>
+              <span style="font-size:11px;background:var(--color-background-secondary);color:var(--color-text-tertiary);padding:2px 7px;border-radius:999px;border:0.5px solid var(--color-border-tertiary)">51–200 people</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);white-space:nowrap" id="ts1">2s ago</div>
+        </div>
+
+        <div class="feed-row" style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:0.5px solid var(--color-border-tertiary);">
+          <div style="width:8px;height:8px;border-radius:50%;background:#8b5cf6;margin-top:4px;flex-shrink:0;box-shadow:0 0 0 3px rgba(139,92,246,0.15)"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#6d28d9;flex-shrink:0">AK</div>
+          <div style="flex:1">
+            <div style="font-size:13px;color:var(--color-text-primary);font-weight:500">Amara Kalu <span style="font-weight:400;color:var(--color-text-secondary)">received PNG summary</span></div>
+            <div style="margin-top:4px;display:flex;gap:6px">
+              <span style="font-size:11px;background:#ede9fe;color:#6d28d9;padding:2px 7px;border-radius:999px;">Auto-delivered</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);white-space:nowrap" id="ts2">18s ago</div>
+        </div>
+
+        <div class="feed-row" style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:0.5px solid var(--color-border-tertiary);">
+          <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;margin-top:4px;flex-shrink:0;box-shadow:0 0 0 3px rgba(34,197,94,0.15)"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--color-text-info);flex-shrink:0">FB</div>
+          <div style="flex:1">
+            <div style="font-size:13px;color:var(--color-text-primary);font-weight:500">Fatimah Bello <span style="font-weight:400;color:var(--color-text-secondary)">submitted Onboarding Survey</span></div>
+            <div style="margin-top:4px;display:flex;gap:6px">
+              <span style="font-size:11px;background:var(--color-background-success);color:var(--color-text-success);padding:2px 7px;border-radius:999px;">Individual</span>
+              <span style="font-size:11px;background:var(--color-background-secondary);color:var(--color-text-tertiary);padding:2px 7px;border-radius:999px;border:0.5px solid var(--color-border-tertiary)">1–10 people</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);white-space:nowrap" id="ts3">1m ago</div>
+        </div>
+
+        <div class="feed-row" style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:0.5px solid var(--color-border-tertiary);opacity:0.7">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary);margin-top:4px;flex-shrink:0"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--color-text-tertiary);flex-shrink:0">TL</div>
+          <div style="flex:1">
+            <div style="font-size:13px;color:var(--color-text-secondary);font-weight:500">Tunde L. <span style="font-weight:400;">exported Q4 leads to CSV</span></div>
+          </div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);white-space:nowrap">4m ago</div>
+        </div>
+
+        <div class="feed-row" style="display:flex;align-items:flex-start;gap:12px;padding:14px 20px;opacity:0.5">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary);margin-top:4px;flex-shrink:0"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--color-text-tertiary);flex-shrink:0">SA</div>
+          <div style="flex:1">
+            <div style="font-size:13px;color:var(--color-text-secondary);font-weight:500">Sade A. <span style="font-weight:400;">updated form — Pricing Survey v3</span></div>
+          </div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);white-space:nowrap">12m ago</div>
+        </div>
+
+      </div>
+
+      <!-- Stats bar -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;border-top:0.5px solid var(--color-border-tertiary);">
+        <div style="padding:14px 16px;border-right:0.5px solid var(--color-border-tertiary);text-align:center">
+          <div style="font-size:18px;font-weight:500;color:var(--color-text-primary)" id="lead-count">47</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px">leads today</div>
+        </div>
+        <div style="padding:14px 16px;border-right:0.5px solid var(--color-border-tertiary);text-align:center">
+          <div style="font-size:18px;font-weight:500;color:var(--color-text-success)">68%</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px">conversion</div>
+        </div>
+        <div style="padding:14px 16px;border-right:0.5px solid var(--color-border-tertiary);text-align:center">
+          <div style="font-size:18px;font-weight:500;color:var(--color-text-primary)">3</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px">active forms</div>
+        </div>
+        <div style="padding:14px 16px;text-align:center">
+          <div style="font-size:18px;font-weight:500;color:var(--color-text-info)">12</div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px">PNG sent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ 3. TEAM COLLABORATION ══════════ -->
+  <div>
+    <div class="ap-section-label">03 — Team collaboration view</div>
+    <div class="ap-two-col">
+
+      <!-- Team members + activity -->
+      <div class="ap-card">
+        <div class="ap-card-header">
+          <div class="ap-icon" style="background:var(--color-background-secondary)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div><div class="ap-title">Team members</div><div class="ap-sub">4 active now</div></div>
+          <button style="margin-left:auto;font-size:11px;padding:4px 10px;border-radius:999px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);cursor:pointer">+ Invite</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0">
+
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:0.5px solid var(--color-border-tertiary);">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0">TL</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Tunde L.</div>
+              <div style="font-size:11px;color:var(--color-text-tertiary)">Marketing Lead</div>
+            </div>
+            <div style="font-size:11px;background:var(--color-background-success);color:var(--color-text-success);padding:2px 8px;border-radius:999px">Viewing analytics</div>
+            <div style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0"></div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:0.5px solid var(--color-border-tertiary);">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#c4b5fd,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0">SA</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Sade A.</div>
+              <div style="font-size:11px;color:var(--color-text-tertiary)">Sales Manager</div>
+            </div>
+            <div style="font-size:11px;background:#ede9fe;color:#6d28d9;padding:2px 8px;border-radius:999px">Exporting leads</div>
+            <div style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0"></div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:0.5px solid var(--color-border-tertiary);">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#ddd6fe,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#5b21b6;flex-shrink:0">KB</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Kola B.</div>
+              <div style="font-size:11px;color:var(--color-text-tertiary)">Growth</div>
+            </div>
+            <div style="font-size:11px;background:var(--color-background-info);color:var(--color-text-info);padding:2px 8px;border-radius:999px">Building form</div>
+            <div style="width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0"></div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;opacity:0.55">
+            <div style="width:34px;height:34px;border-radius:50%;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--color-text-tertiary);flex-shrink:0;border:0.5px solid var(--color-border-tertiary)">JO</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-secondary)">Jade O.</div>
+              <div style="font-size:11px;color:var(--color-text-tertiary)">Operations</div>
+            </div>
+            <div style="font-size:11px;color:var(--color-text-tertiary)">Last seen 2h ago</div>
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--color-border-secondary);flex-shrink:0"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Shared forms + permissions -->
+      <div class="ap-card">
+        <div class="ap-card-header">
+          <div class="ap-icon" style="background:var(--color-background-secondary)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div><div class="ap-title">Shared forms</div><div class="ap-sub">3 forms · team access</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0">
+
+          <div style="padding:14px 20px;border-bottom:0.5px solid var(--color-border-tertiary)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1">Product lead form</div>
+              <span style="font-size:10px;background:var(--color-background-success);color:var(--color-text-success);padding:2px 7px;border-radius:999px;font-weight:500">Live</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="display:flex">
+                <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);border:1.5px solid var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:500">TL</div>
+                <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#c4b5fd,#8b5cf6);border:1.5px solid var(--color-background-primary);margin-left:-6px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:500">SA</div>
+                <div style="width:20px;height:20px;border-radius:50%;background:var(--color-background-secondary);border:1.5px solid var(--color-background-primary);margin-left:-6px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--color-text-tertiary);font-weight:500">+2</div>
+              </div>
+              <span style="font-size:11px;color:var(--color-text-tertiary)">47 leads · updated 2m ago</span>
+            </div>
+          </div>
+
+          <div style="padding:14px 20px;border-bottom:0.5px solid var(--color-border-tertiary)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1">Onboarding survey</div>
+              <span style="font-size:10px;background:var(--color-background-success);color:var(--color-text-success);padding:2px 7px;border-radius:999px;font-weight:500">Live</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="display:flex">
+                <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#ddd6fe,#a78bfa);border:1.5px solid var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:9px;color:#5b21b6;font-weight:500">KB</div>
+                <div style="width:20px;height:20px;border-radius:50%;background:var(--color-background-secondary);border:1.5px solid var(--color-background-primary);margin-left:-6px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--color-text-tertiary);font-weight:500">+1</div>
+              </div>
+              <span style="font-size:11px;color:var(--color-text-tertiary)">23 leads · updated 1h ago</span>
+            </div>
+          </div>
+
+          <div style="padding:14px 20px;opacity:0.6">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);flex:1">Pricing feedback v3</div>
+              <span style="font-size:10px;background:var(--color-background-secondary);color:var(--color-text-tertiary);padding:2px 7px;border-radius:999px;border:0.5px solid var(--color-border-tertiary)">Draft</span>
+            </div>
+            <div style="font-size:11px;color:var(--color-text-tertiary)">Last edited by Sade A. · 3h ago</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let secs = [2, 18, 62];
+  setInterval(() => {
+    secs = secs.map(s => s + 1);
+    const fmt = s => s < 60 ? s + 's ago' : Math.floor(s/60) + 'm ago';
+    ['ts1','ts2','ts3'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = fmt(secs[i]);
+    });
+    const lc = document.getElementById('lead-count');
+    if (lc && Math.random() > 0.97) lc.textContent = parseInt(lc.textContent) + 1;
+  }, 1000);
+</script>
