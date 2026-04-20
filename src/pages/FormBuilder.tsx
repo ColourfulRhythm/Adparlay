@@ -1221,6 +1221,9 @@ const FormBuilder: React.FC = () => {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
       {/* Toolbar - Compact dark bar */}
       <div className="bg-[#0d0d0d] border-b border-[#1f1f1f] px-3 sm:px-6 py-2">
