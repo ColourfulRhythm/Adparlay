@@ -29,6 +29,9 @@ interface Form {
       type: string;
     }>;
   }>;
+  dropOffData?: Record<string, number>;
+  totalViews?: number;
+  totalSubmissions?: number;
 }
 
 const ViewResponses: React.FC = () => {
@@ -648,6 +651,69 @@ const ViewResponses: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Drop-off Report */}
+        {selectedForm !== 'all' && (() => {
+          const form = forms.find(f => f.id === selectedForm);
+          if (!form || !form.dropOffData || !form.blocks) return null;
+          const pages = form.blocks;
+          const totalStarts = form.totalViews || 0;
+          const totalCompletes = form.totalSubmissions || 0;
+
+          // Build page-by-page drop-off data
+          const pageData = pages.map((block, idx) => {
+            const dropKey = `dropOff_page_${idx}`;
+            const droppedHere = form.dropOffData![dropKey] || 0;
+            return { title: block.title || `Page ${idx + 1}`, droppedHere, idx };
+          });
+          const maxDrop = Math.max(...pageData.map(p => p.droppedHere), 1);
+
+          if (totalStarts === 0 && totalCompletes === 0 && maxDrop === 1) return null;
+
+          return (
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
+                    Drop-off Report
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">Users who left on each page without completing</p>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-gray-500">
+                  <span>Views: <strong className="text-gray-800">{totalStarts}</strong></span>
+                  <span>Completed: <strong className="text-green-700">{totalCompletes}</strong></span>
+                  {totalStarts > 0 && <span>Completion: <strong className="text-[#8B5CF6]">{Math.round((totalCompletes / totalStarts) * 100)}%</strong></span>}
+                </div>
+              </div>
+              <div className="space-y-3">
+                {pageData.map((page, i) => {
+                  const pct = maxDrop > 0 ? (page.droppedHere / maxDrop) * 100 : 0;
+                  const isWorst = page.droppedHere === maxDrop && maxDrop > 0;
+                  return (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-24 text-[12px] text-gray-600 truncate flex-shrink-0">{page.title}</div>
+                      <div className="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${isWorst ? 'bg-red-400' : 'bg-orange-300'}`}
+                          style={{ width: `${Math.max(pct, 2)}%` }}
+                        />
+                      </div>
+                      <div className={`text-[12px] font-medium w-20 text-right flex-shrink-0 ${isWorst ? 'text-red-600' : 'text-gray-600'}`}>
+                        {page.droppedHere} left {isWorst && '⚠️'}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {maxDrop > 0 && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl text-[12px] text-red-700">
+                  <strong>Insight:</strong> Most users drop off on <em>{pageData.find(p => p.droppedHere === maxDrop)?.title}</em>. Consider simplifying that page's questions or adding social proof.
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Responses Display */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">

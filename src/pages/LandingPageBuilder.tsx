@@ -43,6 +43,11 @@ interface LandingPage {
   logoUrl: string;
   logoPosition: 'left' | 'center' | 'right';
   showLogo: boolean;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  conversionEvents?: { scrollDepth: boolean; buttonClick: boolean; formSubmit: boolean; };
+  captureUtm?: boolean;
 }
 
 const LandingPageBuilder: React.FC = () => {
@@ -87,7 +92,12 @@ const LandingPageBuilder: React.FC = () => {
     additionalLinks: [],
     logoUrl: '',
     logoPosition: 'left',
-    showLogo: false
+    showLogo: false,
+    ogTitle: '',
+    ogDescription: '',
+    ogImage: '',
+    conversionEvents: { scrollDepth: true, buttonClick: true, formSubmit: true },
+    captureUtm: true
   });
 
   const [userForms, setUserForms] = useState<Array<{ id: string; title: string }>>([]);
@@ -211,7 +221,12 @@ const LandingPageBuilder: React.FC = () => {
             additionalLinks: data.additionalLinks || [],
             logoUrl: data.logoUrl || '',
             logoPosition: data.logoPosition || 'left',
-            showLogo: data.showLogo !== undefined ? data.showLogo : false
+            showLogo: data.showLogo !== undefined ? data.showLogo : false,
+            ogTitle: data.ogTitle || '',
+            ogDescription: data.ogDescription || '',
+            ogImage: data.ogImage || '',
+            conversionEvents: data.conversionEvents || { scrollDepth: true, buttonClick: true, formSubmit: true },
+            captureUtm: data.captureUtm !== undefined ? data.captureUtm : true
         });
       }
     } catch (error) {
@@ -1096,32 +1111,40 @@ const LandingPageBuilder: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link to="/dashboard" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <img src="/logoreal.png" alt="AdParlay logo" className="w-6 h-6 object-contain" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">AdParlay</span>
+      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-14">
+            <Link to="/dashboard" className="flex items-center">
+              <img src="/logoreal.png" alt="AdParlay" className="h-7 w-auto" />
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setPreviewMode(!previewMode)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium border transition-colors ${
+                  previewMode
+                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
               >
-                {previewMode ? 'Edit Mode' : 'Preview Mode'}
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                {previewMode ? 'Edit' : 'Preview'}
               </button>
-              <Link
-                to="/dashboard"
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              <button
+                onClick={handleSubmit}
+                disabled={saving}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${saving ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#8B5CF6] text-white hover:bg-[#7C3AED]'}`}
               >
-                View All Landing Pages
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                {saving ? 'Saving…' : 'Publish'}
+              </button>
+              <Link to="/dashboard" className="flex items-center gap-1.5 text-[13px] text-gray-500 hover:text-gray-800 px-2 py-1.5 rounded-md hover:bg-gray-100 transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                <span className="hidden sm:inline">Dashboard</span>
               </Link>
             </div>
           </div>
         </div>
-      </div>
+      </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {previewMode ? (
@@ -1845,7 +1868,105 @@ const LandingPageBuilder: React.FC = () => {
                   {saving ? (landingPage.id ? 'Updating Landing Page...' : 'Creating Landing Page...') : (landingPage.id ? 'Update Landing Page' : 'Create Landing Page')}
                   </motion.button>
                 </div>
+                </div>
+
+                {/* ── Analytics & Performance Panel ── */}
+                <div className="border-t border-gray-100 pt-6 space-y-5">
+                  <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-[#8B5CF6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                    Analytics &amp; Performance
+                  </h3>
+
+                  {/* Social Share Preview */}
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-medium text-gray-700">🔗 Social Share Preview</span>
+                      <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full">WhatsApp · Twitter · LinkedIn</span>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Share Title <span className="text-gray-400">(overrides page title in previews)</span></label>
+                      <input type="text" value={landingPage.ogTitle || ''} onChange={e => handleInputChange('ogTitle', e.target.value)}
+                        placeholder={landingPage.title || 'e.g. Join Our Lagos Promo — Limited Slots!'}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-[13px] focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Share Description</label>
+                      <input type="text" value={landingPage.ogDescription || ''} onChange={e => handleInputChange('ogDescription', e.target.value)}
+                        placeholder="e.g. Get 30% off when you sign up before Friday"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-[13px] focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Share Image URL <span className="text-gray-400">(1200×630px ideal)</span></label>
+                      <input type="url" value={landingPage.ogImage || ''} onChange={e => handleInputChange('ogImage', e.target.value)}
+                        placeholder="https://... or leave blank to use media above"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-[13px] focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent bg-white" />
+                      {landingPage.ogImage && (
+                        <img src={landingPage.ogImage} alt="OG preview" className="mt-2 w-full h-24 object-cover rounded-lg border border-gray-200" loading="lazy" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* UTM Capture */}
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                    <div>
+                      <div className="text-[13px] font-medium text-gray-700">📍 UTM Parameter Capture</div>
+                      <div className="text-[11px] text-gray-500 mt-0.5">Auto-attach utm_source, utm_campaign etc. to every lead</div>
+                    </div>
+                    <button type="button"
+                      onClick={() => setLandingPage(p => ({ ...p, captureUtm: !p.captureUtm }))}
+                      className={`relative w-10 h-5 rounded-full transition-colors flex-shrink-0 ${landingPage.captureUtm !== false ? 'bg-[#8B5CF6]' : 'bg-gray-300'}`}
+                    >
+                      <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${landingPage.captureUtm !== false ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                    </button>
+                  </div>
+
+                  {/* Pixel Conversion Events */}
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                    <div className="text-[13px] font-medium text-gray-700">🎯 Pixel Conversion Events</div>
+                    <div className="text-[11px] text-gray-500 -mt-1">Fire specific events for real retargeting (needs Pixel ID above)</div>
+                    {([
+                      { key: 'scrollDepth' as const, label: 'Scroll Depth', desc: 'Fires at 25%, 50%, 75%, 100%' },
+                      { key: 'buttonClick' as const, label: 'CTA Button Click', desc: 'Fires on every CTA tap' },
+                      { key: 'formSubmit' as const, label: 'Form Submission', desc: 'Fires Lead + FormComplete event' },
+                    ]).map(ev => (
+                      <div key={ev.key} className="flex items-center justify-between">
+                        <div>
+                          <div className="text-[13px] text-gray-700">{ev.label}</div>
+                          <div className="text-[11px] text-gray-500">{ev.desc}</div>
+                        </div>
+                        <button type="button"
+                          onClick={() => setLandingPage(p => ({
+                            ...p,
+                            conversionEvents: {
+                              scrollDepth: true, buttonClick: true, formSubmit: true,
+                              ...(p.conversionEvents || {}),
+                              [ev.key]: !(p.conversionEvents?.[ev.key] ?? true)
+                            }
+                          }))}
+                          className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${(landingPage.conversionEvents?.[ev.key] ?? true) ? 'bg-[#8B5CF6]' : 'bg-gray-300'}`}
+                        >
+                          <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${(landingPage.conversionEvents?.[ev.key] ?? true) ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Speed tip */}
+                  <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl text-[12px] text-amber-800 flex items-start gap-2">
+                    <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <div>
+                      <div className="font-medium">Speed tips for Nigerian mobile networks</div>
+                      <ul className="mt-1 space-y-0.5 text-[11px] text-amber-700 list-none">
+                        <li>• Images are lazy-loaded automatically on your page</li>
+                        <li>• Use a YouTube link for video — saves mobile data vs upload</li>
+                        <li>• Keep body text under 300 words for a fast first paint</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
               </form>
+
             </div>
 
             {/* Live Preview */}

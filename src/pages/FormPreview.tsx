@@ -593,7 +593,7 @@ const FormPreview: React.FC = () => {
             value={value}
             onChange={(e) => handleChange(e.target.value)}
             placeholder={question.placeholder}
-            className={`w-full px-6 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg ${
+            className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all text-[13px] ${
               error ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
             }`}
           />
@@ -606,7 +606,7 @@ const FormPreview: React.FC = () => {
             onChange={(e) => handleChange(e.target.value)}
             placeholder={question.placeholder}
             rows={4}
-            className={`w-full px-6 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg resize-none ${
+            className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all text-[13px] resize-none ${
               error ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
             }`}
           />
@@ -616,16 +616,16 @@ const FormPreview: React.FC = () => {
         return (
           <div className="space-y-3">
             {question.options?.map((option, index) => (
-              <label key={index} className="flex items-center p-4 border-2 border-gray-200 rounded-2xl hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">
+              <label key={index} className="flex items-center p-3 border-[0.5px] border-gray-200 rounded-lg hover:border-[#8B5CF6] hover:bg-gray-50 transition-all cursor-pointer">
                 <input
                   type="radio"
                   name={question.id}
                   value={option}
                   checked={value === option}
                   onChange={(e) => handleChange(e.target.value)}
-                  className="mr-4 w-5 h-5 text-blue-600 focus:ring-blue-500 border-2 border-gray-300"
+                  className="mr-3 w-4 h-4 text-[#8B5CF6] focus:ring-[#8B5CF6] border-gray-300"
                 />
-                <span className="text-lg text-gray-700">{option}</span>
+                <span className="text-[13px] text-gray-700">{option}</span>
               </label>
             ))}
           </div>
@@ -635,7 +635,7 @@ const FormPreview: React.FC = () => {
         return (
           <div className="space-y-3">
             {question.options?.map((option, index) => (
-              <label key={index} className="flex items-center p-4 border-2 border-gray-200 rounded-2xl hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">
+              <label key={index} className="flex items-center p-3 border-[0.5px] border-gray-200 rounded-lg hover:border-[#8B5CF6] hover:bg-gray-50 transition-all cursor-pointer">
                 <input
                   type="checkbox"
                   value={option}
@@ -648,9 +648,9 @@ const FormPreview: React.FC = () => {
                       handleChange(currentValues.filter(v => v !== option));
                     }
                   }}
-                  className="mr-4 w-5 h-5 text-blue-600 focus:ring-blue-500 border-2 border-gray-300"
+                  className="mr-3 w-4 h-4 text-[#8B5CF6] focus:ring-[#8B5CF6] border-gray-300"
                 />
-                <span className="text-lg text-gray-700">{option}</span>
+                <span className="text-[13px] text-gray-700">{option}</span>
               </label>
             ))}
           </div>
@@ -661,7 +661,7 @@ const FormPreview: React.FC = () => {
           <select
             value={value}
             onChange={(e) => handleChange(e.target.value)}
-            className={`w-full px-6 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg appearance-none bg-white ${
+            className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all text-[13px] appearance-none bg-white ${
               error ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
             }`}
           >
@@ -678,7 +678,7 @@ const FormPreview: React.FC = () => {
             type="date"
             value={value}
             onChange={(e) => handleChange(e.target.value)}
-            className={`w-full px-6 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg ${
+            className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all text-[13px] ${
               error ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
             }`}
           />
@@ -690,7 +690,7 @@ const FormPreview: React.FC = () => {
             type="time"
             value={value}
             onChange={(e) => handleChange(e.target.value)}
-            className={`w-full px-6 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg ${
+            className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all text-[13px] ${
               error ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
             }`}
           />
@@ -729,7 +729,7 @@ const FormPreview: React.FC = () => {
                 }
               }}
               accept={question.validation?.allowedTypes?.join(',') || 'image/*,application/pdf,text/*'}
-              className={`w-full px-6 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 ${
+              className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all text-[13px] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 ${
                 error ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
               }`}
             />
@@ -749,7 +749,7 @@ const FormPreview: React.FC = () => {
       case 'linear_scale':
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-lg text-gray-600">
+            <div className="flex items-center justify-between text-[13px] text-gray-600">
               <span>{question.scaleLabels?.min || '1'}</span>
               <span>{question.scaleLabels?.max || '5'}</span>
             </div>
@@ -764,7 +764,7 @@ const FormPreview: React.FC = () => {
                       value={scaleValue}
                       checked={value === scaleValue}
                       onChange={(e) => handleChange(parseInt(e.target.value))}
-                      className="mr-2 w-5 h-5 text-blue-600 focus:ring-blue-500 border-2 border-gray-300"
+                      className="mr-2 w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 border-[0.5px]"
                     />
                     <span className="text-sm font-medium text-gray-700">{scaleValue}</span>
                   </label>
@@ -781,7 +781,7 @@ const FormPreview: React.FC = () => {
             value={value}
             onChange={(e) => handleChange(e.target.value)}
             placeholder={question.placeholder}
-            className={`w-full px-6 py-4 border-2 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg ${
+            className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all text-[13px] ${
               error ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
             }`}
           />
@@ -818,7 +818,7 @@ const FormPreview: React.FC = () => {
             </svg>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-3">Form Not Found</h1>
-          <p className="text-lg text-gray-600">This form doesn't exist or is not published yet.</p>
+          <p className="text-[13px] text-gray-600">This form doesn't exist or is not published yet.</p>
         </motion.div>
       </div>
     );
@@ -863,6 +863,32 @@ const FormPreview: React.FC = () => {
   }
 
   const currentBlock = form.blocks[currentBlockIndex];
+
+
+  // Drop-off tracking: record furthest page reached
+  const furthestPage = useRef(0);
+  useEffect(() => {
+    if (typeof currentBlockIndex !== 'undefined' && currentBlockIndex > furthestPage.current) {
+      furthestPage.current = currentBlockIndex;
+    }
+  });
+
+  // On unmount without completion, write drop-off page to Firestore
+  useEffect(() => {
+    return () => {
+      if (!submitted && formId && furthestPage.current > 0) {
+        try {
+          const { doc, updateDoc, increment } = require('firebase/firestore');
+          const { db } = require('../firebase');
+          const key = `dropOff_page_${furthestPage.current}`;
+          updateDoc(doc(db, 'forms', formId as string), {
+            [key]: increment(1)
+          }).catch(() => {});
+        } catch (_) {}
+      }
+    };
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -1082,7 +1108,7 @@ const FormPreview: React.FC = () => {
                   <div className="bg-white rounded-2xl lg:rounded-3xl shadow-xl border border-gray-100 p-6 lg:p-8">
                     <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">{currentBlock.title}</h3>
                     {currentBlock.description && (
-                      <p className="text-base lg:text-lg text-gray-600 mb-6 lg:mb-8 leading-relaxed">{currentBlock.description}</p>
+                      <p className="text-base lg:text-[13px] text-gray-600 mb-6 lg:mb-8 leading-relaxed">{currentBlock.description}</p>
                     )}
                     
                     <div className="space-y-6 lg:space-y-8">

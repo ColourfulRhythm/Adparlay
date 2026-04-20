@@ -50,6 +50,11 @@ interface FormQuestion {
   };
   gridRows?: string[];
   gridColumns?: string[];
+  conditionalLogic?: {
+    enabled: boolean;
+    showIf: { questionId: string; operator: string; value: string }[];
+    action: 'show' | 'hide' | 'skip';
+  };
 }
 
 interface Form {
@@ -136,6 +141,8 @@ const FormBuilder: React.FC = () => {
   const [currentBlockIndex, setCurrentBlockIndex] = useState(0);
   const [selectedBlockId, setSelectedBlockId] = useState<string>('');
   const [mediaError, setMediaError] = useState<string>('');
+  const [showConditionalModal, setShowConditionalModal] = useState(false);
+  const [conditionalSourceQuestion, setConditionalSourceQuestion] = useState<string>('');
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Auto-save functionality
@@ -1088,32 +1095,29 @@ const FormBuilder: React.FC = () => {
   const currentBlock = form.blocks[currentBlockIndex];
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-[#0d0d0d] text-gray-900">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-[#0d0d0d] border-b border-[#1f1f1f] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold text-gray-900">AdParlay</span>
-            </div>
+            <Link to="/dashboard" className="flex items-center">
+              <img src="/logoreal.png" alt="AdParlay" className="h-7 w-auto" />
+            </Link>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-2">
               <Link
                 to="/dashboard"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="hidden sm:flex items-center gap-1.5 text-[13px] text-[#555] hover:text-[#111] transition-colors px-2 py-1.5 rounded-md hover:bg-gray-100"
               >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
                 Dashboard
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-1.5 text-[13px] text-[#555] hover:text-[#111] transition-colors px-2 py-1.5 rounded-md hover:bg-gray-100"
               >
-                Logout
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
@@ -1121,7 +1125,7 @@ const FormBuilder: React.FC = () => {
       </nav>
 
       {/* Compact Form Header */}
-      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-3">
+      <div className="bg-[#111] border-b border-[#222] px-3 sm:px-6 py-2.5">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             {/* Form Title - Compact */}
@@ -1130,7 +1134,7 @@ const FormBuilder: React.FC = () => {
                 type="text"
                 value={form?.title || ''}
                 onChange={(e) => setForm(prev => prev ? { ...prev, title: e.target.value } : null)}
-                className="text-lg sm:text-xl font-semibold bg-transparent text-gray-900 border-none outline-none placeholder-gray-400 w-full truncate"
+                className="text-[15px] font-semibold bg-transparent text-white border-none outline-none placeholder-[#555] w-full truncate"
                 placeholder="Untitled Form"
               />
               {/* Form Description - Editable */}
@@ -1138,372 +1142,145 @@ const FormBuilder: React.FC = () => {
                 type="text"
                 value={form?.description || ''}
                 onChange={(e) => setForm(prev => prev ? { ...prev, description: e.target.value } : null)}
-                className="text-sm text-gray-600 bg-transparent border-none outline-none placeholder-gray-400 w-full truncate mt-1"
+                className="text-[12px] text-[#777] bg-transparent border-none outline-none placeholder-[#444] w-full truncate mt-0.5"
                 placeholder="Add a description (optional)"
               />
             </div>
             
-            {/* Actions - Mobile Hamburger + Desktop Buttons */}
-            <div className="flex items-center gap-2">
-              {/* Last Saved - Hidden on mobile */}
+            {/* Actions - Publish + More dropdown */}
+            <div className="flex items-center gap-2 flex-shrink-0">
               {lastSaved && (
-                <div className="hidden lg:block text-xs text-gray-500 whitespace-nowrap">
+                <span className="hidden lg:block text-[11px] text-[#555] whitespace-nowrap">
                   Saved {lastSaved.toLocaleTimeString()}
-                </div>
+                </span>
               )}
-              
-              {/* Desktop Actions */}
-              <div className="hidden sm:flex items-center gap-2">
-                {/* Primary Action - Save */}
-                <button
-                  onClick={saveForm}
-                  disabled={saving}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                    saving
-                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  {saving ? (
-                    <>
-                      <div className="animate-spin rounded-full h-3 w-3 border border-white border-t-transparent"></div>
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                      </svg>
-                      <span>Save</span>
-                    </>
-                  )}
-                </button>
 
-                {/* Publish Button */}
-                <button
-                  onClick={publishForm}
-                  disabled={saving || !form?.blocks?.length}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                    saving || !form?.blocks?.length
-                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                      : form?.status === 'published'
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-purple-600 text-white hover:bg-purple-700'
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                  <span>{form?.status === 'published' ? 'Published' : 'Publish'}</span>
-                </button>
+              {/* Publish - always visible */}
+              <button
+                onClick={publishForm}
+                disabled={saving || !form?.blocks?.length}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
+                  saving || !form?.blocks?.length
+                    ? 'bg-[#333] text-[#666] cursor-not-allowed'
+                    : form?.status === 'published'
+                    ? 'bg-[#22c55e]/20 border border-[#22c55e]/40 text-[#22c55e]'
+                    : 'bg-[#8B5CF6] text-white hover:bg-[#7C3AED]'
+                }`}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                {form?.status === 'published' ? 'Live' : 'Publish'}
+              </button>
 
-                {/* Secondary Actions */}
-                <button
-                  onClick={() => setPreviewMode(!previewMode)}
-                  className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-1.5"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  <span>{previewMode ? 'Edit' : 'Preview'}</span>
-                </button>
-
-                <button
-                  onClick={() => setShowShareModal(true)}
-                  className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-1.5"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                  </svg>
-                  <span>Share</span>
-                </button>
-
-                {/* Integrations - Desktop */}
-                <div className="relative" ref={integrationsDropdownRef}>
-                  <button
-                    onClick={() => setShowIntegrationsDropdown(!showIntegrationsDropdown)}
-                    className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-1.5"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                    <span>Integrations</span>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Desktop Integrations Dropdown */}
-                  {showIntegrationsDropdown && (
-                    <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
-                      <div className="py-2">
-                        <div className="px-4 py-3 border-b border-gray-100">
-                          <h3 className="text-sm font-semibold text-gray-900">Integrations</h3>
-                          <p className="text-xs text-gray-500">Connect your form to external tools</p>
-                        </div>
-                        
-                        <button
-                          onClick={() => {
-                            setShowGoogleSheetsModal(true);
-                            setShowIntegrationsDropdown(false);
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3"
-                        >
-                          <svg className="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                          </svg>
-                          <div>
-                            <div className="font-medium text-gray-900">Google Sheets</div>
-                            <div className="text-sm text-gray-500">Sync leads to spreadsheets</div>
-                          </div>
-                        </button>
-                        
-                        <button
-                          onClick={() => {
-                            setShowCRMModal(true);
-                            setShowIntegrationsDropdown(false);
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3"
-                        >
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                          <div>
-                            <div className="font-medium text-gray-900">CRM Tools</div>
-                            <div className="text-sm text-gray-500">HubSpot, Zoho, Salesforce</div>
-                          </div>
-                        </button>
-                        
-                        <button
-                          onClick={() => {
-                            setShowZapierModal(true);
-                            setShowIntegrationsDropdown(false);
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3"
-                        >
-                          <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                          </svg>
-                          <div>
-                            <div className="font-medium text-gray-900">Zapier</div>
-                            <div className="text-sm text-gray-500">Connect 5,000+ apps</div>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-
-              {/* Mobile Publish Menu */}
-              <div className="sm:hidden relative">
+              {/* More dropdown - Save, Preview, Share, Integrations */}
+              <div className="relative" ref={integrationsDropdownRef}>
                 <button
                   onClick={() => setShowMobileMenu(!showMobileMenu)}
                   data-mobile-menu-button
-                  className="flex items-center gap-2 px-3 py-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-md transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1.5 bg-[#1a1a1a] border border-[#333] text-[#aaa] text-[13px] font-medium rounded-md hover:border-[#555] hover:text-white transition-colors"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                  <span className="text-sm font-medium">Publish</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
                 </button>
-                
-                {/* Mobile Actions Menu */}
+
                 {showMobileMenu && (
-                  <div data-mobile-menu className="absolute top-full right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
-                    <div className="py-2">
-                      {/* Save */}
-                      <button
-                        onClick={() => {
-                          saveForm();
-                          setShowMobileMenu(false);
-                        }}
-                        disabled={saving}
-                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 ${
-                          saving ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                      >
-                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                        </svg>
-                        <div>
-                          <div className="font-medium text-gray-900">{saving ? 'Saving...' : 'Save'}</div>
-                          <div className="text-sm text-gray-500">Save form changes</div>
-                        </div>
+                  <div data-mobile-menu className="absolute top-full right-0 mt-2 w-56 bg-[#111] border border-[#2a2a2a] rounded-xl shadow-2xl z-50 overflow-hidden">
+                    <div className="p-1">
+                      <button onClick={() => { saveForm(); setShowMobileMenu(false); }} disabled={saving}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors">
+                        <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                        {saving ? 'Saving…' : 'Save'}
                       </button>
-
-                      {/* Publish */}
-                      <button
-                        onClick={() => {
-                          publishForm();
-                          setShowMobileMenu(false);
-                        }}
-                        disabled={saving || !form?.blocks?.length}
-                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 ${
-                          saving || !form?.blocks?.length ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                      >
-                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                        <div>
-                          <div className="font-medium text-gray-900">{form?.status === 'published' ? 'Published' : 'Publish'}</div>
-                          <div className="text-sm text-gray-500">Make form live</div>
-                        </div>
+                      <button onClick={() => { setPreviewMode(!previewMode); setShowMobileMenu(false); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors">
+                        <svg className="w-4 h-4 text-[#777] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        {previewMode ? 'Exit Preview' : 'Preview'}
                       </button>
-
-                      {/* Preview */}
-                      <button
-                        onClick={() => {
-                          setPreviewMode(!previewMode);
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3"
-                      >
-                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        <div>
-                          <div className="font-medium text-gray-900">{previewMode ? 'Edit' : 'Preview'}</div>
-                          <div className="text-sm text-gray-500">Toggle preview mode</div>
-                        </div>
+                      <button onClick={() => { setShowShareModal(true); setShowMobileMenu(false); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors">
+                        <svg className="w-4 h-4 text-[#777] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" /></svg>
+                        Share
                       </button>
-
-                      {/* Share */}
-                      <button
-                        onClick={() => {
-                          console.log('Share button clicked in mobile menu');
-                          setShowShareModal(true);
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3"
-                      >
-                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                        </svg>
-                        <div>
-                          <div className="font-medium text-gray-900">Share</div>
-                          <div className="text-sm text-gray-500">Share your form</div>
-                        </div>
+                      <div className="h-px bg-[#222] my-1" />
+                      <div className="px-3 py-1 text-[10px] uppercase tracking-widest text-[#555] font-semibold">Integrations</div>
+                      <button onClick={() => { setShowGoogleSheetsModal(true); setShowMobileMenu(false); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors">
+                        <svg className="w-4 h-4 text-green-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                        Google Sheets
                       </button>
-
-                      {/* Divider */}
-                      <div className="border-t border-gray-100 my-2"></div>
-
-                      {/* Integrations */}
-                      <div className="px-4 py-2">
-                        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Integrations</div>
-                      </div>
-
-                      {/* Google Sheets */}
-                      <button
-                        onClick={() => {
-                          setShowGoogleSheetsModal(true);
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3"
-                      >
-                        <svg className="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                        </svg>
-                        <div>
-                          <div className="font-medium text-gray-900">Google Sheets</div>
-                          <div className="text-sm text-gray-500">Sync to spreadsheets</div>
-                        </div>
+                      <button onClick={() => { setShowCRMModal(true); setShowMobileMenu(false); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors">
+                        <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        CRM Tools
                       </button>
-
-                      {/* CRM */}
-                      <button
-                        onClick={() => {
-                          setShowCRMModal(true);
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3"
-                      >
-                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <div>
-                          <div className="font-medium text-gray-900">CRM</div>
-                          <div className="text-sm text-gray-500">Manage leads</div>
-                        </div>
-                      </button>
-
-                      {/* Zapier */}
-                      <button
-                        onClick={() => {
-                          setShowZapierModal(true);
-                          setShowMobileMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3"
-                      >
-                        <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                        <div>
-                          <div className="font-medium text-gray-900">Zapier</div>
-                          <div className="text-sm text-gray-500">Automate workflows</div>
-                        </div>
+                      <button onClick={() => { setShowZapierModal(true); setShowMobileMenu(false); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors">
+                        <svg className="w-4 h-4 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                        Zapier
                       </button>
                     </div>
                   </div>
                 )}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Toolbar */}
-      <div className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
+      {/* Toolbar - Compact dark bar */}
+      <div className="bg-[#0d0d0d] border-b border-[#1f1f1f] px-3 sm:px-6 py-2">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            {/* Left side buttons */}
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center justify-between gap-1.5 overflow-hidden">
+            {/* Left: Add Page + Add Question - compact on mobile */}
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={addBlock}
+                className="flex items-center gap-1 px-2.5 py-1.5 bg-[#1a1a1a] border border-[#333] text-[#ccc] text-[12px] font-medium rounded-md hover:border-[#8B5CF6] hover:text-white transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                <span className="hidden sm:inline">Add Page</span>
+                <span className="sm:hidden">Page</span>
+              </button>
+              {currentBlock && (
+                <button
+                  onClick={() => { setSelectedBlockId(currentBlock.id); setShowQuestionTypeModal(true); }}
+                  className="flex items-center gap-1 px-2.5 py-1.5 bg-[#1a1a1a] border border-[#333] text-[#ccc] text-[12px] font-medium rounded-md hover:border-[#22c55e] hover:text-white transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                  <span className="hidden sm:inline">Add Question</span>
+                  <span className="sm:hidden">Question</span>
+                </button>
+              )}
+              {currentBlock && (
+                <span className="text-[11px] text-[#555] hidden sm:inline">{currentBlock.questions.length} questions</span>
+              )}
+            </div>
+            {/* Right: Preview toggle + Media + Settings */}
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setPreviewMode(!previewMode)}
-                className={`min-h-[44px] px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 text-[12px] font-medium rounded-md border transition-colors ${
                   previewMode
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-600 text-white hover:bg-gray-700'
+                    ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white'
+                    : 'bg-[#1a1a1a] border-[#333] text-[#ccc] hover:border-[#8B5CF6] hover:text-white'
                 }`}
               >
-                {previewMode ? 'Exit Preview' : 'Preview'}
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                {previewMode ? 'Edit' : 'Preview'}
               </button>
-            </div>
-            
-            {/* Right side buttons */}
-            <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={() => setShowMediaModal(true)}
-                className={`min-h-[44px] px-4 py-2 text-white text-sm rounded-lg font-medium transition-colors ${
-                  mediaError 
-                    ? 'bg-red-600 hover:bg-red-700' 
-                    : 'bg-blue-600 hover:bg-blue-700'
+                className={`flex items-center gap-1 px-2.5 py-1.5 text-[12px] font-medium rounded-md border transition-colors ${
+                  mediaError
+                    ? 'bg-red-900/30 border-red-700 text-red-400'
+                    : 'bg-[#1a1a1a] border-[#333] text-[#ccc] hover:border-[#555] hover:text-white'
                 }`}
               >
-                {mediaError ? 'Fix Media' : 'Media'}
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                Media
               </button>
-              
               <button
                 onClick={() => setShowSettingsModal(true)}
-                className="min-h-[44px] px-4 py-2 bg-purple-600 text-white text-sm rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                className="flex items-center gap-1 px-2.5 py-1.5 bg-[#1a1a1a] border border-[#333] text-[#ccc] text-[12px] font-medium rounded-md hover:border-[#555] hover:text-white transition-colors"
               >
-                Settings
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                <span className="hidden sm:inline">Settings</span>
               </button>
-              
-              {mediaError && (
-                <div className="flex items-center gap-2 text-red-400 text-xs bg-red-50 px-2 py-1 rounded">
-                  <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                  <span>Issue</span>
-                </div>
-              )}
-              
             </div>
           </div>
         </div>
@@ -1559,7 +1336,7 @@ const FormBuilder: React.FC = () => {
           </div>
 
           {/* Right/Bottom Half - Form Preview */}
-          <div className="w-full lg:w-1/2 bg-[#111] flex flex-col">
+          <div className="w-full lg:w-1/2 bg-[#0d0d0d] flex flex-col">
             <div className="p-6 flex-1">
               <div className="max-w-2xl mx-auto">
                 <h1 className="text-3xl font-bold text-white mb-4">{form.title}</h1>
@@ -1618,7 +1395,7 @@ const FormBuilder: React.FC = () => {
                               <input
                                 type="text"
                                 placeholder={question.placeholder || 'Enter your answer'}
-                                className="w-full px-4 py-3 border-2 border-[#333] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all bg-[#222] text-white placeholder-[#A3A3A3]"
+                                className="w-full px-3 py-2 border-[0.5px] border-[#333] rounded-md focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all bg-[#1A1A1A] text-white text-[13px] placeholder-[#A3A3A3]"
                                 disabled
                               />
                             )}
@@ -1627,7 +1404,7 @@ const FormBuilder: React.FC = () => {
                               <textarea
                                 placeholder={question.placeholder || 'Enter your answer'}
                                 rows={4}
-                                className="w-full px-4 py-3 border-2 border-[#333] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all resize-none bg-[#222] text-white placeholder-[#A3A3A3]"
+                                className="w-full px-3 py-2 border-[0.5px] border-[#333] rounded-md focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all resize-none bg-[#1A1A1A] text-white text-[13px] placeholder-[#A3A3A3]"
                                 disabled
                               />
                             )}
@@ -1635,11 +1412,11 @@ const FormBuilder: React.FC = () => {
                             {question.type === 'multiple_choice' && question.options && (
                               <div className="space-y-2">
                                 {question.options.map((option, index) => (
-                                  <label key={index} className="flex items-center p-3 border-2 border-[#333] rounded-lg hover:border-[#8B5CF6] cursor-pointer bg-[#222]">
+                                  <label key={index} className="flex items-center p-2.5 border-[0.5px] border-[#333] rounded-md hover:border-[#8B5CF6] cursor-pointer bg-[#1A1A1A]">
                                     <input
                                       type="radio"
                                       name={question.id}
-                                      className="mr-3 w-4 h-4 text-[#8B5CF6] focus:ring-[#8B5CF6] border-[#333]"
+                                      className="mr-2.5 w-3.5 h-3.5 text-[#8B5CF6] focus:ring-[#8B5CF6] border-[#333]"
                                       disabled
                                     />
                                     <span className="text-white">{option}</span>
@@ -1651,10 +1428,10 @@ const FormBuilder: React.FC = () => {
                             {question.type === 'checkboxes' && question.options && (
                               <div className="space-y-2">
                                 {question.options.map((option, index) => (
-                                  <label key={index} className="flex items-center p-3 border-2 border-[#333] rounded-lg hover:border-[#8B5CF6] cursor-pointer bg-[#222]">
+                                  <label key={index} className="flex items-center p-2.5 border-[0.5px] border-[#333] rounded-md hover:border-[#8B5CF6] cursor-pointer bg-[#1A1A1A]">
                                     <input
                                       type="checkbox"
-                                      className="mr-3 w-4 h-4 text-[#8B5CF6] focus:ring-[#8B5CF6] border-[#333]"
+                                      className="mr-2.5 w-3.5 h-3.5 text-[#8B5CF6] focus:ring-[#8B5CF6] border-[#333]"
                                       disabled
                                     />
                                     <span className="text-white">{option}</span>
@@ -1664,7 +1441,7 @@ const FormBuilder: React.FC = () => {
                             )}
                             
                             {question.type === 'dropdown' && question.options && (
-                              <select className="w-full px-4 py-3 border-2 border-[#333] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all bg-[#222] text-white" disabled>
+                              <select className="w-full px-3 py-2 border-[0.5px] border-[#333] rounded-md focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all bg-[#1A1A1A] text-white text-[13px]" disabled>
                                 <option value="">Select an option</option>
                                 {question.options.map((option, index) => (
                                   <option key={index} value={option}>{option}</option>
@@ -1675,7 +1452,7 @@ const FormBuilder: React.FC = () => {
                             {question.type === 'date' && (
                               <input
                                 type="date"
-                                className="w-full px-4 py-3 border-2 border-[#333] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all bg-[#222] text-white"
+                                className="w-full px-3 py-2 border-[0.5px] border-[#333] rounded-md focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all bg-[#1A1A1A] text-white text-[13px]"
                                 disabled
                               />
                             )}
@@ -1683,7 +1460,7 @@ const FormBuilder: React.FC = () => {
                             {question.type === 'time' && (
                               <input
                                 type="time"
-                                className="w-full px-4 py-3 border-2 border-[#333] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all bg-[#222] text-white"
+                                className="w-full px-3 py-2 border-[0.5px] border-[#333] rounded-md focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6] transition-all bg-[#1A1A1A] text-white text-[13px]"
                                 disabled
                               />
                             )}
@@ -1798,41 +1575,7 @@ const FormBuilder: React.FC = () => {
             </div>
           </div>
 
-          {/* Action Buttons - Between Media and Form */}
-          <div className="w-full bg-[#1a1a1a] border-b border-[#333] px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={addBlock}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                  Add Page
-                </button>
-                
-                {currentBlock && (
-                  <button
-                    onClick={() => {
-                      setSelectedBlockId(currentBlock.id);
-                      setShowQuestionTypeModal(true);
-                    }}
-                    className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center gap-2"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Add Question
-                  </button>
-                )}
-              </div>
-              
-              <div className="text-sm text-gray-400">
-                {currentBlock ? `${currentBlock.questions.length} questions` : 'No questions'}
-              </div>
-            </div>
-          </div>
+
 
           {/* Right/Bottom Half - Form Builder */}
           <div className="w-full lg:w-1/2 bg-[#111] flex flex-col">
@@ -1920,20 +1663,26 @@ const FormBuilder: React.FC = () => {
                             layout
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className={`bg-[#1a1a1a] rounded-lg p-3 border-2 transition-all ${
+                            className={`flex items-center justify-between p-3 rounded-lg border-[0.5px] transition-all group ${
                               activeQuestion === question.id 
                                 ? 'border-[#8B5CF6] bg-[#1a1a1a]' 
-                                : 'border-[#333] hover:border-[#444]'
+                                : 'bg-[#141414] border-[#333] hover:border-[#444]'
                             }`}
                           >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center space-x-2">
-                                <span className="text-xl">{getQuestionIcon(question.type)}</span>
-                                <div>
-                                  <h6 className="font-medium text-white text-sm">{question.label}</h6>
-                                  <p className="text-xs text-[#A3A3A3]">{question.type}</p>
-                                </div>
+                            <div className="flex items-center space-x-3 overflow-hidden">
+                              <div className="w-8 h-8 rounded-md bg-[#222] flex items-center justify-center flex-shrink-0 text-gray-400">
+                                {getQuestionIcon(question.type)}
                               </div>
+                              <div className="min-w-0">
+                                <h6 className="font-medium text-white text-[13px] truncate">{question.label}</h6>
+                                <p className="text-[11px] text-[#A3A3A3] mt-0.5 truncate">
+                                  {question.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} · {question.required ? 'Required' : 'Optional'}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3 flex-shrink-0 ml-4">
+                              <div className={`w-1.5 h-1.5 rounded-full ${question.required ? 'bg-[#22c55e]' : 'bg-[#555]'}`}></div>
                               
                               <div className="flex items-center space-x-1">
                                 <button
@@ -1941,23 +1690,19 @@ const FormBuilder: React.FC = () => {
                                     setEditingQuestion(question);
                                     setShowQuestionModal(true);
                                   }}
-                                  className="px-2 py-1 bg-[#8B5CF6] text-white text-xs rounded hover:bg-[#7C3AED] transition-colors"
+                                  className="px-2 py-1 bg-[#222] border border-[#333] text-[#A3A3A3] text-[11px] rounded hover:bg-[#333] hover:text-white transition-colors"
                                 >
                                   Edit
                                 </button>
                                 
                                 <button
                                   onClick={() => deleteQuestion(currentBlock.id, question.id)}
-                                  className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition-colors"
+                                  className="px-2 py-1 bg-[#222] border border-[#333] text-red-400 text-[11px] rounded hover:bg-red-900/30 hover:border-red-800 transition-colors"
                                 >
                                   Delete
                                 </button>
                               </div>
                             </div>
-                            
-                            <span className="text-xs text-[#A3A3A3]">
-                              {question.required ? 'Required' : 'Optional'}
-                            </span>
                           </motion.div>
                         ))}
                       </div>
@@ -1974,6 +1719,73 @@ const FormBuilder: React.FC = () => {
                   <p className="text-[#A3A3A3]">No blocks added yet. Start building your form by adding pages above.</p>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Collaboration & Activity Feed - Coming Soon Panels */}
+      {!previewMode && (
+        <div className="border-t border-[#1f1f1f] bg-[#0d0d0d] px-3 sm:px-6 py-4">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Lead Activity Feed */}
+            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden">
+              <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f1f1f]">
+                <div className="w-6 h-6 rounded-md bg-[#1a1a1a] flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 text-[#777]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-medium text-white">Lead Activity Feed</div>
+                  <div className="text-[11px] text-[#555]">Live response tracking</div>
+                </div>
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#1f1f1f] border border-[#2a2a2a] text-[#555]">Coming Soon</span>
+              </div>
+              <div className="px-4 py-3 space-y-2.5 opacity-40 pointer-events-none select-none">
+                {[
+                  { init: 'EO', name: 'Emeka O.', action: 'submitted this form', time: '2s ago', color: 'bg-blue-900 text-blue-300' },
+                  { init: 'AK', name: 'Amara K.', action: 'received PDF summary', time: '18s ago', color: 'bg-purple-900 text-purple-300' },
+                  { init: 'FB', name: 'Fatimah B.', action: 'submitted this form', time: '1m ago', color: 'bg-green-900 text-green-300' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0 ${item.color}`}>{item.init}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[12px] text-white"><span className="font-medium">{item.name}</span> <span className="text-[#777]">{item.action}</span></div>
+                    </div>
+                    <div className="text-[11px] text-[#555] whitespace-nowrap">{item.time}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Team Collaboration */}
+            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden">
+              <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f1f1f]">
+                <div className="w-6 h-6 rounded-md bg-[#1a1a1a] flex items-center justify-center">
+                  <svg className="w-3.5 h-3.5 text-[#777]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-medium text-white">Team Collaboration</div>
+                  <div className="text-[11px] text-[#555]">Real-time co-editing</div>
+                </div>
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#1f1f1f] border border-[#2a2a2a] text-[#555]">Coming Soon</span>
+              </div>
+              <div className="px-4 py-3 space-y-2.5 opacity-40 pointer-events-none select-none">
+                {[
+                  { init: 'TL', name: 'Tunde L.', role: 'Marketing Lead', status: 'Viewing analytics', online: true, grad: 'from-violet-700 to-purple-600' },
+                  { init: 'SA', name: 'Sade A.', role: 'Sales Manager', status: 'Exporting leads', online: true, grad: 'from-purple-600 to-violet-500' },
+                  { init: 'KB', name: 'Kola B.', role: 'Growth', status: 'Building form', online: true, grad: 'from-violet-500 to-purple-400' },
+                ].map((m, i) => (
+                  <div key={i} className="flex items-center gap-2.5">
+                    <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${m.grad} flex items-center justify-center text-[11px] font-semibold text-white flex-shrink-0`}>{m.init}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium text-white truncate">{m.name}</div>
+                      <div className="text-[11px] text-[#555] truncate">{m.role}</div>
+                    </div>
+                    <div className="text-[11px] text-[#22c55e] bg-[#22c55e]/10 px-2 py-0.5 rounded-full whitespace-nowrap">{m.status}</div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] flex-shrink-0"></div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -2180,6 +1992,107 @@ const FormBuilder: React.FC = () => {
                 )}
               </div>
               
+              {/* Conditional Logic */}
+                <div className="border-t border-[#333] pt-4 mt-2">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="text-sm font-medium text-white flex items-center gap-2">
+                        <span>⚡</span> Conditional Logic
+                      </div>
+                      <div className="text-[11px] text-[#777] mt-0.5">Show/hide this field based on other answers</div>
+                    </div>
+                    <button
+                      onClick={() => setEditingQuestion(prev => prev ? {
+                        ...prev,
+                        conditionalLogic: {
+                          enabled: !prev.conditionalLogic?.enabled,
+                          showIf: prev.conditionalLogic?.showIf || [],
+                          action: prev.conditionalLogic?.action || 'show'
+                        }
+                      } : null)}
+                      className={`relative w-9 h-5 rounded-full transition-colors ${editingQuestion.conditionalLogic?.enabled ? 'bg-[#8B5CF6]' : 'bg-[#333]'}`}
+                    >
+                      <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${editingQuestion.conditionalLogic?.enabled ? 'translate-x-4' : 'translate-x-0.5'}`}></span>
+                    </button>
+                  </div>
+
+                  {editingQuestion.conditionalLogic?.enabled && (
+                    <div className="space-y-2">
+                      {(editingQuestion.conditionalLogic?.showIf || []).map((rule, ri) => (
+                        <div key={ri} className="flex items-center gap-2 p-2 bg-[#111] border border-[#2a2a2a] rounded-lg">
+                          <span className="text-[10px] text-[#777] font-medium w-6">{ri === 0 ? 'IF' : 'AND'}</span>
+                          <select
+                            value={rule.questionId}
+                            onChange={e => setEditingQuestion(prev => {
+                              if (!prev) return null;
+                              const rules = [...(prev.conditionalLogic?.showIf || [])];
+                              rules[ri] = { ...rules[ri], questionId: e.target.value };
+                              return { ...prev, conditionalLogic: { ...prev.conditionalLogic!, showIf: rules } };
+                            })}
+                            className="flex-1 min-w-0 px-2 py-1 bg-[#1a1a1a] border border-[#333] rounded text-[12px] text-white"
+                          >
+                            <option value="">Select question…</option>
+                            {currentBlock?.questions.filter(q => q.id !== editingQuestion.id).map(q => (
+                              <option key={q.id} value={q.id}>{q.label}</option>
+                            ))}
+                          </select>
+                          <select
+                            value={rule.operator}
+                            onChange={e => setEditingQuestion(prev => {
+                              if (!prev) return null;
+                              const rules = [...(prev.conditionalLogic?.showIf || [])];
+                              rules[ri] = { ...rules[ri], operator: e.target.value };
+                              return { ...prev, conditionalLogic: { ...prev.conditionalLogic!, showIf: rules } };
+                            })}
+                            className="w-16 px-1.5 py-1 bg-[#1a1a1a] border border-[#333] rounded text-[12px] text-white"
+                          >
+                            <option value="=">=</option>
+                            <option value="!=">≠</option>
+                            <option value="contains">has</option>
+                          </select>
+                          <input
+                            value={rule.value}
+                            onChange={e => setEditingQuestion(prev => {
+                              if (!prev) return null;
+                              const rules = [...(prev.conditionalLogic?.showIf || [])];
+                              rules[ri] = { ...rules[ri], value: e.target.value };
+                              return { ...prev, conditionalLogic: { ...prev.conditionalLogic!, showIf: rules } };
+                            })}
+                            placeholder="value"
+                            className="w-20 px-2 py-1 bg-[#1a1a1a] border border-[#333] rounded text-[12px] text-white placeholder-[#555]"
+                          />
+                          <button
+                            onClick={() => setEditingQuestion(prev => {
+                              if (!prev) return null;
+                              const rules = (prev.conditionalLogic?.showIf || []).filter((_, i) => i !== ri);
+                              return { ...prev, conditionalLogic: { ...prev.conditionalLogic!, showIf: rules } };
+                            })}
+                            className="text-red-400 hover:text-red-300 text-[14px] flex-shrink-0"
+                          >×</button>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => setEditingQuestion(prev => {
+                          if (!prev) return null;
+                          const rules = [...(prev.conditionalLogic?.showIf || []), { questionId: '', operator: '=', value: '' }];
+                          return { ...prev, conditionalLogic: { ...prev.conditionalLogic!, showIf: rules } };
+                        })}
+                        className="text-[12px] text-[#8B5CF6] hover:text-[#a78bfa] transition-colors"
+                      >+ Add condition</button>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[12px] text-[#777]">Action:</span>
+                        {(['show','hide','skip'] as const).map(a => (
+                          <button
+                            key={a}
+                            onClick={() => setEditingQuestion(prev => prev ? { ...prev, conditionalLogic: { ...prev.conditionalLogic!, action: a } } : null)}
+                            className={`text-[11px] px-2 py-0.5 rounded border transition-colors ${editingQuestion.conditionalLogic?.action === a ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white' : 'bg-[#1a1a1a] border-[#333] text-[#777]'}`}
+                          >{a}</button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
               <div className="flex items-center justify-end space-x-3 mt-6">
                 <button
                   onClick={() => {
