@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SocialMediaIcons } from '../components/SocialMediaIcons';
 import { AccordionLink } from '../components/AccordionLink';
@@ -186,13 +186,73 @@ const UsernameView: React.FC = () => {
     }
   };
 
+  const getLinksArray = (): LinkItem[] => {
+    const rawLinks = linkOrganizer?.links as any;
+    if (!rawLinks) return [];
+    if (Array.isArray(rawLinks)) return rawLinks.filter(Boolean);
+    if (typeof rawLinks === 'object') return Object.values(rawLinks).filter(Boolean) as LinkItem[];
+    return [];
+  };
+
+  const getProductsArray = (): ProductItem[] => {
+    const rawProducts = linkOrganizer?.products as any;
+    if (!rawProducts) return [];
+    if (Array.isArray(rawProducts)) return rawProducts.filter(Boolean);
+    if (typeof rawProducts === 'object') return Object.values(rawProducts).filter(Boolean) as ProductItem[];
+    return [];
+  };
+
+  const incrementLinkClicks = async (link: LinkItem) => {
+    if (!linkOrganizer) return;
+    try {
+      if (Array.isArray(linkOrganizer.links)) {
+        const nextLinks = linkOrganizer.links.map((item) =>
+          item.id === link.id ? { ...item, clicks: (item.clicks || 0) + 1 } : item
+        );
+        await updateDoc(doc(db, 'linkOrganizers', linkOrganizer.id), { links: nextLinks });
+        setLinkOrganizer((prev) => (prev ? { ...prev, links: nextLinks } : prev));
+        return;
+      }
+      if (typeof linkOrganizer.links === 'object' && linkOrganizer.links !== null) {
+        const current = linkOrganizer.links as Record<string, LinkItem>;
+        const key = Object.keys(current).find((k) => current[k]?.id === link.id);
+        if (!key) return;
+        await updateDoc(doc(db, 'linkOrganizers', linkOrganizer.id), {
+          [`links.${key}.clicks`]: (current[key]?.clicks || 0) + 1
+        });
+      }
+    } catch (error) {
+      console.error('Error updating link count:', error);
+    }
+  };
+
+  const incrementProductClicks = async (product: ProductItem) => {
+    if (!linkOrganizer) return;
+    try {
+      if (Array.isArray(linkOrganizer.products)) {
+        const nextProducts = linkOrganizer.products.map((item) =>
+          item.id === product.id ? { ...item, clicks: (item.clicks || 0) + 1 } : item
+        );
+        await updateDoc(doc(db, 'linkOrganizers', linkOrganizer.id), { products: nextProducts });
+        setLinkOrganizer((prev) => (prev ? { ...prev, products: nextProducts } : prev));
+        return;
+      }
+      if (typeof linkOrganizer.products === 'object' && linkOrganizer.products !== null) {
+        const current = linkOrganizer.products as Record<string, ProductItem>;
+        const key = Object.keys(current).find((k) => current[k]?.id === product.id);
+        if (!key) return;
+        await updateDoc(doc(db, 'linkOrganizers', linkOrganizer.id), {
+          [`products.${key}.clicks`]: (current[key]?.clicks || 0) + 1
+        });
+      }
+    } catch (error) {
+      console.error('Error updating product count:', error);
+    }
+  };
+
   const handleLinkClick = async (link: LinkItem) => {
     try {
-      // Update click count
-      const linkRef = doc(db, 'linkOrganizers', linkOrganizer!.id);
-      await updateDoc(linkRef, {
-        [`links.${link.id}.clicks`]: increment(1)
-      });
+      await incrementLinkClicks(link);
 
       // Format URL using smart formatting
       const formattedUrl = formatUrl(link.url);
@@ -212,11 +272,7 @@ const UsernameView: React.FC = () => {
 
   const handleProductClick = async (product: ProductItem) => {
     try {
-      // Update click count
-      const linkRef = doc(db, 'linkOrganizers', linkOrganizer!.id);
-      await updateDoc(linkRef, {
-        [`products.${product.id}.clicks`]: increment(1)
-      });
+      await incrementProductClicks(product);
 
       // Format URL using smart formatting
       const formattedUrl = formatUrl(product.url);
@@ -295,8 +351,8 @@ const UsernameView: React.FC = () => {
     );
   }
 
-  const visibleLinks = (linkOrganizer.links || []).filter(link => link.isVisible);
-  const visibleProducts = (linkOrganizer.products || []).filter(product => product.isVisible);
+  const visibleLinks = getLinksArray().filter((link) => link.isVisible);
+  const visibleProducts = getProductsArray().filter((product) => product.isVisible);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans flex flex-col items-center p-4 sm:p-8">

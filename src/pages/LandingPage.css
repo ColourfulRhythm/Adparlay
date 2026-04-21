@@ -31,7 +31,8 @@
     backdrop-filter: blur(18px);
     border-bottom: 1px solid var(--border);
   }
-  .nav-brand { font-family:'Outfit',sans-serif; font-weight:800; font-size:1.4rem; color:var(--white); letter-spacing:-0.5px; }
+  .nav-brand { display:inline-flex; align-items:center; gap:10px; font-family:'Outfit',sans-serif; font-weight:800; font-size:1.4rem; color:var(--white); letter-spacing:-0.5px; }
+  .nav-brand-logo { width:24px; height:24px; object-fit:contain; }
   .nav-links { display:flex; gap:32px; }
   .nav-links a { color:var(--gray-2); text-decoration:none; font-size:0.9rem; transition:color 0.2s; }
   .nav-links a:hover { color:var(--white); }

@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, where, orderBy, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import AdvancedAnalytics from '../components/AdvancedAnalytics';
 import PaystackPayment from '../components/PaystackPayment';
 import AIBuilder from '../components/AIBuilder';
 import ExportModal from '../components/ExportModal';
-import AuthDebugger from '../components/AuthDebugger';
+
 import { useSEO } from '../hooks/useSEO';
 import DashboardSkeleton from '../components/ui/DashboardSkeleton';
 import AnimatedDropdown from '../components/ui/AnimatedDropdown';
@@ -60,9 +60,14 @@ const Dashboard: React.FC = () => {
   const [loadingForms, setLoadingForms] = useState(false);
   const [loadingLandingPages, setLoadingLandingPages] = useState(false);
   const [loadingLinkOrganizers, setLoadingLinkOrganizers] = useState(false);
+  const hasLoadedInitialData = useRef(false);
 
   useEffect(() => {
     if (currentUser) {
+      if (hasLoadedInitialData.current) {
+        return;
+      }
+      hasLoadedInitialData.current = true;
       // Load forms first (most important), then others in background
       fetchForms();
       
@@ -73,11 +78,6 @@ const Dashboard: React.FC = () => {
       }, 100);
     }
   }, [currentUser]);
-
-  // Debug template modal state
-  useEffect(() => {
-    console.log('showTemplateModal state changed:', showTemplateModal);
-  }, [showTemplateModal]);
 
   // Refresh forms when user changes - removed automatic refresh to prevent infinite loops
 
@@ -167,139 +167,47 @@ const Dashboard: React.FC = () => {
     
     setLoadingForms(true);
     try {
-      console.log('fetchForms: Fetching forms for user:', currentUser.id);
-      
-      // First try the filtered query
-      try {
-        const formsQuery = query(
-          collection(db, 'forms'),
-          where('userId', '==', currentUser.id),
-          orderBy('createdAt', 'desc')
-        );
-        
-        const querySnapshot = await getDocs(formsQuery);
-        console.log('fetchForms: Filtered query returned', querySnapshot.size, 'forms');
-        
-        const formsList: Form[] = [];
-        let totalSubmissions = 0;
-        let thisMonthSubmissions = 0;
-        
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          console.log('fetchForms: Form data:', { id: doc.id, title: data.title, userId: data.userId, status: data.status });
-          
-          const form: Form = {
-            id: doc.id,
-            title: data.title || 'Untitled Form',
-            description: data.description || '',
-            fields: data.blocks || data.fields || [],
-            settings: data.settings || {},
-            status: data.status || 'draft',
-            createdAt: data.createdAt?.toDate() || new Date(),
-            lastSubmission: data.lastSubmission?.toDate(),
-            submissions: data.submissions || 0
-          };
-          
-          formsList.push(form);
-          totalSubmissions += form.submissions;
-          
-          // Calculate this month's submissions
-          const thisMonth = new Date().getMonth();
-          const formMonth = form.lastSubmission ? form.lastSubmission.getMonth() : -1;
-          if (formMonth === thisMonth) {
-            thisMonthSubmissions += form.submissions;
-          }
-        });
-        
-        console.log('fetchForms: Processed forms:', formsList.length);
-        setForms(formsList);
-        
-        // Calculate average submissions per form
-        const avgSubmissionsPerForm = formsList.length > 0 ? totalSubmissions / formsList.length : 0;
-        const submissionRate = Math.round(avgSubmissionsPerForm * 10) / 10; // Round to 1 decimal place
-        
-        setStats({
-          totalForms: formsList.length,
-          totalSubmissions,
-          conversionRate: submissionRate, // This is average submissions per form
-          thisMonthSubmissions
-        });
-        setLoading(false);
-        
-        // If we found forms, we're done
-        if (formsList.length > 0) {
-          return;
-        }
-      } catch (filteredError) {
-        console.error('fetchForms: Error with filtered query:', filteredError);
-      }
-      
-      // If no forms found or filtered query failed, try getting all forms and filter manually
-      console.log('fetchForms: Trying fallback - getting all forms and filtering manually...');
-      try {
-        const allFormsQuery = query(collection(db, 'forms'), orderBy('createdAt', 'desc'));
-        const allFormsSnapshot = await getDocs(allFormsQuery);
-        console.log('fetchForms: Total forms in collection:', allFormsSnapshot.size);
-        
-        const formsList: Form[] = [];
-        let totalSubmissions = 0;
-        let thisMonthSubmissions = 0;
-        
-        allFormsSnapshot.forEach((doc) => {
-          const data = doc.data();
-          console.log('fetchForms: All form data:', { 
-            id: doc.id, 
-            title: data.title, 
-            userId: data.userId, 
-            currentUserId: currentUser.id,
-            status: data.status 
-          });
-          
-          // Manual filter for current user
-          if (data.userId === currentUser.id) {
-            const form: Form = {
-              id: doc.id,
-              title: data.title || 'Untitled Form',
-              description: data.description || '',
-              fields: data.blocks || data.fields || [],
-              settings: data.settings || {},
-              status: data.status || 'draft',
-              createdAt: data.createdAt?.toDate() || new Date(),
-              lastSubmission: data.lastSubmission?.toDate(),
-              submissions: data.submissions || 0
-            };
-            
-            formsList.push(form);
-            totalSubmissions += form.submissions;
-            
-            // Calculate this month's submissions
-            const thisMonth = new Date().getMonth();
-            const formMonth = form.lastSubmission ? form.lastSubmission.getMonth() : -1;
-            if (formMonth === thisMonth) {
-              thisMonthSubmissions += form.submissions;
-            }
-          }
-        });
-        
-        console.log('fetchForms: Manually filtered forms:', formsList.length);
-        setForms(formsList);
-        
-        // Calculate average submissions per form
-        const avgSubmissionsPerForm = formsList.length > 0 ? totalSubmissions / formsList.length : 0;
-        const submissionRate = Math.round(avgSubmissionsPerForm * 10) / 10; // Round to 1 decimal place
-        
-        setStats({
-          totalForms: formsList.length,
-          totalSubmissions,
-          conversionRate: submissionRate, // This is average submissions per form
-          thisMonthSubmissions
-        });
-        setLoading(false);
-        
-      } catch (fallbackError) {
-        console.error('fetchForms: Error with fallback query:', fallbackError);
-        setLoading(false);
-      }
+      // Keep query index-light: filter by user only, sort client-side.
+      const formsQuery = query(collection(db, 'forms'), where('userId', '==', currentUser.id));
+      const querySnapshot = await getDocs(formsQuery);
+      const formsList: Form[] = [];
+      let totalSubmissions = 0;
+      let thisMonthSubmissions = 0;
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const form: Form = {
+          id: doc.id,
+          title: data.title || 'Untitled Form',
+          description: data.description || '',
+          fields: data.blocks || data.fields || [],
+          settings: data.settings || {},
+          status: data.status || 'draft',
+          createdAt: data.createdAt?.toDate() || new Date(),
+          lastSubmission: data.lastSubmission?.toDate(),
+          submissions: data.submissions || 0
+        };
+        formsList.push(form);
+        totalSubmissions += form.submissions;
+
+        const thisMonth = new Date().getMonth();
+        const formMonth = form.lastSubmission ? form.lastSubmission.getMonth() : -1;
+        if (formMonth === thisMonth) thisMonthSubmissions += form.submissions;
+      });
+
+      formsList.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      setForms(formsList);
+
+      const avgSubmissionsPerForm = formsList.length > 0 ? totalSubmissions / formsList.length : 0;
+      const submissionRate = Math.round(avgSubmissionsPerForm * 10) / 10;
+
+      setStats({
+        totalForms: formsList.length,
+        totalSubmissions,
+        conversionRate: submissionRate,
+        thisMonthSubmissions
+      });
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching forms:', error);
       setLoading(false);
@@ -316,41 +224,13 @@ const Dashboard: React.FC = () => {
     
     setLoadingLandingPages(true);
     try {
-      console.log('fetchLandingPages: Fetching landing pages for user:', currentUser.id);
-      
-      // Try the ordered query first
-      let querySnapshot;
-      try {
-        const landingPagesQuery = query(
-          collection(db, 'landingPages'),
-          where('userId', '==', currentUser.id),
-          orderBy('createdAt', 'desc')
-        );
-        querySnapshot = await getDocs(landingPagesQuery);
-        console.log('fetchLandingPages: Ordered query returned', querySnapshot.size, 'landing pages');
-      } catch (orderError) {
-        console.log('fetchLandingPages: Ordered query failed, trying without orderBy:', orderError);
-        // Fallback to query without orderBy
-        const landingPagesQuery = query(
-          collection(db, 'landingPages'),
-          where('userId', '==', currentUser.id)
-        );
-        querySnapshot = await getDocs(landingPagesQuery);
-        console.log('fetchLandingPages: Fallback query returned', querySnapshot.size, 'landing pages');
-      }
+      const landingPagesQuery = query(collection(db, 'landingPages'), where('userId', '==', currentUser.id));
+      const querySnapshot = await getDocs(landingPagesQuery);
       
       const landingPagesList: any[] = [];
       
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log('fetchLandingPages: Landing page data:', { 
-          id: doc.id, 
-          title: data.title, 
-          userId: data.userId, 
-          status: data.status,
-          createdAt: data.createdAt
-        });
-        
         const landingPage = {
           id: doc.id,
           title: data.title || 'Untitled Landing Page',
@@ -367,10 +247,8 @@ const Dashboard: React.FC = () => {
         landingPagesList.push(landingPage);
       });
       
-      // Sort manually if orderBy failed
       landingPagesList.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       
-      console.log('fetchLandingPages: Processed landing pages:', landingPagesList.length);
       setLandingPages(landingPagesList);
       
     } catch (error) {
@@ -423,38 +301,13 @@ const Dashboard: React.FC = () => {
     
     setLoadingLinkOrganizers(true);
     try {
-      console.log('fetchLinkOrganizers: Fetching link organizers for user:', currentUser.id);
-      
-      let querySnapshot;
-      try {
-        const linkOrganizersQuery = query(
-          collection(db, 'linkOrganizers'),
-          where('userId', '==', currentUser.id),
-          orderBy('createdAt', 'desc')
-        );
-        querySnapshot = await getDocs(linkOrganizersQuery);
-        console.log('fetchLinkOrganizers: Ordered query returned', querySnapshot.size, 'link organizers');
-      } catch (orderError) {
-        console.log('fetchLinkOrganizers: Ordered query failed, trying without orderBy:', orderError);
-        const linkOrganizersQuery = query(
-          collection(db, 'linkOrganizers'),
-          where('userId', '==', currentUser.id)
-        );
-        querySnapshot = await getDocs(linkOrganizersQuery);
-        console.log('fetchLinkOrganizers: Fallback query returned', querySnapshot.size, 'link organizers');
-      }
+      const linkOrganizersQuery = query(collection(db, 'linkOrganizers'), where('userId', '==', currentUser.id));
+      const querySnapshot = await getDocs(linkOrganizersQuery);
       
       const linkOrganizersList: any[] = [];
       
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log('fetchLinkOrganizers: Link organizer data:', { 
-          id: doc.id, 
-          title: data.title, 
-          userId: data.userId, 
-          createdAt: data.createdAt
-        });
-        
         const linkOrganizer = {
           id: doc.id,
           title: data.title || 'Untitled Link Page',
@@ -471,7 +324,6 @@ const Dashboard: React.FC = () => {
       
       linkOrganizersList.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       
-      console.log('fetchLinkOrganizers: Processed link organizers:', linkOrganizersList.length);
       setLinkOrganizers(linkOrganizersList);
       
     } catch (error) {
@@ -656,9 +508,9 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white text-gray-900 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
@@ -683,7 +535,7 @@ const Dashboard: React.FC = () => {
         <div className="mb-8">
           <div className="mb-6">
             <h1 className="text-4xl font-bold text-gray-900 mb-3">Welcome back, {currentUser?.displayName || 'User'}!</h1>
-            <p className="text-gray-600 text-lg leading-relaxed">
+            <p className="text-gray-600 text-lg leading-relaxed bg-white/50 inline-block px-3 py-1 rounded-lg">
               {currentUser?.subscription === 'premium' 
                 ? 'You are on the Premium plan with unlimited forms and leads'
                 : `You are on the Free plan. You can create up to ${currentUser?.maxForms} forms and collect up to ${currentUser?.maxLeads} leads.`
@@ -698,76 +550,40 @@ const Dashboard: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition-all shadow-sm"
+            className="bg-white/90 backdrop-blur-sm rounded-xl p-6 border border-gray-100 hover:border-gray-300 transition-all shadow-sm flex flex-col items-center justify-center text-center"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Total Forms</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalForms}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-            </div>
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Total Forms</p>
+            <p className="text-4xl font-light text-gray-800 tracking-tight">{stats.totalForms}</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition-all shadow-sm"
+            className="bg-white/90 backdrop-blur-sm rounded-xl p-6 border border-gray-100 hover:border-gray-300 transition-all shadow-sm flex flex-col items-center justify-center text-center"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Total Submissions</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalSubmissions}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-            </div>
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Total Submissions</p>
+            <p className="text-4xl font-light text-gray-800 tracking-tight">{stats.totalSubmissions}</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-blue-300 transition-all shadow-sm"
+            className="bg-white/90 backdrop-blur-sm rounded-xl p-6 border border-gray-100 hover:border-gray-300 transition-all shadow-sm flex flex-col items-center justify-center text-center"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Avg Submissions per Form</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.conversionRate}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-            </div>
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Avg Submissions / Form</p>
+            <p className="text-4xl font-light text-gray-800 tracking-tight">{stats.conversionRate}</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-[#1a1a1a] rounded-2xl p-6 border border-[#333] hover:border-[#8B5CF6] transition-all"
+            className="bg-[#1a1a1a] rounded-xl p-6 border border-[#333] hover:border-[#8B5CF6] transition-all flex flex-col items-center justify-center text-center shadow-md"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[#A3A3A3] text-sm font-medium">This Month</p>
-                <p className="text-3xl font-bold text-white">{stats.thisMonthSubmissions}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            </div>
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">This Month</p>
+            <p className="text-4xl font-light text-white tracking-tight">{stats.thisMonthSubmissions}</p>
           </motion.div>
         </div>
 
@@ -1243,7 +1059,7 @@ const Dashboard: React.FC = () => {
           </div>
         ) : (
           <AdvancedAnalytics 
-            key={`${currentUser?.id}-${forms.length}-${stats.totalSubmissions}`}
+            key={currentUser?.id || 'analytics'}
             userId={currentUser?.id || ''} 
             isProUser={currentUser?.subscription === 'premium'}
           />
@@ -1461,7 +1277,7 @@ const Dashboard: React.FC = () => {
       )}
       
       {/* Auth Debugger - Only in development */}
-      {process.env.NODE_ENV === 'development' && <AuthDebugger />}
+
     </div>
   );
 };

@@ -1,0 +1,527 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1020;--surface:#151929;--surface2:#1c2240;--surface3:#222847;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --accent:#3357f5;--accent2:#4b6af7;--accent-glow:rgba(51,87,245,0.25);
+  --text:#fff;--text2:rgba(255,255,255,0.55);--text3:rgba(255,255,255,0.28);
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  --font-head:'Sora',sans-serif;--font:'DM Sans',sans-serif;
+  --r:14px;--r2:20px;
+}
+body,html{background:var(--bg);font-family:var(--font);color:var(--text);min-height:100vh}
+.shell{display:grid;grid-template-columns:260px 1fr;min-height:100vh;max-width:1100px;margin:0 auto;gap:0}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--text);padding:4px 12px 20px;display:flex;align-items:center;gap:8px}
+.brand-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all 0.15s;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(51,87,245,0.15);color:var(--accent)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:0.7}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+.profile-mini{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer}
+.avatar-sm{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#2a3a7a,#1a2558);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:12px;font-weight:700;color:#7a9fff;flex-shrink:0;border:1.5px solid var(--border2)}
+.profile-mini-name{font-size:12px;font-weight:600}
+.profile-mini-role{font-size:11px;color:var(--text3)}
+
+/* MAIN */
+.main{padding:28px 28px 60px;overflow-y:auto}
+.page{display:none}.page.active{display:block}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.page-title{font-family:var(--font-head);font-size:20px;font-weight:700}
+.page-sub{font-size:13px;color:var(--text3);margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:var(--font);transition:all 0.15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2)}
+.btn svg{width:14px;height:14px}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
+.stat-label{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.stat-val{font-family:var(--font-head);font-size:24px;font-weight:700;color:var(--text)}
+.stat-change{font-size:11px;margin-top:4px}
+.stat-change.up{color:var(--green)}.stat-change.down{color:var(--red)}
+
+/* CHART */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:20px;margin-bottom:24px}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.chart-title{font-family:var(--font-head);font-size:14px;font-weight:600}
+.chart-wrap{position:relative;height:180px}
+.chart-filters{display:flex;gap:6px}
+.cf{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text3);font-family:var(--font);transition:all 0.15s}
+.cf.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* LINKS */
+.links-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.search-box{flex:1;position:relative}
+.search-box input{width:100%;padding:9px 12px 9px 36px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color 0.2s}
+.search-box input:focus{border-color:rgba(51,87,245,0.5)}
+.search-box input::placeholder{color:var(--text3)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none}
+.search-icon svg{width:15px;height:15px;fill:none;stroke:var(--text3);stroke-width:2}
+
+.link-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:border-color 0.2s,box-shadow 0.2s;cursor:grab;user-select:none}
+.link-row:hover{border-color:var(--border2)}
+.link-row.dragging{opacity:0.4;cursor:grabbing}
+.link-row.drag-over{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
+.drag-handle{color:var(--text3);cursor:grab;padding:2px;flex-shrink:0}
+.drag-handle svg{width:14px;height:14px;fill:currentColor}
+
+.link-thumb{width:40px;height:40px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;border:1px solid var(--border)}
+.link-thumb img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+
+.link-body{flex:1;min-width:0}
+.link-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.link-href{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.link-meta{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.link-clicks-badge{font-size:12px;color:var(--text2);text-align:right}
+.link-clicks-badge strong{display:block;font-size:14px;font-weight:700;color:var(--text)}
+
+.toggle{width:36px;height:20px;border-radius:20px;background:var(--surface3);border:1px solid var(--border);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0}
+.toggle.on{background:var(--green);border-color:var(--green)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform 0.2s}
+.toggle.on::after{transform:translateX(16px)}
+
+.link-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{width:30px;height:30px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.icon-btn:hover{border-color:var(--border2)}
+.icon-btn.danger:hover{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3)}
+.icon-btn svg{width:13px;height:13px;fill:none;stroke:var(--text2);stroke-width:2}
+.icon-btn.danger svg{stroke:var(--red)}
+
+/* ADD LINK FORM */
+.add-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:20px;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-field label{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px}
+.form-field input{width:100%;padding:10px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color 0.2s}
+.form-field input:focus{border-color:rgba(51,87,245,0.5)}
+.form-field input::placeholder{color:var(--text3)}
+.form-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* IMAGE UPLOAD */
+.img-upload{width:100%;height:80px;border:1.5px dashed var(--border2);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:border-color 0.2s;background:var(--surface2)}
+.img-upload:hover{border-color:var(--accent)}
+.img-upload svg{width:20px;height:20px;stroke:var(--text3);stroke-width:1.5;fill:none}
+.img-upload span{font-size:11px;color:var(--text3)}
+.img-preview{width:100%;height:80px;border-radius:10px;object-fit:cover;border:1px solid var(--border)}
+
+/* SHOP */
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;transition:border-color 0.2s,transform 0.15s}
+.product-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.prod-img{aspect-ratio:1;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative;overflow:hidden}
+.prod-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.prod-body{padding:12px 14px 14px}
+.prod-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.prod-price{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.prod-actions{display:flex;gap:6px}
+.prod-toggle{padding:7px 0;flex:1;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);font-family:var(--font);transition:all 0.15s}
+.prod-toggle.live{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:var(--green)}
+.prod-del{width:31px;height:31px;border-radius:8px;background:none;border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+.prod-del:hover{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3)}
+.prod-del svg{width:12px;height:12px;fill:none;stroke:var(--red);stroke-width:2}
+
+.add-prod-card{border:1.5px dashed var(--border2);border-radius:var(--r2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;min-height:220px;transition:border-color 0.2s;background:none}
+.add-prod-card:hover{border-color:var(--accent)}
+.add-prod-card svg{width:24px;height:24px;stroke:var(--text3);stroke-width:1.5;fill:none}
+.add-prod-card span{font-size:12px;color:var(--text3)}
+
+/* PROFILE PAGE */
+.profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:28px;margin-bottom:20px;display:flex;gap:24px;align-items:flex-start}
+.profile-avatar-big{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#2a3a7a,#1a2558);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:28px;font-weight:700;color:#7a9fff;flex-shrink:0;border:2px solid var(--border2);overflow:hidden;cursor:pointer;position:relative}
+.profile-avatar-big img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s}
+.profile-avatar-big:hover .avatar-overlay{opacity:1}
+.avatar-overlay svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2}
+.profile-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:28px;width:100%;max-width:440px;animation:popIn 0.2s ease}
+@keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal-title{font-family:var(--font-head);font-size:17px;font-weight:700;margin-bottom:20px}
+.modal-field{margin-bottom:14px}
+.modal-field label{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px}
+.modal-field input{width:100%;padding:11px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color 0.2s}
+.modal-field input:focus{border-color:rgba(51,87,245,0.5)}
+.modal-field input::placeholder{color:var(--text3)}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:11px 18px;border-radius:12px;font-size:13px;font-weight:500;opacity:0;transition:all 0.3s;z-index:999;transform:translateY(8px);pointer-events:none;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+</style>
+
+<div class="shell">
+  <nav class="sidebar">
+    <div class="brand"><div class="brand-dot"></div>Adparlay</div>
+    <button class="nav-item active" onclick="showPage('links',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+      Links
+      <span class="nav-badge" id="navLinkCount">3</span>
+    </button>
+    <button class="nav-item" onclick="showPage('shop',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Shop
+      <span class="nav-badge" id="navShopCount">1</span>
+    </button>
+    <button class="nav-item" onclick="showPage('analytics',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analytics
+    </button>
+    <button class="nav-item" onclick="showPage('profile',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </button>
+    <div class="sidebar-footer">
+      <div class="profile-mini" onclick="showPage('profile',null)">
+        <div class="avatar-sm" id="sideAvatarEl">TO</div>
+        <div><div class="profile-mini-name">Tolulope O.</div><div class="profile-mini-role">Founder</div></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <!-- LINKS PAGE -->
+    <div class="page active" id="page-links">
+      <div class="topbar">
+        <div><div class="page-title">Links</div><div class="page-sub">Manage and track your links</div></div>
+        <button class="btn btn-primary" onclick="openAddLink()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add link
+        </button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total links</div><div class="stat-val" id="statLinks">3</div><div class="stat-change up">↑ Active</div></div>
+        <div class="stat-card"><div class="stat-label">Total clicks</div><div class="stat-val" id="statClicks">444</div><div class="stat-change up">↑ 12% this week</div></div>
+        <div class="stat-card"><div class="stat-label">Top link</div><div class="stat-val" style="font-size:14px;padding-top:4px" id="statTop">Adparlay</div><div class="stat-change up">213 clicks</div></div>
+        <div class="stat-card"><div class="stat-label">Avg CTR</div><div class="stat-val" id="statCtr">4.2%</div><div class="stat-change up">↑ 0.8%</div></div>
+      </div>
+
+      <div class="links-toolbar">
+        <div class="search-box">
+          <span class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+          <input type="text" placeholder="Search links..." oninput="filterLinks(this.value)" />
+        </div>
+        <button class="btn btn-ghost" onclick="sortLinks()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+          Sort
+        </button>
+      </div>
+
+      <div id="linksList"></div>
+    </div>
+
+    <!-- SHOP PAGE -->
+    <div class="page" id="page-shop">
+      <div class="topbar">
+        <div><div class="page-title">Shop</div><div class="page-sub">Sell products directly from your profile</div></div>
+        <button class="btn btn-primary" onclick="openAddProduct()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add product
+        </button>
+      </div>
+      <div class="shop-grid" id="shopGrid"></div>
+    </div>
+
+    <!-- ANALYTICS PAGE -->
+    <div class="page" id="page-analytics">
+      <div class="topbar">
+        <div><div class="page-title">Analytics</div><div class="page-sub">See how your links are performing</div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total views</div><div class="stat-val">1,284</div><div class="stat-change up">↑ 18% vs last week</div></div>
+        <div class="stat-card"><div class="stat-label">Unique visitors</div><div class="stat-val">861</div><div class="stat-change up">↑ 9%</div></div>
+        <div class="stat-card"><div class="stat-label">Total clicks</div><div class="stat-val" id="aClicks">444</div><div class="stat-change up">↑ 12%</div></div>
+        <div class="stat-card"><div class="stat-label">Avg. session</div><div class="stat-val">1m 42s</div><div class="stat-change down">↓ 4s</div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div class="chart-title">Clicks over time</div>
+          <div class="chart-filters">
+            <button class="cf active" onclick="setRange('7d',this)">7d</button>
+            <button class="cf" onclick="setRange('30d',this)">30d</button>
+            <button class="cf" onclick="setRange('90d',this)">90d</button>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="clickChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head"><div class="chart-title">Top links by clicks</div></div>
+        <div id="topLinksBars"></div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page" id="page-profile">
+      <div class="topbar">
+        <div><div class="page-title">Profile</div><div class="page-sub">Customize your public page</div></div>
+        <button class="btn btn-primary" onclick="saveProfile()">Save changes</button>
+      </div>
+      <div class="profile-hero">
+        <div class="profile-avatar-big" id="profileAvatarEl" onclick="document.getElementById('avatarInput').click()">
+          <span id="avatarInitials">TO</span>
+          <div class="avatar-overlay"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(event)">
+        <div class="profile-fields">
+          <div class="form-field"><label>Display name</label><input id="pName" value="Tolulope Olugbode" /></div>
+          <div class="form-field"><label>Username</label><input id="pUser" value="@tolulope" /></div>
+          <div class="form-field" style="grid-column:1/-1"><label>Bio</label><input id="pBio" value="Founder of Focal Point Prop., Subx and Adparlay. Building dreams, Building Africa." /></div>
+          <div class="form-field"><label>Instagram</label><input id="pIg" placeholder="@handle" /></div>
+          <div class="form-field"><label>Twitter/X</label><input id="pTw" placeholder="@handle" /></div>
+          <div class="form-field"><label>LinkedIn</label><input id="pLi" placeholder="profile URL" /></div>
+          <div class="form-field"><label>Website</label><input id="pWeb" placeholder="https://..." /></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ADD LINK MODAL -->
+<div class="overlay" id="addLinkOverlay">
+  <div class="modal-box">
+    <div class="modal-title">Add a new link</div>
+    <div class="modal-field"><label>URL</label><input id="mUrl" placeholder="https://..." /></div>
+    <div class="modal-field"><label>Title</label><input id="mTitle" placeholder="My awesome link" /></div>
+    <div class="modal-field"><label>Emoji icon</label><input id="mEmoji" placeholder="🔗" maxlength="2" /></div>
+    <div class="modal-field">
+      <label>Thumbnail image (optional)</label>
+      <div class="img-upload" id="linkImgUpload" onclick="document.getElementById('linkImgInput').click()">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Click to upload image</span>
+      </div>
+      <input type="file" id="linkImgInput" accept="image/*" style="display:none" onchange="previewLinkImg(event)">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOverlay('addLinkOverlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="addLink()">Add link</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="overlay" id="addProductOverlay">
+  <div class="modal-box">
+    <div class="modal-title">Add a product</div>
+    <div class="modal-field"><label>Product name</label><input id="sName" placeholder="e.g. Brand Strategy Pack" /></div>
+    <div class="modal-field"><label>Price (₦)</label><input id="sPrice" type="number" placeholder="25000" /></div>
+    <div class="modal-field"><label>Buy link</label><input id="sUrl" placeholder="https://..." /></div>
+    <div class="modal-field">
+      <label>Product image</label>
+      <div class="img-upload" id="prodImgUpload" onclick="document.getElementById('prodImgInput').click()">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Click to upload image</span>
+      </div>
+      <input type="file" id="prodImgInput" accept="image/*" style="display:none" onchange="previewProdImg(event)">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOverlay('addProductOverlay')">Cancel</button>
+      <button class="btn btn-primary" onclick="addProduct()">Add product</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg">Done!</span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+let links=[
+  {id:1,title:'Focal Point Prop.',url:'https://focalpointprop.com',emoji:'🏠',clicks:142,active:true,img:null},
+  {id:2,title:'Subx Platform',url:'https://subx.ng',emoji:'📱',clicks:89,active:true,img:null},
+  {id:3,title:'Adparlay',url:'https://adparlay.com',emoji:'📢',clicks:213,active:true,img:null},
+];
+let products=[
+  {id:1,name:'Brand Strategy Pack',price:25000,url:'#',img:null,live:true},
+];
+let nid=10,dragSrc=null,linkImgData=null,prodImgData=null,avatarData=null,sortAsc=true;
+
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(name==='analytics')initChart();
+}
+
+function renderLinks(filter=''){
+  const el=document.getElementById('linksList');
+  const filtered=links.filter(l=>l.title.toLowerCase().includes(filter.toLowerCase())||l.url.toLowerCase().includes(filter.toLowerCase()));
+  if(!filtered.length){el.innerHTML=`<div style="text-align:center;padding:48px 0;color:var(--text3);font-size:13px">No links found</div>`;return;}
+  el.innerHTML=filtered.map(l=>`
+    <div class="link-row" draggable="true" data-id="${l.id}" ondragstart="dragStart(event,${l.id})" ondragover="dragOver(event)" ondrop="dragDrop(event,${l.id})" ondragleave="dragLeave(event)">
+      <div class="drag-handle"><svg viewBox="0 0 20 20"><circle cx="7" cy="6" r="1.2"/><circle cx="13" cy="6" r="1.2"/><circle cx="7" cy="10" r="1.2"/><circle cx="13" cy="10" r="1.2"/><circle cx="7" cy="14" r="1.2"/><circle cx="13" cy="14" r="1.2"/></svg></div>
+      <div class="link-thumb">${l.img?`<img src="${l.img}">`:l.emoji}</div>
+      <div class="link-body">
+        <div class="link-name">${l.title}</div>
+        <div class="link-href">${l.url}</div>
+      </div>
+      <div class="link-meta">
+        <div class="link-clicks-badge"><strong>${l.clicks}</strong>clicks</div>
+        <div class="toggle ${l.active?'on':''}" onclick="toggleLink(${l.id})" title="${l.active?'Hide':'Show'}"></div>
+        <div class="link-actions">
+          <button class="icon-btn" onclick="copyLink(${l.id})" title="Copy">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="icon-btn danger" onclick="removeLink(${l.id})" title="Delete">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  updateStats();
+}
+
+function updateStats(){
+  const total=links.reduce((s,l)=>s+l.clicks,0);
+  document.getElementById('statLinks').textContent=links.length;
+  document.getElementById('statClicks').textContent=total.toLocaleString();
+  document.getElementById('aClicks').textContent=total.toLocaleString();
+  document.getElementById('navLinkCount').textContent=links.length;
+  const top=links.slice().sort((a,b)=>b.clicks-a.clicks)[0];
+  if(top){document.getElementById('statTop').textContent=top.title;}
+}
+
+function filterLinks(v){renderLinks(v);}
+function sortLinks(){
+  sortAsc=!sortAsc;
+  links.sort((a,b)=>sortAsc?b.clicks-a.clicks:a.clicks-b.clicks);
+  renderLinks();showToast('Sorted by clicks');
+}
+function toggleLink(id){const l=links.find(x=>x.id===id);if(l){l.active=!l.active;renderLinks();showToast(l.active?'Link shown':'Link hidden');}}
+function removeLink(id){links=links.filter(x=>x.id!==id);renderLinks();showToast('Link removed');}
+function copyLink(id){const l=links.find(x=>x.id===id);if(l){navigator.clipboard&&navigator.clipboard.writeText(l.url);showToast('URL copied!');}};
+
+// DRAG
+function dragStart(e,id){dragSrc=id;e.currentTarget.classList.add('dragging');}
+function dragOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function dragLeave(e){e.currentTarget.classList.remove('drag-over');}
+function dragDrop(e,targetId){
+  e.preventDefault();
+  document.querySelectorAll('.link-row').forEach(r=>r.classList.remove('drag-over','dragging'));
+  if(dragSrc===targetId)return;
+  const si=links.findIndex(x=>x.id===dragSrc),ti=links.findIndex(x=>x.id===targetId);
+  if(si<0||ti<0)return;
+  const [item]=links.splice(si,1);links.splice(ti,0,item);
+  renderLinks();showToast('Order updated');
+}
+
+// ADD LINK
+let tempLinkImg=null;
+function openAddLink(){linkImgData=null;document.getElementById('linkImgUpload').innerHTML='<svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--text3);stroke-width:1.5;fill:none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Click to upload image</span>';document.getElementById('addLinkOverlay').classList.add('open');}
+function previewLinkImg(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=d=>{linkImgData=d.target.result;const up=document.getElementById('linkImgUpload');up.innerHTML='';const img=document.createElement('img');img.src=linkImgData;img.className='img-preview';up.appendChild(img);};r.readAsDataURL(f);}
+function addLink(){
+  const url=document.getElementById('mUrl').value.trim();
+  const title=document.getElementById('mTitle').value.trim()||url;
+  const emoji=document.getElementById('mEmoji').value.trim()||'🔗';
+  if(!url&&!title)return;
+  links.unshift({id:nid++,title,url:url||'#',emoji,clicks:0,active:true,img:linkImgData||null});
+  renderLinks();closeOverlay('addLinkOverlay');showToast('Link added!');
+  document.getElementById('mUrl').value='';document.getElementById('mTitle').value='';document.getElementById('mEmoji').value='';
+}
+
+// SHOP
+function renderShop(){
+  const el=document.getElementById('shopGrid');
+  el.innerHTML=products.map(p=>`
+    <div class="product-card">
+      <div class="prod-img">${p.img?`<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`:''}<span style="${p.img?'opacity:0':''}">🛍️</span></div>
+      <div class="prod-body">
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-price">₦${Number(p.price).toLocaleString()}</div>
+        <div class="prod-actions">
+          <button class="prod-toggle ${p.live?'live':''}" onclick="toggleProd(${p.id})">${p.live?'Live':'Hidden'}</button>
+          <button class="prod-del" onclick="removeProd(${p.id})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+        </div>
+      </div>
+    </div>
+  `).join('')+`<div class="add-prod-card" onclick="openAddProduct()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add product</span></div>`;
+  document.getElementById('navShopCount').textContent=products.length;
+}
+
+function toggleProd(id){const p=products.find(x=>x.id===id);if(p){p.live=!p.live;renderShop();showToast(p.live?'Product live':'Product hidden');}}
+function removeProd(id){products=products.filter(x=>x.id!==id);renderShop();showToast('Product removed');}
+
+let tempProdImg=null;
+function openAddProduct(){prodImgData=null;document.getElementById('prodImgUpload').innerHTML='<svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--text3);stroke-width:1.5;fill:none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Click to upload image</span>';document.getElementById('addProductOverlay').classList.add('open');}
+function previewProdImg(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=d=>{prodImgData=d.target.result;const up=document.getElementById('prodImgUpload');up.innerHTML='';const img=document.createElement('img');img.src=prodImgData;img.className='img-preview';up.appendChild(img);};r.readAsDataURL(f);}
+function addProduct(){
+  const name=document.getElementById('sName').value.trim();
+  const price=document.getElementById('sPrice').value;
+  const url=document.getElementById('sUrl').value.trim()||'#';
+  if(!name)return;
+  products.push({id:nid++,name,price:Number(price)||0,url,img:prodImgData||null,live:true});
+  renderShop();closeOverlay('addProductOverlay');showToast('Product added!');
+  document.getElementById('sName').value='';document.getElementById('sPrice').value='';document.getElementById('sUrl').value='';
+}
+
+// PROFILE
+function uploadAvatar(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=d=>{avatarData=d.target.result;const el=document.getElementById('profileAvatarEl');el.innerHTML=`<img src="${avatarData}"><div class="avatar-overlay"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;document.getElementById('sideAvatarEl').innerHTML=`<img src="${avatarData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;};r.readAsDataURL(f);}
+function saveProfile(){showToast('Profile saved!');}
+
+// ANALYTICS CHART
+let chartInst=null;
+const chartData={
+  '7d':{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],data:[28,45,34,67,52,89,71]},
+  '30d':{labels:['W1','W2','W3','W4'],data:[210,330,280,444]},
+  '90d':{labels:['Jan','Feb','Mar'],data:[820,1100,1284]},
+};
+let activeRange='7d';
+function setRange(r,btn){activeRange=r;document.querySelectorAll('.cf').forEach(c=>c.classList.remove('active'));btn.classList.add('active');if(chartInst)updateChart();}
+function initChart(){
+  if(chartInst)return;
+  const ctx=document.getElementById('clickChart').getContext('2d');
+  const d=chartData[activeRange];
+  chartInst=new Chart(ctx,{type:'line',data:{labels:d.labels,datasets:[{label:'Clicks',data:d.data,borderColor:'#3357f5',backgroundColor:'rgba(51,87,245,0.08)',borderWidth:2,pointBackgroundColor:'#3357f5',pointRadius:4,pointHoverRadius:6,tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1c2240',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,titleColor:'#fff',bodyColor:'rgba(255,255,255,0.6)',padding:10}},scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'rgba(255,255,255,0.35)',font:{size:11}}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'rgba(255,255,255,0.35)',font:{size:11}}}}}});
+  renderTopBars();
+}
+function updateChart(){
+  const d=chartData[activeRange];
+  chartInst.data.labels=d.labels;
+  chartInst.data.datasets[0].data=d.data;
+  chartInst.update();
+}
+function renderTopBars(){
+  const max=Math.max(...links.map(l=>l.clicks));
+  document.getElementById('topLinksBars').innerHTML=links.slice().sort((a,b)=>b.clicks-a.clicks).map(l=>`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="width:24px;font-size:16px;text-align:center">${l.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px">
+          <span style="font-weight:500">${l.title}</span><span style="color:var(--text3)">${l.clicks}</span>
+        </div>
+        <div style="height:6px;border-radius:3px;background:var(--surface3);overflow:hidden">
+          <div style="height:100%;width:${Math.round(l.clicks/max*100)}%;background:var(--accent);border-radius:3px;transition:width 0.5s ease"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function closeOverlay(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+
+renderLinks();
+renderShop();
+</script>

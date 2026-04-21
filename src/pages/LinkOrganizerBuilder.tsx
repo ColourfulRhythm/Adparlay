@@ -7,7 +7,7 @@ import { db } from '../firebase';
 import { useSEO } from '../hooks/useSEO';
 import { getBaseUrl } from '../utils/getBaseUrl';
 import { SocialMediaIcons } from '../components/SocialMediaIcons';
-import { Link, User, Pencil, Save, Plus, X, Trash2, ArrowUp, ArrowDown, Camera, ExternalLink } from 'lucide-react';
+import { Link, User, Pencil, Save, Plus, X, Trash2, ArrowUp, ArrowDown, Camera, ExternalLink, BarChart3, Eye, Lock, Crown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface LinkItem {
@@ -518,15 +518,34 @@ const LinkOrganizerBuilder: React.FC = () => {
     updatedAt: new Date()
   });
 
-  const [activeTab, setActiveTab] = useState<'links' | 'shop'>('links');
+  const [activeTab, setActiveTab] = useState<'links' | 'shop' | 'analytics'>('links');
   const [isEditing, setIsEditing] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const testEmails = ['kingflamebeats@gmail.com', 'olugbodeoluwaseyi111@gmail.com'];
+  const isTestAccount = !!currentUser?.email && testEmails.includes(currentUser.email.toLowerCase());
+  const hasPremiumAnalyticsAccess = isTestAccount || (currentUser?.subscription === 'premium' && currentUser?.paymentStatus === 'active');
 
   // --- CRUD OPERATIONS FOR "EDITOR IS PREVIEW" APPROACH ---
+
+  const getLinksArray = useCallback((): LinkItem[] => {
+    const rawLinks = linkOrganizer?.links as any;
+    if (!rawLinks) return [];
+    if (Array.isArray(rawLinks)) return rawLinks.filter(Boolean);
+    if (typeof rawLinks === 'object') return Object.values(rawLinks).filter(Boolean) as LinkItem[];
+    return [];
+  }, [linkOrganizer]);
+
+  const getProductsArray = useCallback((): ProductItem[] => {
+    const rawProducts = linkOrganizer?.products as any;
+    if (!rawProducts) return [];
+    if (Array.isArray(rawProducts)) return rawProducts.filter(Boolean);
+    if (typeof rawProducts === 'object') return Object.values(rawProducts).filter(Boolean) as ProductItem[];
+    return [];
+  }, [linkOrganizer]);
   
   const handleSaveLink = async (linkData: LinkItem & { isNew?: boolean }) => {
     if (!linkOrganizer.id || !currentUser?.id) return;
@@ -819,61 +838,76 @@ const LinkOrganizerBuilder: React.FC = () => {
     );
   }
 
+  const linksArray = getLinksArray();
+  const productsArray = getProductsArray();
+  const totalLinkClicks = linksArray.reduce((sum, item) => sum + (item.clicks || 0), 0);
+  const totalProductClicks = productsArray.reduce((sum, item) => sum + (item.clicks || 0), 0);
+  const totalClicks = totalLinkClicks + totalProductClicks;
+  const topLink = linksArray.slice().sort((a, b) => (b.clicks || 0) - (a.clicks || 0))[0];
+  const topProduct = productsArray.slice().sort((a, b) => (b.clicks || 0) - (a.clicks || 0))[0];
+  const totalItems = linksArray.length + productsArray.length;
+  const avgClicksPerItem = totalItems > 0 ? Math.round((totalClicks / totalItems) * 10) / 10 : 0;
+  const topPerformers = [
+    ...linksArray.map((link) => ({ id: `l-${link.id}`, title: link.title, clicks: link.clicks || 0, type: 'Link' })),
+    ...productsArray.map((product) => ({ id: `p-${product.id}`, title: product.title, clicks: product.clicks || 0, type: 'Product' }))
+  ]
+    .sort((a, b) => b.clicks - a.clicks)
+    .slice(0, 5);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans flex flex-col items-center p-4 sm:p-8">
       <style>
         {`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+        body { font-family: 'DM Sans', sans-serif; background: #0d1020; }
+        h1, h2, h3 { font-family: 'Sora', sans-serif; }
         .glass-card {
-          background-color: rgba(31, 31, 31, 0.7);
+          background-color: rgba(21, 25, 41, 0.88);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           box-shadow: 0 4px 60px rgba(0, 0, 0, 0.5);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.12);
         }
         `}
       </style>
 
       {/* Header with controls */}
       <div className="w-full max-w-lg mb-6">
-        <div className="glass-card rounded-2xl p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+        <div className="glass-card rounded-2xl p-4 flex items-center justify-between gap-3">
+          <div className="flex items-center space-x-3 min-w-0 flex-1">
             <button
               onClick={() => window.history.back()}
-              className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-700 transition-colors flex-shrink-0"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <div>
-              <h1 className="text-lg font-bold text-white">Link Organizer Builder</h1>
-              <p className="text-xs text-gray-400">Create beautiful link pages</p>
+            <div className="min-w-0">
+              <h1 className="text-lg font-bold text-white truncate">Link Organizer Builder</h1>
+              <p className="text-xs text-gray-400 truncate">Create beautiful link pages</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className={`px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
-                isEditing 
-                  ? 'bg-red-600 text-white hover:bg-red-700' 
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              className={`px-3 py-2 rounded-md transition-colors text-sm font-medium border ${
+                isEditing
+                  ? 'bg-transparent border-gray-500 text-gray-200 hover:bg-gray-800'
+                  : 'bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800'
               }`}
             >
-              {isEditing ? 'Exit Edit' : 'Edit Mode'}
+              {isEditing ? 'Done Editing' : 'Edit'}
             </button>
             {linkOrganizer.id && (
               <button
                 onClick={() => {
-                  const linkUrl = linkOrganizer.username 
-                    ? `${getBaseUrl()}/${linkOrganizer.username}`
-                    : `${getBaseUrl()}/link/${linkOrganizer.id}`;
+                  const linkUrl = `${getBaseUrl()}/link/${linkOrganizer.id}`;
                   navigator.clipboard.writeText(linkUrl);
                   toast.success('Link copied to clipboard!');
                 }}
-                className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                className="px-3 py-2 bg-transparent border border-gray-600 text-gray-200 rounded-md hover:bg-gray-800 transition-colors text-sm"
               >
                 Copy Link
               </button>
@@ -881,7 +915,7 @@ const LinkOrganizerBuilder: React.FC = () => {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm"
+              className="px-4 py-2 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors disabled:opacity-50 text-sm font-medium"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>
@@ -890,6 +924,27 @@ const LinkOrganizerBuilder: React.FC = () => {
       </div>
 
       <main className="w-full max-w-lg">
+        <div className="grid grid-cols-2 gap-3 mb-5">
+          <div className="glass-card rounded-2xl p-4">
+            <div className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Total clicks</div>
+            <div className="text-2xl font-bold">{totalClicks.toLocaleString()}</div>
+          </div>
+          <div className="glass-card rounded-2xl p-4">
+            <div className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Live items</div>
+            <div className="text-2xl font-bold flex items-center gap-2">
+              <Eye size={18} className="text-green-400" />
+              {linksArray.filter((l) => l.isVisible).length + productsArray.filter((p) => p.isVisible).length}
+            </div>
+          </div>
+          <div className="glass-card rounded-2xl p-4 col-span-2">
+            <div className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Top link</div>
+            <div className="text-base font-semibold flex items-center gap-2">
+              <BarChart3 size={16} className="text-violet-400" />
+              {topLink ? `${topLink.title} (${(topLink.clicks || 0).toLocaleString()} clicks)` : 'No tracked link clicks yet'}
+            </div>
+          </div>
+        </div>
+
         {/* Profile Header with Glass Morphism */}
         <div className="glass-card rounded-[36px] p-6 mb-8 text-center transition-all duration-300">
           {linkOrganizer.profileImage ? (
@@ -1134,9 +1189,9 @@ const LinkOrganizerBuilder: React.FC = () => {
               <div className="flex items-center justify-center space-x-2">
                 <Link size={16} />
                 <span>Links</span>
-                {linkOrganizer.links.length > 0 && (
+                {linksArray.length > 0 && (
                   <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                    {linkOrganizer.links.length}
+                    {linksArray.length}
                   </span>
                 )}
               </div>
@@ -1153,10 +1208,26 @@ const LinkOrganizerBuilder: React.FC = () => {
               <div className="flex items-center justify-center space-x-2">
                 <Camera size={16} />
                 <span>Shop</span>
-                {linkOrganizer.products.length > 0 && (
+                {productsArray.length > 0 && (
                   <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                    {linkOrganizer.products.length}
+                    {productsArray.length}
                   </span>
+                )}
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-300 rounded-xl ${
+                activeTab === 'analytics'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+              }`}
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <BarChart3 size={16} />
+                <span>Analytics</span>
+                {!hasPremiumAnalyticsAccess && (
+                  <Lock size={12} className="text-amber-400" />
                 )}
               </div>
             </button>
@@ -1167,7 +1238,7 @@ const LinkOrganizerBuilder: React.FC = () => {
         <div className="flex-1 overflow-y-auto">
           {activeTab === 'links' && (
             <div className="space-y-4">
-              {linkOrganizer.links.length === 0 ? (
+              {linksArray.length === 0 ? (
                 <div className="glass-card rounded-2xl p-8 text-center">
                   <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Link size={24} className="text-gray-400" />
@@ -1176,9 +1247,9 @@ const LinkOrganizerBuilder: React.FC = () => {
                   <p className="text-gray-400 text-sm">Click Edit Mode to start adding links</p>
                 </div>
               ) : (
-                linkOrganizer.links.map(link => (
+                linksArray.map((link, index) => (
                   <LinkModule
-                    key={link.id}
+                    key={link.id || `link-${index}`}
                     link={link}
                     isEditing={isEditing}
                     onDelete={handleDeleteLink}
@@ -1202,7 +1273,7 @@ const LinkOrganizerBuilder: React.FC = () => {
 
           {activeTab === 'shop' && (
             <div className="space-y-4">
-              {linkOrganizer.products.length === 0 ? (
+              {productsArray.length === 0 ? (
                 <div className="glass-card rounded-2xl p-8 text-center">
                   <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Camera size={24} className="text-gray-400" />
@@ -1220,7 +1291,7 @@ const LinkOrganizerBuilder: React.FC = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4">
-                  {linkOrganizer.products.map((product, index) => (
+                  {productsArray.map((product, index) => (
                     <div
                       key={product.id}
                       className={`glass-card rounded-2xl overflow-hidden transition-all duration-300 group ${
@@ -1283,14 +1354,74 @@ const LinkOrganizerBuilder: React.FC = () => {
                 </div>
               )}
 
-              {isEditing && linkOrganizer.products.length > 0 && (
+              {isEditing && productsArray.length > 0 && (
                 <button
-                  onClick={() => setEditingLink({ id: '', title: '', description: '', price: '', image: '', url: '', category: '', isVisible: true, order: linkOrganizer.products.length, type: 'product', isNew: true } as LinkItem & { isNew: boolean })}
+                  onClick={() => setEditingLink({ id: '', title: '', description: '', price: '', image: '', url: '', category: '', isVisible: true, order: productsArray.length, type: 'product', isNew: true } as LinkItem & { isNew: boolean })}
                   className="w-full py-4 rounded-3xl bg-gray-800 text-blue-400 hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2 font-semibold text-lg border-2 border-dashed border-gray-600"
                 >
                   <Plus size={24} />
                   <span>Add New Product</span>
                 </button>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'analytics' && (
+            <div className="space-y-4">
+              {!hasPremiumAnalyticsAccess ? (
+                <div className="glass-card rounded-2xl p-8 text-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 flex items-center justify-center mx-auto mb-4">
+                    <Crown size={24} className="text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Pro/Premium Analytics</h3>
+                  <p className="text-gray-300 text-sm mb-5">
+                    Advanced analytics is available for Pro/Premium users only. Upgrade to unlock click performance insights.
+                  </p>
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    Upgrade to Premium
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="glass-card rounded-2xl p-4">
+                      <div className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Average clicks/item</div>
+                      <div className="text-2xl font-bold">{avgClicksPerItem}</div>
+                    </div>
+                    <div className="glass-card rounded-2xl p-4">
+                      <div className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">Top product</div>
+                      <div className="text-sm font-semibold text-white truncate">{topProduct ? topProduct.title : 'No products yet'}</div>
+                      <div className="text-xs text-gray-400">{topProduct ? `${topProduct.clicks || 0} clicks` : '-'}</div>
+                    </div>
+                  </div>
+
+                  <div className="glass-card rounded-2xl p-4">
+                    <div className="text-sm font-semibold mb-3">Top performers</div>
+                    {topPerformers.length === 0 ? (
+                      <p className="text-sm text-gray-400">No click data yet.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {topPerformers.map((item) => {
+                          const width = totalClicks > 0 ? Math.max(8, Math.round((item.clicks / totalClicks) * 100)) : 8;
+                          return (
+                            <div key={item.id}>
+                              <div className="flex items-center justify-between text-xs mb-1">
+                                <span className="text-gray-200 truncate pr-2">{item.title}</span>
+                                <span className="text-gray-400">{item.type} · {item.clicks}</span>
+                              </div>
+                              <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                                <div className="h-full bg-blue-500 rounded-full transition-all duration-500" style={{ width: `${width}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </div>
           )}

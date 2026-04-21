@@ -1253,19 +1253,8 @@ const FormBuilder: React.FC = () => {
                 <span className="text-[11px] text-[#555] hidden sm:inline">{currentBlock.questions.length} questions</span>
               )}
             </div>
-            {/* Right: Preview toggle + Media + Settings */}
+            {/* Right: Media + Settings */}
             <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setPreviewMode(!previewMode)}
-                className={`flex items-center gap-1 px-2.5 py-1.5 text-[12px] font-medium rounded-md border transition-colors ${
-                  previewMode
-                    ? 'bg-[#8B5CF6] border-[#8B5CF6] text-white'
-                    : 'bg-[#1a1a1a] border-[#333] text-[#ccc] hover:border-[#8B5CF6] hover:text-white'
-                }`}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                {previewMode ? 'Edit' : 'Preview'}
-              </button>
               <button
                 onClick={() => setShowMediaModal(true)}
                 className={`flex items-center gap-1 px-2.5 py-1.5 text-[12px] font-medium rounded-md border transition-colors ${
@@ -1730,9 +1719,9 @@ const FormBuilder: React.FC = () => {
       {/* Collaboration & Activity Feed - Coming Soon Panels */}
       {!previewMode && (
         <div className="border-t border-[#1f1f1f] bg-[#0d0d0d] px-3 sm:px-6 py-4">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Lead Activity Feed */}
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden">
+            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden h-full min-h-[220px]">
               <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f1f1f]">
                 <div className="w-6 h-6 rounded-md bg-[#1a1a1a] flex items-center justify-center">
                   <svg className="w-3.5 h-3.5 text-[#777]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -1749,7 +1738,7 @@ const FormBuilder: React.FC = () => {
                   { init: 'AK', name: 'Amara K.', action: 'received PDF summary', time: '18s ago', color: 'bg-purple-900 text-purple-300' },
                   { init: 'FB', name: 'Fatimah B.', action: 'submitted this form', time: '1m ago', color: 'bg-green-900 text-green-300' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-2.5">
+                  <div key={i} className="flex items-start justify-between gap-3">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0 ${item.color}`}>{item.init}</div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[12px] text-white"><span className="font-medium">{item.name}</span> <span className="text-[#777]">{item.action}</span></div>
@@ -1761,7 +1750,7 @@ const FormBuilder: React.FC = () => {
             </div>
 
             {/* Team Collaboration */}
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden">
+            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden h-full min-h-[220px]">
               <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f1f1f]">
                 <div className="w-6 h-6 rounded-md bg-[#1a1a1a] flex items-center justify-center">
                   <svg className="w-3.5 h-3.5 text-[#777]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -1778,14 +1767,16 @@ const FormBuilder: React.FC = () => {
                   { init: 'SA', name: 'Sade A.', role: 'Sales Manager', status: 'Exporting leads', online: true, grad: 'from-purple-600 to-violet-500' },
                   { init: 'KB', name: 'Kola B.', role: 'Growth', status: 'Building form', online: true, grad: 'from-violet-500 to-purple-400' },
                 ].map((m, i) => (
-                  <div key={i} className="flex items-center gap-2.5">
+                  <div key={i} className="flex items-center justify-between gap-3">
                     <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${m.grad} flex items-center justify-center text-[11px] font-semibold text-white flex-shrink-0`}>{m.init}</div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[13px] font-medium text-white truncate">{m.name}</div>
                       <div className="text-[11px] text-[#555] truncate">{m.role}</div>
                     </div>
-                    <div className="text-[11px] text-[#22c55e] bg-[#22c55e]/10 px-2 py-0.5 rounded-full whitespace-nowrap">{m.status}</div>
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] flex-shrink-0"></div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-[11px] text-[#22c55e] bg-[#22c55e]/10 px-2 py-0.5 rounded-full whitespace-nowrap">{m.status}</div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] flex-shrink-0"></div>
+                    </div>
                   </div>
                 ))}
               </div>

@@ -93,6 +93,7 @@ const FormPreview: React.FC = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const furthestPage = useRef(0);
 
   // Video control functions
   const toggleMute = () => {
@@ -198,6 +199,28 @@ const FormPreview: React.FC = () => {
     }
   }, [form]);
 
+  useEffect(() => {
+    if (currentBlockIndex > furthestPage.current) {
+      furthestPage.current = currentBlockIndex;
+    }
+  }, [currentBlockIndex]);
+
+  // On unmount without completion, write drop-off page to Firestore
+  useEffect(() => {
+    return () => {
+      if (!submitted && formId && furthestPage.current > 0) {
+        try {
+          const { doc, updateDoc, increment } = require('firebase/firestore');
+          const { db } = require('../firebase');
+          const key = `dropOff_page_${furthestPage.current}`;
+          updateDoc(doc(db, 'forms', formId as string), {
+            [key]: increment(1)
+          }).catch(() => {});
+        } catch (_) {}
+      }
+    };
+  }, [submitted, formId]);
+
   const fetchForm = async () => {
     try {
       const formDoc = await getDoc(doc(db, 'forms', formId!));
@@ -205,17 +228,8 @@ const FormPreview: React.FC = () => {
       if (formDoc.exists()) {
         const data = formDoc.data();
         
-        // Debug: Log form data from Firestore
-        console.log('Form data from Firestore:', {
-          formId: formDoc.id,
-          status: data.status,
-          hasStatus: 'status' in data,
-          allFields: Object.keys(data)
-        });
-        
         // Check if form is published
         if (data.status !== 'published') {
-          console.log('Form not published, blocking access. Status:', data.status);
           setForm(null);
           return;
         }
@@ -863,31 +877,6 @@ const FormPreview: React.FC = () => {
   }
 
   const currentBlock = form.blocks[currentBlockIndex];
-
-
-  // Drop-off tracking: record furthest page reached
-  const furthestPage = useRef(0);
-  useEffect(() => {
-    if (typeof currentBlockIndex !== 'undefined' && currentBlockIndex > furthestPage.current) {
-      furthestPage.current = currentBlockIndex;
-    }
-  });
-
-  // On unmount without completion, write drop-off page to Firestore
-  useEffect(() => {
-    return () => {
-      if (!submitted && formId && furthestPage.current > 0) {
-        try {
-          const { doc, updateDoc, increment } = require('firebase/firestore');
-          const { db } = require('../firebase');
-          const key = `dropOff_page_${furthestPage.current}`;
-          updateDoc(doc(db, 'forms', formId as string), {
-            [key]: increment(1)
-          }).catch(() => {});
-        } catch (_) {}
-      }
-    };
-  }, []);
 
 
   return (

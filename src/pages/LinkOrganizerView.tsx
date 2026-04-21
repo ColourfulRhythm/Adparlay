@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SocialMediaIcons } from '../components/SocialMediaIcons';
 import { formatUrl } from '../utils/formatUrl';
 import { Link, User, Camera, ExternalLink, Pencil } from 'lucide-react';
-import html2canvas from 'html2canvas';
 
 interface LinkItem {
   id: string;
@@ -75,155 +74,6 @@ const LinkOrganizerView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<'links' | 'shop'>('links');
-  const profileSectionRef = useRef<HTMLDivElement>(null);
-  const [previewImageUrl, setPreviewImageUrl] = useState<string>('');
-
-  const generatePreviewImage = async () => {
-    if (!linkOrganizer) return;
-
-    try {
-      console.log('Generating preview image for social media...');
-      
-      // Create canvas for preview image
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      
-      // Set canvas dimensions (social media optimized)
-      canvas.width = 1200;
-      canvas.height = 630; // 1.91:1 ratio for social media
-      
-      // Create gradient background (similar to the glass card effect)
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#1F2937');
-      gradient.addColorStop(1, '#111827');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Add glass morphism effect
-      ctx.fillStyle = 'rgba(31, 41, 55, 0.7)';
-      ctx.fillRect(50, 50, canvas.width - 100, canvas.height - 100);
-      
-      // Add border radius effect (simplified)
-      ctx.globalCompositeOperation = 'destination-over';
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.globalCompositeOperation = 'source-over';
-      
-      // Load and draw profile image
-      if (linkOrganizer.profileImage) {
-        try {
-          await new Promise((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-              // Draw profile image (circular)
-              const centerX = canvas.width / 2;
-              const centerY = canvas.height / 2 - 80;
-              const radius = 80;
-              
-              ctx.save();
-              ctx.beginPath();
-              ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-              ctx.closePath();
-              ctx.clip();
-              ctx.drawImage(img, centerX - radius, centerY - radius, radius * 2, radius * 2);
-              ctx.restore();
-              
-              // Add border to profile image
-              ctx.beginPath();
-              ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-              ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-              ctx.lineWidth = 4;
-              ctx.stroke();
-              
-              resolve(void 0);
-            };
-            img.onerror = reject;
-            img.src = linkOrganizer.profileImage || '';
-          });
-        } catch (error) {
-          console.log('Could not load profile image, using default');
-        }
-      }
-      
-      // Add profile name
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 48px Inter, system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(linkOrganizer.profileName || 'Link Page', canvas.width / 2, canvas.height / 2 + 60);
-      
-      // Add bio
-      if (linkOrganizer.bio) {
-        ctx.fillStyle = '#9CA3AF';
-        ctx.font = '24px Inter, system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        
-        // Wrap text for bio
-        const words = linkOrganizer.bio.split(' ');
-        const lines = [];
-        let currentLine = '';
-        
-        for (let i = 0; i < words.length; i++) {
-          const testLine = currentLine + words[i] + ' ';
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > canvas.width - 200 && currentLine !== '') {
-            lines.push(currentLine);
-            currentLine = words[i] + ' ';
-          } else {
-            currentLine = testLine;
-          }
-        }
-        lines.push(currentLine);
-        
-        // Draw bio lines
-        lines.slice(0, 2).forEach((line, index) => {
-          ctx.fillText(line.trim(), canvas.width / 2, canvas.height / 2 + 120 + (index * 35));
-        });
-      }
-      
-      // Add social media icons (simplified representation)
-      const socialLinks = linkOrganizer.socialLinks || {};
-      const socialPlatforms = Object.keys(socialLinks).filter(platform => 
-        socialLinks[platform as keyof typeof socialLinks]
-      );
-      
-      if (socialPlatforms.length > 0) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.font = '16px Inter, system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${socialPlatforms.length} social links`, canvas.width / 2, canvas.height / 2 + 200);
-      }
-      
-      // Add Adparlay branding
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      ctx.font = '18px Inter, system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Adparlay', canvas.width / 2, canvas.height - 40);
-      
-      const dataUrl = canvas.toDataURL('image/png', 0.9);
-      console.log('Preview image generated successfully:', {
-        dataUrlLength: dataUrl.length,
-        isDataUrl: dataUrl.startsWith('data:image/'),
-        timestamp: new Date().toISOString()
-      });
-      
-      // Convert data URL to blob URL for better social media compatibility
-      try {
-        const response = await fetch(dataUrl);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        console.log('Created blob URL for preview image');
-        setPreviewImageUrl(blobUrl);
-      } catch (error) {
-        console.log('Failed to create blob URL, using data URL');
-        setPreviewImageUrl(dataUrl);
-      }
-    } catch (error) {
-      console.error('Error generating preview image:', error);
-      // Fallback to profile image or default
-      setPreviewImageUrl(linkOrganizer.profileImage || 'https://adparlay.com/logo512.png');
-    }
-  };
 
   const fetchLinkOrganizer = async () => {
     if (!linkId) return;
@@ -256,13 +106,6 @@ const LinkOrganizerView: React.FC = () => {
       fetchLinkOrganizer();
     }
   }, [linkId]);
-
-  // No need to generate preview image anymore since we're using profile image directly
-  // useEffect(() => {
-  //   if (linkOrganizer) {
-  //     generatePreviewImage();
-  //   }
-  // }, [linkOrganizer]);
 
   // Update document head for social sharing
   useEffect(() => {
@@ -297,17 +140,6 @@ const LinkOrganizerView: React.FC = () => {
         ? linkOrganizer.profileImage 
         : 'https://adparlay.com/logo512.png';
       
-      // Debug logging
-      console.log('Social media preview setup:', {
-        hasPreviewImageUrl: !!previewImageUrl,
-        hasProfileImage: !!linkOrganizer.profileImage,
-        usingFallback: !previewImageUrl && !linkOrganizer.profileImage,
-        previewImageUrl: previewImageUrl ? 'Generated' : 'Not generated',
-        finalImage: previewImage.substring(0, 100) + '...',
-        isDataUrl: previewImage.startsWith('data:image/'),
-        timestamp: new Date().toISOString()
-      });
-      
       // Open Graph tags
       updateMetaTag('og:title', `${linkOrganizer.profileName || 'Link Page'} - Adparlay`);
       updateMetaTag('og:description', linkOrganizer.bio || 'Check out my links and products');
@@ -325,15 +157,59 @@ const LinkOrganizerView: React.FC = () => {
       // Basic meta description
       updateMetaName('description', linkOrganizer.bio || 'Check out my links and products');
     }
-  }, [linkOrganizer, previewImageUrl]);
+  }, [linkOrganizer]);
+
+  const incrementLinkClicks = async (link: LinkItem) => {
+    if (!linkOrganizer || !linkId) return;
+    try {
+      if (Array.isArray(linkOrganizer.links)) {
+        const nextLinks = linkOrganizer.links.map((item) =>
+          item.id === link.id ? { ...item, clicks: (item.clicks || 0) + 1 } : item
+        );
+        await updateDoc(doc(db, 'linkOrganizers', linkId), { links: nextLinks });
+        setLinkOrganizer((prev) => (prev ? { ...prev, links: nextLinks } : prev));
+        return;
+      }
+      if (typeof linkOrganizer.links === 'object' && linkOrganizer.links !== null) {
+        const current = linkOrganizer.links as Record<string, LinkItem>;
+        const key = Object.keys(current).find((k) => current[k]?.id === link.id);
+        if (!key) return;
+        await updateDoc(doc(db, 'linkOrganizers', linkId), {
+          [`links.${key}.clicks`]: (current[key]?.clicks || 0) + 1
+        });
+      }
+    } catch (error) {
+      console.error('Error updating link clicks:', error);
+    }
+  };
+
+  const incrementProductClicks = async (product: ProductItem) => {
+    if (!linkOrganizer || !linkId) return;
+    try {
+      if (Array.isArray(linkOrganizer.products)) {
+        const nextProducts = linkOrganizer.products.map((item) =>
+          item.id === product.id ? { ...item, clicks: (item.clicks || 0) + 1 } : item
+        );
+        await updateDoc(doc(db, 'linkOrganizers', linkId), { products: nextProducts });
+        setLinkOrganizer((prev) => (prev ? { ...prev, products: nextProducts } : prev));
+        return;
+      }
+      if (typeof linkOrganizer.products === 'object' && linkOrganizer.products !== null) {
+        const current = linkOrganizer.products as Record<string, ProductItem>;
+        const key = Object.keys(current).find((k) => current[k]?.id === product.id);
+        if (!key) return;
+        await updateDoc(doc(db, 'linkOrganizers', linkId), {
+          [`products.${key}.clicks`]: (current[key]?.clicks || 0) + 1
+        });
+      }
+    } catch (error) {
+      console.error('Error updating product clicks:', error);
+    }
+  };
 
   const handleLinkClick = async (link: LinkItem) => {
     try {
-      // Update click count
-      const linkRef = doc(db, 'linkOrganizers', linkId!);
-      await updateDoc(linkRef, {
-        [`links.${link.id}.clicks`]: increment(1)
-      });
+      await incrementLinkClicks(link);
 
       // Format URL using smart formatting
       const formattedUrl = formatUrl(link.url);
@@ -353,11 +229,7 @@ const LinkOrganizerView: React.FC = () => {
 
   const handleProductClick = async (product: ProductItem) => {
     try {
-      // Update click count
-      const linkRef = doc(db, 'linkOrganizers', linkId!);
-      await updateDoc(linkRef, {
-        [`products.${product.id}.clicks`]: increment(1)
-      });
+      await incrementProductClicks(product);
 
       // Format URL using smart formatting
       const formattedUrl = formatUrl(product.url);
@@ -463,22 +335,15 @@ const LinkOrganizerView: React.FC = () => {
     <div className="min-h-screen gradient-bg text-white font-sans flex flex-col items-center p-4 sm:p-8">
       <style>
         {`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+        body { font-family: 'DM Sans', sans-serif; }
+        h1, h2, h3 { font-family: 'Sora', sans-serif; }
         
         /* Subtle abstract gradient background */
         .gradient-bg {
-          background: linear-gradient(135deg, 
-            #0f0f23 0%, 
-            #1a1a2e 25%, 
-            #16213e 50%, 
-            #0f3460 75%, 
-            #533483 100%);
-          background-size: 400% 400%;
-          -webkit-animation: gradientShift 20s ease infinite;
-          -moz-animation: gradientShift 20s ease infinite;
-          -o-animation: gradientShift 20s ease infinite;
-          animation: gradientShift 20s ease infinite;
+          background: radial-gradient(circle at top right, rgba(75,106,247,0.18), transparent 45%),
+            radial-gradient(circle at bottom left, rgba(51,87,245,0.14), transparent 50%),
+            #0d1020;
         }
         
         @-webkit-keyframes gradientShift {
@@ -506,23 +371,15 @@ const LinkOrganizerView: React.FC = () => {
         }
         
         .glass-card {
-          background-color: rgba(31, 31, 31, 0.8);
-          /* Fallback for browsers without backdrop-filter support */
-          background: linear-gradient(135deg, rgba(31, 31, 31, 0.9), rgba(45, 45, 45, 0.8));
+          background-color: rgba(21, 25, 41, 0.88);
+          background: linear-gradient(135deg, rgba(21, 25, 41, 0.95), rgba(34, 40, 71, 0.86));
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           box-shadow: 0 4px 60px rgba(0, 0, 0, 0.5);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.12);
         }
         
         /* Fallback for browsers that don't support backdrop-filter */
-        @supports not (backdrop-filter: blur(20px)) {
-          .glass-card {
-            background: linear-gradient(135deg, rgba(31, 31, 31, 0.95), rgba(45, 45, 45, 0.9));
-            border: 1px solid rgba(255, 255, 255, 0.2);
-          }
-        }
-        
         /* Cross-browser centering fix for link accordion */
         .link-item-container {
           display: -webkit-box;
@@ -625,7 +482,7 @@ const LinkOrganizerView: React.FC = () => {
 
       <main className="w-full max-w-lg">
         {/* Profile Header with Glass Morphism */}
-        <div ref={profileSectionRef} className="glass-card rounded-[36px] p-6 mb-8 text-center transition-all duration-300">
+        <div className="glass-card rounded-[24px] p-6 mb-8 text-center transition-all duration-300">
               {linkOrganizer.profileImage ? (
                   <img 
                     src={linkOrganizer.profileImage} 

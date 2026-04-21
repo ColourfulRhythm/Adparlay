@@ -23,7 +23,10 @@ const LandingPage: React.FC = () => {
 
 
 <nav>
-  <div className="nav-brand">AdParlay</div>
+  <div className="nav-brand">
+    <img src="/logoreal.png" alt="AdParlay logo" className="nav-brand-logo" />
+    <span>AdParlay</span>
+  </div>
   <div className="nav-links">
     <a href="#features">Features</a>
     <a href="#pricing">Pricing</a>

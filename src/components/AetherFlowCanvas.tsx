@@ -6,11 +6,12 @@ export default function AetherFlowCanvas() {
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
 
   React.useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const canvasElement = canvasRef.current;
+    if (!canvasElement) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const canvasContext = canvasElement.getContext('2d');
+    if (!canvasContext) return;
+    const context: CanvasRenderingContext2D = canvasContext;
 
     let animationFrameId = 0;
     let particles: Particle[] = [];
@@ -34,15 +35,15 @@ export default function AetherFlowCanvas() {
       }
 
       draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color;
-        ctx.fill();
+        context.beginPath();
+        context.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+        context.fillStyle = this.color;
+        context.fill();
       }
 
       update() {
-        if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
-        if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+        if (this.x > canvasElement.width || this.x < 0) this.directionX = -this.directionX;
+        if (this.y > canvasElement.height || this.y < 0) this.directionY = -this.directionY;
 
         if (mouse.x !== null && mouse.y !== null) {
           const dx = mouse.x - this.x;
@@ -65,11 +66,11 @@ export default function AetherFlowCanvas() {
 
     function init() {
       particles = [];
-      const numberOfParticles = (canvas.height * canvas.width) / 9000;
+      const numberOfParticles = (canvasElement.height * canvasElement.width) / 9000;
       for (let i = 0; i < numberOfParticles; i++) {
         const size = Math.random() * 2 + 1;
-        const x = Math.random() * (canvas.width - size * 4) + size * 2;
-        const y = Math.random() * (canvas.height - size * 4) + size * 2;
+        const x = Math.random() * (canvasElement.width - size * 4) + size * 2;
+        const y = Math.random() * (canvasElement.height - size * 4) + size * 2;
         const directionX = Math.random() * 0.4 - 0.2;
         const directionY = Math.random() * 0.4 - 0.2;
         const color = 'rgba(191, 128, 255, 0.8)';
@@ -78,8 +79,8 @@ export default function AetherFlowCanvas() {
     }
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvasElement.width = window.innerWidth;
+      canvasElement.height = window.innerHeight;
       init();
     };
 
@@ -90,7 +91,7 @@ export default function AetherFlowCanvas() {
             (particles[a].x - particles[b].x) * (particles[a].x - particles[b].x) +
             (particles[a].y - particles[b].y) * (particles[a].y - particles[b].y);
 
-          if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+          if (distance < (canvasElement.width / 7) * (canvasElement.height / 7)) {
             const opacityValue = 1 - distance / 20000;
 
             if (mouse.x !== null && mouse.y !== null) {
@@ -98,19 +99,19 @@ export default function AetherFlowCanvas() {
               const dyMouse = particles[a].y - mouse.y;
               const distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
               if (distanceMouse < mouse.radius) {
-                ctx.strokeStyle = `rgba(255, 255, 255, ${opacityValue})`;
+                context.strokeStyle = `rgba(255, 255, 255, ${opacityValue})`;
               } else {
-                ctx.strokeStyle = `rgba(200, 150, 255, ${opacityValue})`;
+                context.strokeStyle = `rgba(200, 150, 255, ${opacityValue})`;
               }
             } else {
-              ctx.strokeStyle = `rgba(200, 150, 255, ${opacityValue})`;
+              context.strokeStyle = `rgba(200, 150, 255, ${opacityValue})`;
             }
 
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
+            context.lineWidth = 1;
+            context.beginPath();
+            context.moveTo(particles[a].x, particles[a].y);
+            context.lineTo(particles[b].x, particles[b].y);
+            context.stroke();
           }
         }
       }
@@ -118,8 +119,8 @@ export default function AetherFlowCanvas() {
 
     const animate = () => {
       animationFrameId = window.requestAnimationFrame(animate);
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = 'black';
+      context.fillRect(0, 0, canvasElement.width, canvasElement.height);
       for (let i = 0; i < particles.length; i++) particles[i].update();
       connect();
     };

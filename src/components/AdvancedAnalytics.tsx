@@ -117,7 +117,6 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ userId, isProUser
 
   const handleRefresh = () => {
     setLastRefresh(new Date());
-    fetchAnalyticsData();
   };
 
   const fetchAnalyticsData = async () => {
@@ -793,29 +792,22 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ userId, isProUser
       {isProUser && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
           {[
-            { title: 'Total Forms', value: analyticsData.totalForms, icon: FileIcon, color: 'bg-blue-500' },
-            { title: 'Total Submissions', value: analyticsData.totalSubmissions, icon: ChartIcon, color: 'bg-green-500' },
-            { title: 'Landing Pages', value: analyticsData.totalLandingPages, icon: Globe, color: 'bg-indigo-500' },
-            { title: 'Landing Page Views', value: analyticsData.totalLandingPageViews, icon: Eye, color: 'bg-teal-500' },
-            { title: 'Conversion Rate', value: `${analyticsData.conversionRate}%`, icon: TrendingUp, color: 'bg-purple-500' },
-            { title: 'Avg Completion Time', value: `${analyticsData.averageCompletionTime} min`, icon: Clock, color: 'bg-orange-500' },
+            { title: 'Total Forms', value: analyticsData.totalForms },
+            { title: 'Total Submissions', value: analyticsData.totalSubmissions },
+            { title: 'Landing Pages', value: analyticsData.totalLandingPages },
+            { title: 'Landing Page Views', value: analyticsData.totalLandingPageViews },
+            { title: 'Conversion Rate', value: `${analyticsData.conversionRate}%` },
+            { title: 'Avg Completion', value: `${analyticsData.averageCompletionTime}m` },
           ].map((metric, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
+              className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center text-center transition-all hover:border-gray-200"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{metric.title}</p>
-                  <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
-                </div>
-                <div className={`w-12 h-12 ${metric.color} rounded-lg flex items-center justify-center text-white`}>
-                  <metric.icon className="w-6 h-6" />
-                </div>
-              </div>
+              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">{metric.title}</p>
+              <p className="text-4xl font-light text-gray-800 tracking-tight">{metric.value}</p>
             </motion.div>
           ))}
         </div>

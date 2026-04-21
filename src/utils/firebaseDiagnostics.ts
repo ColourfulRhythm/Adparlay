@@ -1,7 +1,6 @@
 // Firebase diagnostics and configuration checker
 
 import { auth } from '../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export interface FirebaseDiagnostics {
   isConfigured: boolean;
@@ -57,24 +56,8 @@ export const checkFirebaseConfiguration = async (): Promise<FirebaseDiagnostics>
       console.log('No current user');
     }
 
-    // Test basic auth functionality
-    try {
-      // This will fail but we can catch the error to see if auth is working
-      await signInWithEmailAndPassword(auth, 'test@example.com', 'testpassword');
-    } catch (error: any) {
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        // These are expected errors, meaning auth is working
-        console.log('Auth is working (got expected error):', error.code);
-      } else if (error.code === 'auth/operation-not-allowed') {
-        diagnostics.errors.push('Email/password authentication is not enabled in Firebase Console');
-      } else if (error.code === 'auth/invalid-api-key') {
-        diagnostics.errors.push('Invalid Firebase API key');
-      } else if (error.code === 'auth/network-request-failed') {
-        diagnostics.errors.push('Network error - check internet connection');
-      } else {
-        diagnostics.warnings.push(`Unexpected auth error: ${error.code} - ${error.message}`);
-      }
-    }
+    // Do not perform test sign-ins during diagnostics.
+    // Triggering signInWithEmailAndPassword with dummy credentials causes noisy 400s in dev tools.
 
   } catch (error: any) {
     diagnostics.errors.push(`Configuration check failed: ${error.message}`);
