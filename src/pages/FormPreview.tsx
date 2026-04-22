@@ -95,6 +95,32 @@ const FormPreview: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const furthestPage = useRef(0);
 
+  useEffect(() => {
+    if (window.parent === window) return;
+
+    const sendHeight = () => {
+      const height =
+        Math.max(
+          document.documentElement.scrollHeight || 0,
+          document.body?.scrollHeight || 0
+        ) || 0;
+      window.parent.postMessage({ type: 'ADPARLAY_FORM_HEIGHT', height }, '*');
+    };
+
+    sendHeight();
+    const onResize = () => sendHeight();
+    window.addEventListener('resize', onResize);
+
+    const ro = new ResizeObserver(() => sendHeight());
+    ro.observe(document.documentElement);
+    if (document.body) ro.observe(document.body);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      ro.disconnect();
+    };
+  }, []);
+
   // Video control functions
   const toggleMute = () => {
     if (videoRef.current) {

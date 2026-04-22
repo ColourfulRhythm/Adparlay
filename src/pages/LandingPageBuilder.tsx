@@ -932,9 +932,11 @@ const LandingPageBuilder: React.FC = () => {
                 <h2>${debouncedLandingPage.buttonLabel}</h2>
                 
                 ${debouncedLandingPage.showForm && debouncedLandingPage.formUrl ? `
-                    <iframe 
-                        src="${getBaseUrl()}/form/${debouncedLandingPage.formUrl}" 
-                        style="width: 100%; height: 600px; border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
+                    <iframe
+                        id="adparlayEmbeddedForm"
+                        src="${getBaseUrl()}/form/${debouncedLandingPage.formUrl}"
+                        style="width: 100%; height: 720px; border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden;"
+                        scrolling="no"
                         title="Embedded Form"
                     ></iframe>
                 ` : debouncedLandingPage.showForm ? `
@@ -1067,6 +1069,28 @@ const LandingPageBuilder: React.FC = () => {
                 </div>
             \`;
         }
+
+        // Auto-resize embedded AdParlay forms so the page scrolls normally
+        (function () {
+          const iframe = document.getElementById('adparlayEmbeddedForm');
+          if (!iframe) return;
+
+          function setHeight(h) {
+            const height = Math.max(420, Math.min(Number(h) || 0, 6000));
+            iframe.style.height = height + 'px';
+          }
+
+          window.addEventListener('message', function (event) {
+            try {
+              const data = event && event.data;
+              if (!data || data.type !== 'ADPARLAY_FORM_HEIGHT') return;
+              setHeight(data.height);
+            } catch (e) {}
+          });
+
+          // Fallback: if we never get a message, keep a reasonable height
+          setHeight(720);
+        })();
     </script>
 </body>
 </html>
