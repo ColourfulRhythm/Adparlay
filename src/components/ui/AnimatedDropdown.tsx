@@ -59,7 +59,7 @@ export default function AnimatedDropdown({
 
   const getAlignmentClass = () => {
     if (align === 'left') return 'left-0';
-    if (align === 'right') return 'right-0';
+    if (align === 'right') return 'right-0 left-auto';
     return 'left-1/2 -translate-x-1/2';
   };
 
@@ -103,7 +103,7 @@ export default function AnimatedDropdown({
                 ease: 'easeOut',
               }}
               className={cn(
-                'absolute top-[calc(100%+0.5rem)] z-50 w-fit min-w-[200px]',
+                'absolute top-[calc(100%+0.5rem)] z-50 w-fit min-w-[200px] max-w-[calc(100vw-1rem)]',
                 getAlignmentClass(),
                 'overflow-hidden rounded-xl',
                 'bg-white',
