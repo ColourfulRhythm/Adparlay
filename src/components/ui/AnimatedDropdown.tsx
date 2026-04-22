@@ -56,39 +56,77 @@ export default function AnimatedDropdown({
   align = 'center',
 }: AnimatedDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const MENU_WIDTH = 220;
+  const VIEWPORT_PADDING = 8;
 
-  const getAlignmentClass = () => {
-    if (align === 'left') return 'left-0';
-    if (align === 'right') return 'right-0 left-auto';
-    return 'left-1/2 -translate-x-1/2';
+  const updateMenuPosition = React.useCallback(() => {
+    if (!triggerRef.current) return;
+
+    const rect = triggerRef.current.getBoundingClientRect();
+    let left = rect.left;
+
+    if (align === 'right') {
+      left = rect.right - MENU_WIDTH;
+    } else if (align === 'center') {
+      left = rect.left + rect.width / 2 - MENU_WIDTH / 2;
+    }
+
+    const minLeft = VIEWPORT_PADDING;
+    const maxLeft = window.innerWidth - MENU_WIDTH - VIEWPORT_PADDING;
+    const clampedLeft = Math.max(minLeft, Math.min(left, maxLeft));
+
+    setMenuPosition({
+      top: rect.bottom + 8,
+      left: clampedLeft,
+    });
+  }, [align]);
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    updateMenuPosition();
+    window.addEventListener('resize', updateMenuPosition);
+    window.addEventListener('scroll', updateMenuPosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updateMenuPosition);
+      window.removeEventListener('scroll', updateMenuPosition, true);
+    };
+  }, [isOpen, updateMenuPosition]);
+
+  const closeMenu = () => {
+    setIsOpen(false);
   };
 
   return (
-    <OnClickOutside onClickOutside={() => setIsOpen(false)}>
+    <OnClickOutside onClickOutside={closeMenu}>
       <div
         data-state={isOpen ? 'open' : 'closed'}
         className={cn('group relative inline-block', className)}
       >
         {trigger ? (
-           <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
+           <div ref={triggerRef} onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
              {trigger}
            </div>
         ) : (
-          <Button
-            variant='default'
-            aria-haspopup='listbox'
-            aria-expanded={isOpen}
-            onClick={() => setIsOpen(!isOpen)}
-            className={cn("gap-2 min-h-[44px] rounded-xl", triggerClassName)}
-          >
-            <span>{text}</span>
-            <motion.div
-              animate={{ rotate: isOpen ? 180 : 0 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
+          <div ref={triggerRef}>
+            <Button
+              variant='default'
+              aria-haspopup='listbox'
+              aria-expanded={isOpen}
+              onClick={() => setIsOpen(!isOpen)}
+              className={cn("gap-2 min-h-[44px] rounded-xl", triggerClassName)}
             >
-              <ChevronDown className='h-5 w-5' />
-            </motion.div>
-          </Button>
+              <span>{text}</span>
+              <motion.div
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+              >
+                <ChevronDown className='h-5 w-5' />
+              </motion.div>
+            </Button>
+          </div>
         )}
 
         <AnimatePresence>
@@ -102,9 +140,9 @@ export default function AnimatedDropdown({
                 duration: 0.2,
                 ease: 'easeOut',
               }}
+              style={{ top: menuPosition.top, left: menuPosition.left }}
               className={cn(
-                'absolute top-[calc(100%+0.5rem)] z-50 w-fit min-w-[200px] max-w-[calc(100vw-1rem)]',
-                getAlignmentClass(),
+                'fixed z-50 w-[220px] max-w-[calc(100vw-1rem)]',
                 'overflow-hidden rounded-xl',
                 'bg-white',
                 'border border-gray-100',
