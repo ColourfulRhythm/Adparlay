@@ -3,6 +3,7 @@ import { useState, useRef, FC, ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { cn } from '../../utils';
 
 const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string }>(
@@ -129,90 +130,93 @@ export default function AnimatedDropdown({
           </div>
         )}
 
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              role='listbox'
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{
-                duration: 0.2,
-                ease: 'easeOut',
-              }}
-              style={{ top: menuPosition.top, left: menuPosition.left }}
-              className={cn(
-                'fixed z-50 w-[220px] max-w-[calc(100vw-1rem)]',
-                'overflow-hidden rounded-xl',
-                'bg-white',
-                'border border-gray-100',
-                'shadow-xl shadow-black/5'
-              )}
-            >
+        {typeof document !== 'undefined' && createPortal(
+          <AnimatePresence>
+            {isOpen && (
               <motion.div
-                initial='hidden'
-                animate='visible'
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.03,
-                    },
-                  },
+                role='listbox'
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{
+                  duration: 0.2,
+                  ease: 'easeOut',
                 }}
-                className="flex flex-col p-1"
+                style={{ top: menuPosition.top, left: menuPosition.left }}
+                className={cn(
+                  'fixed z-[1000] w-[220px] max-w-[calc(100vw-1rem)]',
+                  'overflow-hidden rounded-xl',
+                  'bg-white',
+                  'border border-gray-100',
+                  'shadow-xl shadow-black/5'
+                )}
               >
-                {items.map((item, index) => {
-                  const itemClasses = cn(
-                    'flex items-center gap-2 w-full px-3 py-2.5 text-sm font-medium rounded-lg text-left',
-                    'hover:bg-gray-50 focus:bg-gray-50 outline-none',
-                    'transition-colors duration-150',
-                    item.destructive ? 'text-red-600 hover:text-red-700 hover:bg-red-50' : 'text-gray-700 hover:text-gray-900'
-                  );
-
-                  const ItemContent = (
-                    <>
-                      {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
-                      {item.name}
-                    </>
-                  );
-
-                  const variants = {
-                    hidden: { opacity: 0, x: -10 },
-                    visible: { opacity: 1, x: 0 },
-                  };
-
-                  if (item.link) {
-                    return (
-                      <motion.div key={index} variants={variants}>
-                        <Link 
-                          to={item.link} 
-                          className={itemClasses}
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {ItemContent}
-                        </Link>
-                      </motion.div>
+                <motion.div
+                  initial='hidden'
+                  animate='visible'
+                  variants={{
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.03,
+                      },
+                    },
+                  }}
+                  className="flex flex-col p-1"
+                >
+                  {items.map((item, index) => {
+                    const itemClasses = cn(
+                      'flex items-center gap-2 w-full px-3 py-2.5 text-sm font-medium rounded-lg text-left',
+                      'hover:bg-gray-50 focus:bg-gray-50 outline-none',
+                      'transition-colors duration-150',
+                      item.destructive ? 'text-red-600 hover:text-red-700 hover:bg-red-50' : 'text-gray-700 hover:text-gray-900'
                     );
-                  }
 
-                  return (
-                    <motion.button
-                      key={index}
-                      variants={variants}
-                      onClick={() => {
-                        item.onClick?.();
-                        setIsOpen(false);
-                      }}
-                      className={itemClasses}
-                    >
-                      {ItemContent}
-                    </motion.button>
-                  );
-                })}
+                    const ItemContent = (
+                      <>
+                        {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
+                        {item.name}
+                      </>
+                    );
+
+                    const variants = {
+                      hidden: { opacity: 0, x: -10 },
+                      visible: { opacity: 1, x: 0 },
+                    };
+
+                    if (item.link) {
+                      return (
+                        <motion.div key={index} variants={variants}>
+                          <Link 
+                            to={item.link} 
+                            className={itemClasses}
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {ItemContent}
+                          </Link>
+                        </motion.div>
+                      );
+                    }
+
+                    return (
+                      <motion.button
+                        key={index}
+                        variants={variants}
+                        onClick={() => {
+                          item.onClick?.();
+                          setIsOpen(false);
+                        }}
+                        className={itemClasses}
+                      >
+                        {ItemContent}
+                      </motion.button>
+                    );
+                  })}
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
       </div>
     </OnClickOutside>
   );
