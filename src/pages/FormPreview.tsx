@@ -146,6 +146,11 @@ const FormPreview: React.FC = () => {
     }
   };
 
+  const notifyParentSubmitted = useCallback(() => {
+    if (window.parent === window) return;
+    window.parent.postMessage({ type: 'ADPARLAY_FORM_SUBMIT' }, '*');
+  }, []);
+
   // Function to convert YouTube URLs to embed URLs
   const getYouTubeEmbedUrl = (url: string): string => {
     if (!url) return '';
@@ -416,6 +421,7 @@ const FormPreview: React.FC = () => {
       }
       
       setSubmitted(true);
+      notifyParentSubmitted();
       
       // Generate HD PNG summary and auto-save to gallery
       if (formRef.current) {

@@ -36,8 +36,12 @@ interface LandingPage {
   shareImage?: string;
   shareTitle?: string;
   shareDesc?: string;
-  conversionEvents?: string[];
+  conversionEvents?: any;
   scrollDepthThresholds?: number[];
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  captureUtm?: boolean;
 }
 
 // ─── UTM helper ───────────────────────────────────────────────────────────────
@@ -64,10 +68,14 @@ const LandingPageView: React.FC = () => {
   const [utmParams] = useState<Record<string, string>>(getUtmParams());
   const scrollFired = useRef<Set<number>>(new Set());
   const formRef = useRef<HTMLFormElement>(null);
+  const embeddedFormRef = useRef<HTMLIFrameElement>(null);
+  const [embeddedFormHeight, setEmbeddedFormHeight] = useState<number>(720);
 
   // ─── Meta Pixel Loader ──────────────────────────────────────────────────
   useEffect(() => {
     if (!landingPage?.pixelId) return;
+    const pixelId = String(landingPage.pixelId || '').trim();
+    if (!/^\d{8,20}$/.test(pixelId)) return;
     const existingPixels = document.querySelectorAll('script[data-meta-pixel]');
     existingPixels.forEach(el => el.remove());
 
@@ -82,7 +90,7 @@ const LandingPageView: React.FC = () => {
       t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}(window,document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init','${landingPage.pixelId}');
+      fbq('init','${pixelId}');
       fbq('track','PageView');
     `;
     document.head.appendChild(script);
@@ -92,6 +100,9 @@ const LandingPageView: React.FC = () => {
   // ─── Scroll Depth tracking ──────────────────────────────────────────────
   useEffect(() => {
     if (!landingPage) return;
+    const ev = (landingPage as any).conversionEvents;
+    const scrollEnabled = typeof ev === 'object' ? (ev.scrollDepth ?? true) : true;
+    if (!scrollEnabled) return;
     const thresholds = landingPage.scrollDepthThresholds?.length ? landingPage.scrollDepthThresholds : [25, 50, 75, 100];
 
     const onScroll = () => {
@@ -111,7 +122,7 @@ const LandingPageView: React.FC = () => {
   // ─── OG / social meta tags ──────────────────────────────────────────────
   useEffect(() => {
     if (!landingPage) return;
-    document.title = landingPage.shareTitle || landingPage.title;
+    document.title = landingPage.shareTitle || landingPage.ogTitle || landingPage.title;
 
     const set = (sel: string, attr: string, val: string) => {
       let el = document.querySelector(sel) as HTMLMetaElement;
@@ -119,9 +130,9 @@ const LandingPageView: React.FC = () => {
       el.setAttribute('content', val);
     };
 
-    const img = landingPage.shareImage || landingPage.mediaUrl || `${getBaseUrl()}/default-preview.svg`;
-    const title = landingPage.shareTitle || landingPage.title;
-    const desc = landingPage.shareDesc || landingPage.tagline;
+    const img = landingPage.shareImage || landingPage.ogImage || landingPage.mediaUrl || `${getBaseUrl()}/default-preview.svg`;
+    const title = landingPage.shareTitle || landingPage.ogTitle || landingPage.title;
+    const desc = landingPage.shareDesc || landingPage.ogDescription || landingPage.tagline;
 
     // OG
     [['og:title', title], ['og:description', desc], ['og:image', img], ['og:url', window.location.href], ['og:type', 'website'], ['og:site_name', 'AdParlay']].forEach(([p, v]) => {
@@ -184,6 +195,10 @@ const LandingPageView: React.FC = () => {
             shareDesc: d.shareDesc || '',
             conversionEvents: d.conversionEvents || [],
             scrollDepthThresholds: d.scrollDepthThresholds || [25, 50, 75, 100],
+            ogTitle: d.ogTitle || '',
+            ogDescription: d.ogDescription || '',
+            ogImage: d.ogImage || '',
+            captureUtm: d.captureUtm !== undefined ? d.captureUtm : true,
           });
           await updateDoc(doc(db, 'landingPages', snap.id), { views: (d.views || 0) + 1 });
         }
@@ -218,8 +233,33 @@ const LandingPageView: React.FC = () => {
 
   const handleButtonClick = () => {
     if (!landingPage) return;
+    const ev = (landingPage as any).conversionEvents;
+    const buttonEnabled = typeof ev === 'object' ? (ev.buttonClick ?? true) : true;
+    if (!buttonEnabled) return;
     firePixel('InitiateCheckout', { content_name: landingPage.buttonLabel, ...utmParams });
   };
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      const data: any = event.data;
+      if (!data) return;
+      if (data.type === 'ADPARLAY_FORM_HEIGHT') {
+        const next = Math.max(420, Math.min(Number(data.height) || 0, 6000));
+        if (next) setEmbeddedFormHeight(next);
+      }
+      if (data.type === 'ADPARLAY_FORM_SUBMIT') {
+        const ev = (landingPage as any)?.conversionEvents;
+        const submitEnabled = typeof ev === 'object' ? (ev.formSubmit ?? true) : true;
+        if (!landingPage || !submitEnabled) return;
+        firePixel('Lead', { content_name: landingPage.title, ...utmParams });
+        if ((window as any).fbq) {
+          (window as any).fbq('trackCustom', 'FormComplete', { landingPageId: landingPage.id, ...utmParams });
+        }
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [landingPage, utmParams]);
 
   const convertToYouTubeEmbed = (url: string): string => {
     const patterns = [/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/];
@@ -737,11 +777,13 @@ const LandingPageView: React.FC = () => {
             <h2>{landingPage.buttonLabel}</h2>
 
             {landingPage.showForm && landingPage.formUrl ? (
-              <iframe 
-                  src={`${getBaseUrl()}/form/${landingPage.formUrl}`} 
-                  style={{ width: '100%', height: '600px', border: 'none', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                  title="Embedded Form"
-              ></iframe>
+              <iframe
+                ref={embeddedFormRef}
+                src={`${getBaseUrl()}/form/${landingPage.formUrl}${(landingPage.captureUtm !== false && Object.keys(utmParams).length) ? `?${new URLSearchParams(utmParams).toString()}` : ''}`}
+                style={{ width: '100%', height: `${embeddedFormHeight}px`, border: 'none', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}
+                title="Embedded Form"
+                scrolling="no"
+              />
             ) : landingPage.showForm ? (
               !submitted ? (
                 <form ref={formRef} onSubmit={handleFormSubmit}>

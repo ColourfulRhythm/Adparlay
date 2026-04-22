@@ -334,7 +334,13 @@ const LandingPageBuilder: React.FC = () => {
           status: 'published',
           // Ensure proper serialization of dates and arrays
           createdAt: landingPage.createdAt || new Date(),
-          additionalLinks: landingPage.additionalLinks || []
+          additionalLinks: landingPage.additionalLinks || [],
+          // Backwards/forwards compatible social + tracking fields
+          shareTitle: landingPage.ogTitle || '',
+          shareDesc: landingPage.ogDescription || '',
+          shareImage: landingPage.ogImage || '',
+          captureUtm: landingPage.captureUtm !== false,
+          conversionEvents: landingPage.conversionEvents || { scrollDepth: true, buttonClick: true, formSubmit: true },
         };
         console.log('landingPageData to save:', landingPageData);
         console.log('Media URL being saved:', landingPageData.mediaUrl);
@@ -407,16 +413,16 @@ const LandingPageBuilder: React.FC = () => {
     <title>${debouncedLandingPage.title}</title>
     
     <!-- Social Media Meta Tags -->
-    <meta property="og:title" content="${debouncedLandingPage.title}">
-    <meta property="og:description" content="${debouncedLandingPage.tagline}">
+    <meta property="og:title" content="${debouncedLandingPage.ogTitle || debouncedLandingPage.title}">
+    <meta property="og:description" content="${debouncedLandingPage.ogDescription || debouncedLandingPage.tagline}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Adparlay">
-    <meta property="og:image" content="${debouncedLandingPage.mediaUrl || getBaseUrl() + '/default-preview.svg'}">
+    <meta property="og:image" content="${debouncedLandingPage.ogImage || debouncedLandingPage.mediaUrl || getBaseUrl() + '/default-preview.svg'}">
     
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${debouncedLandingPage.title}">
-    <meta name="twitter:description" content="${debouncedLandingPage.tagline}">
-    <meta name="twitter:image" content="${debouncedLandingPage.mediaUrl || getBaseUrl() + '/default-preview.svg'}">
+    <meta name="twitter:title" content="${debouncedLandingPage.ogTitle || debouncedLandingPage.title}">
+    <meta name="twitter:description" content="${debouncedLandingPage.ogDescription || debouncedLandingPage.tagline}">
+    <meta name="twitter:image" content="${debouncedLandingPage.ogImage || debouncedLandingPage.mediaUrl || getBaseUrl() + '/default-preview.svg'}">
     
     <meta name="description" content="${debouncedLandingPage.tagline}">
     
