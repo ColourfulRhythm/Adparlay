@@ -8,9 +8,9 @@ import AdvancedAnalytics from '../components/AdvancedAnalytics';
 import PaystackPayment from '../components/PaystackPayment';
 import AIBuilder from '../components/AIBuilder';
 import ExportModal from '../components/ExportModal';
+import BrandedLoadingScreen from '../components/BrandedLoadingScreen';
 
 import { useSEO } from '../hooks/useSEO';
-import DashboardSkeleton from '../components/ui/DashboardSkeleton';
 import AnimatedDropdown from '../components/ui/AnimatedDropdown';
 import { FileText, LayoutTemplate, Link as LinkIcon, MoreVertical, Eye, Trash2 } from 'lucide-react';
 
@@ -78,6 +78,14 @@ const Dashboard: React.FC = () => {
       }, 100);
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!loading) return;
+    const timeout = window.setTimeout(() => {
+      setLoading(false);
+    }, 10000);
+    return () => window.clearTimeout(timeout);
+  }, [loading]);
 
   // Refresh forms when user changes - removed automatic refresh to prevent infinite loops
 
@@ -504,7 +512,7 @@ const Dashboard: React.FC = () => {
   };
 
   if (loading) {
-    return <DashboardSkeleton />;
+    return <BrandedLoadingScreen message="Loading your dashboard..." />;
   }
 
   return (

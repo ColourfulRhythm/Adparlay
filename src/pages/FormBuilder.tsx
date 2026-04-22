@@ -7,6 +7,7 @@ import { db } from '../firebase';
 import GoogleSheetsIntegration from '../components/GoogleSheetsIntegration';
 import CRMIntegration from '../components/CRMIntegration';
 import ZapierIntegration from '../components/ZapierIntegration';
+import BrandedLoadingScreen from '../components/BrandedLoadingScreen';
 import { useSEO } from '../hooks/useSEO';
 import { getShareUrl } from '../utils/getBaseUrl';
 import toast from 'react-hot-toast';
@@ -1072,14 +1073,7 @@ const FormBuilder: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading form builder...</p>
-        </div>
-      </div>
-    );
+    return <BrandedLoadingScreen message="Loading form builder..." />;
   }
 
   if (!form) {
@@ -1199,6 +1193,15 @@ const FormBuilder: React.FC = () => {
                         <svg className="w-4 h-4 text-[#777] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" /></svg>
                         Share
                       </button>
+                      {form?.id && (
+                        <button
+                          onClick={() => { navigate(`/builder/${form.id}/workspace`); setShowMobileMenu(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-violet-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h18M3 12h18M3 19h18" /></svg>
+                          Activity & Team
+                        </button>
+                      )}
                       <div className="h-px bg-[#222] my-1" />
                       <div className="px-3 py-1 text-[10px] uppercase tracking-widest text-[#555] font-semibold">Integrations</div>
                       <button onClick={() => { setShowGoogleSheetsModal(true); setShowMobileMenu(false); }}
@@ -1711,75 +1714,6 @@ const FormBuilder: React.FC = () => {
                   <p className="text-[#A3A3A3]">No blocks added yet. Start building your form by adding pages above.</p>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Collaboration & Activity Feed - Coming Soon Panels */}
-      {!previewMode && (
-        <div className="border-t border-[#1f1f1f] bg-[#0d0d0d] px-3 sm:px-6 py-4">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Lead Activity Feed */}
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden h-full min-h-[220px]">
-              <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f1f1f]">
-                <div className="w-6 h-6 rounded-md bg-[#1a1a1a] flex items-center justify-center">
-                  <svg className="w-3.5 h-3.5 text-[#777]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-medium text-white">Lead Activity Feed</div>
-                  <div className="text-[11px] text-[#555]">Live response tracking</div>
-                </div>
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#1f1f1f] border border-[#2a2a2a] text-[#555]">Coming Soon</span>
-              </div>
-              <div className="px-4 py-3 space-y-2.5 opacity-40 pointer-events-none select-none">
-                {[
-                  { init: 'EO', name: 'Emeka O.', action: 'submitted this form', time: '2s ago', color: 'bg-blue-900 text-blue-300' },
-                  { init: 'AK', name: 'Amara K.', action: 'received PDF summary', time: '18s ago', color: 'bg-purple-900 text-purple-300' },
-                  { init: 'FB', name: 'Fatimah B.', action: 'submitted this form', time: '1m ago', color: 'bg-green-900 text-green-300' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start justify-between gap-3">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0 ${item.color}`}>{item.init}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[12px] text-white"><span className="font-medium">{item.name}</span> <span className="text-[#777]">{item.action}</span></div>
-                    </div>
-                    <div className="text-[11px] text-[#555] whitespace-nowrap">{item.time}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Team Collaboration */}
-            <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden h-full min-h-[220px]">
-              <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f1f1f]">
-                <div className="w-6 h-6 rounded-md bg-[#1a1a1a] flex items-center justify-center">
-                  <svg className="w-3.5 h-3.5 text-[#777]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-medium text-white">Team Collaboration</div>
-                  <div className="text-[11px] text-[#555]">Real-time co-editing</div>
-                </div>
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#1f1f1f] border border-[#2a2a2a] text-[#555]">Coming Soon</span>
-              </div>
-              <div className="px-4 py-3 space-y-2.5 opacity-40 pointer-events-none select-none">
-                {[
-                  { init: 'TL', name: 'Tunde L.', role: 'Marketing Lead', status: 'Viewing analytics', online: true, grad: 'from-violet-700 to-purple-600' },
-                  { init: 'SA', name: 'Sade A.', role: 'Sales Manager', status: 'Exporting leads', online: true, grad: 'from-purple-600 to-violet-500' },
-                  { init: 'KB', name: 'Kola B.', role: 'Growth', status: 'Building form', online: true, grad: 'from-violet-500 to-purple-400' },
-                ].map((m, i) => (
-                  <div key={i} className="flex items-center justify-between gap-3">
-                    <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${m.grad} flex items-center justify-center text-[11px] font-semibold text-white flex-shrink-0`}>{m.init}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-medium text-white truncate">{m.name}</div>
-                      <div className="text-[11px] text-[#555] truncate">{m.role}</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-[11px] text-[#22c55e] bg-[#22c55e]/10 px-2 py-0.5 rounded-full whitespace-nowrap">{m.status}</div>
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] flex-shrink-0"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>

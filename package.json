@@ -36,7 +36,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
+    "build": "cp -f \"./logoreal.png\" \"./public/logoreal.png\" && cp -f \"./logoreal2.png\" \"./public/logoreal2.png\" && CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

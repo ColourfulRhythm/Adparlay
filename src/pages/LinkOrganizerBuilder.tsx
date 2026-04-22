@@ -7,6 +7,7 @@ import { db } from '../firebase';
 import { useSEO } from '../hooks/useSEO';
 import { getBaseUrl } from '../utils/getBaseUrl';
 import { SocialMediaIcons } from '../components/SocialMediaIcons';
+import BrandedLoadingScreen from '../components/BrandedLoadingScreen';
 import { Link, User, Pencil, Save, Plus, X, Trash2, ArrowUp, ArrowDown, Camera, ExternalLink, BarChart3, Eye, Lock, Crown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -828,14 +829,7 @@ const LinkOrganizerBuilder: React.FC = () => {
   }, [id, currentUser, navigate]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-300">Loading...</p>
-        </div>
-      </div>
-    );
+    return <BrandedLoadingScreen message="Opening link organizer..." />;
   }
 
   const linksArray = getLinksArray();

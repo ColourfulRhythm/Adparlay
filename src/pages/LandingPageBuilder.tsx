@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import BrandedLoadingScreen from '../components/BrandedLoadingScreen';
 import { collection, addDoc, doc, updateDoc, getDoc, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import OptimizedVideo from '../components/OptimizedVideo';
@@ -1075,7 +1076,7 @@ const LandingPageBuilder: React.FC = () => {
   const selectedFormMeta = userForms.find((f) => f.id === landingPage.formUrl);
 
   if (!currentUser) {
-    return <div>Loading...</div>;
+    return <BrandedLoadingScreen message="Opening landing page builder..." />;
   }
 
   if (submitted) {

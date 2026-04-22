@@ -36,6 +36,10 @@
       "dest": "/logoreal.png"
     },
     {
+      "src": "/logoreal2.png",
+      "dest": "/logoreal2.png"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

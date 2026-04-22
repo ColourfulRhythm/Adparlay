@@ -24,7 +24,7 @@ const LandingPage: React.FC = () => {
 
 <nav>
   <div className="nav-brand">
-    <img src="/logoreal.png" alt="AdParlay logo" className="nav-brand-logo" />
+    <img src="/logoreal2.png" alt="AdParlay logo" className="nav-brand-logo" />
     <span>AdParlay</span>
   </div>
   <div className="nav-links">
