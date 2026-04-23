@@ -2,15 +2,36 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
-import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, onSnapshot, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 import GoogleSheetsIntegration from '../components/GoogleSheetsIntegration';
 import CRMIntegration from '../components/CRMIntegration';
 import ZapierIntegration from '../components/ZapierIntegration';
 import BrandedLoadingScreen from '../components/BrandedLoadingScreen';
+import LeadViewer from '../components/LeadViewer';
 import { useSEO } from '../hooks/useSEO';
 import { getShareUrl } from '../utils/getBaseUrl';
 import toast from 'react-hot-toast';
+
+interface FormSubmission {
+  id: string;
+  formId: string;
+  formTitle: string;
+  formData: Record<string, any>;
+  submittedAt: Date;
+  userAgent: string;
+  ipAddress: string;
+}
+
+interface NotificationItem {
+  id: string;
+  userId: string;
+  type: 'form_submission' | string;
+  formId: string;
+  submissionId: string;
+  createdAt: Date;
+  read: boolean;
+}
 
 interface FormMedia {
   type: 'image' | 'video';
@@ -111,12 +132,22 @@ const FormBuilder: React.FC = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const integrationsDropdownRef = useRef<HTMLDivElement>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsDropdownRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [leadActivity, setLeadActivity] = useState<FormSubmission[]>([]);
+  const [showLeadViewer, setShowLeadViewer] = useState(false);
+  const [leadViewerIndex, setLeadViewerIndex] = useState(0);
 
   // Handle click outside to close integrations dropdown and mobile menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (integrationsDropdownRef.current && !integrationsDropdownRef.current.contains(event.target as Node)) {
         setShowIntegrationsDropdown(false);
+      }
+      if (notificationsDropdownRef.current && !notificationsDropdownRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
       }
       // Close mobile menu when clicking outside (but not on menu items)
       const target = event.target as Element;
@@ -125,14 +156,14 @@ const FormBuilder: React.FC = () => {
       }
     };
 
-    if (showIntegrationsDropdown || showMobileMenu) {
+    if (showIntegrationsDropdown || showMobileMenu || showNotifications) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showIntegrationsDropdown, showMobileMenu]);
+  }, [showIntegrationsDropdown, showMobileMenu, showNotifications]);
   const [activeShareTab, setActiveShareTab] = useState<'link' | 'embed'>('link');
   const [editingQuestion, setEditingQuestion] = useState<FormQuestion | null>(null);
   const [editingBlock, setEditingBlock] = useState<FormBlock | null>(null);
@@ -145,6 +176,100 @@ const FormBuilder: React.FC = () => {
   const [showConditionalModal, setShowConditionalModal] = useState(false);
   const [conditionalSourceQuestion, setConditionalSourceQuestion] = useState<string>('');
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const inferLeadLabel = useCallback((data: Record<string, any>) => {
+    const entries = Object.entries(data || {});
+    const lower = (s: string) => s.toLowerCase();
+    const pick = (pred: (k: string) => boolean) =>
+      entries.find(([k, v]) => pred(lower(k)) && typeof v === 'string' && v.trim())?.[1] as string | undefined;
+
+    const email = pick((k) => k.includes('email'));
+    const name = pick((k) => k.includes('name') && !k.includes('username'));
+
+    return name || email || 'New submission';
+  }, []);
+
+  // Real-time lead activity feed (current form only)
+  useEffect(() => {
+    if (!form?.id) return;
+
+    const q = query(
+      collection(db, 'formSubmissions'),
+      where('formId', '==', form.id),
+      orderBy('submittedAt', 'desc'),
+      limit(20)
+    );
+
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const items: FormSubmission[] = snap.docs.map((d) => {
+          const data: any = d.data();
+          return {
+            id: d.id,
+            formId: data.formId,
+            formTitle: data.formTitle || form.title,
+            formData: data.formData || {},
+            submittedAt: data.submittedAt?.toDate?.() || new Date(data.submittedAt || Date.now()),
+            userAgent: data.userAgent || '',
+            ipAddress: data.ipAddress || '',
+          };
+        });
+        setLeadActivity(items);
+      },
+      (err) => {
+        console.error('Lead activity listener error:', err);
+      }
+    );
+
+    return () => unsub();
+  }, [form?.id, form?.title]);
+
+  // In-app notifications (unread)
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    const q = query(
+      collection(db, 'notifications'),
+      where('userId', '==', currentUser.id),
+      where('read', '==', false),
+      orderBy('createdAt', 'desc'),
+      limit(20)
+    );
+
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const items: NotificationItem[] = snap.docs.map((d) => {
+          const data: any = d.data();
+          return {
+            id: d.id,
+            userId: data.userId,
+            type: data.type,
+            formId: data.formId,
+            submissionId: data.submissionId,
+            createdAt: data.createdAt?.toDate?.() || new Date(),
+            read: Boolean(data.read),
+          };
+        });
+        setNotifications(items);
+        setUnreadCount(items.length);
+      },
+      (err) => {
+        console.error('Notifications listener error:', err);
+      }
+    );
+
+    return () => unsub();
+  }, [currentUser?.id]);
+
+  const markNotificationRead = useCallback(async (id: string) => {
+    try {
+      await updateDoc(doc(db, 'notifications', id), { read: true });
+    } catch (e) {
+      console.error('Failed to mark notification read:', e);
+    }
+  }, []);
 
   // Auto-save functionality
   const autoSave = useCallback(async () => {
@@ -188,7 +313,7 @@ const FormBuilder: React.FC = () => {
           questions: (block.questions || []).map(question => ({
             id: question.id || `question-${Date.now()}`,
             type: question.type || 'short_answer',
-            label: question.label || 'Untitled Question',
+            label: question.label || '',
             placeholder: question.placeholder || '',
             required: question.required !== undefined ? question.required : false,
             options: question.options || [],
@@ -508,7 +633,7 @@ const FormBuilder: React.FC = () => {
           questions: (block.questions || []).map(question => ({
             id: question.id || `question-${Date.now()}`,
             type: question.type || 'short_answer',
-            label: question.label || 'Untitled Question',
+            label: question.label || '',
             placeholder: question.placeholder || '',
             required: question.required !== undefined ? question.required : false,
             options: question.options || [],
@@ -619,7 +744,7 @@ const FormBuilder: React.FC = () => {
           questions: (block.questions || []).map(question => ({
             id: question.id || `question-${Date.now()}`,
             type: question.type || 'short_answer',
-            label: question.label || 'Untitled Question',
+            label: question.label || '',
             placeholder: question.placeholder || '',
             required: question.required !== undefined ? question.required : false,
             options: question.options || [],
@@ -697,7 +822,7 @@ const FormBuilder: React.FC = () => {
           questions: (block.questions || []).map(question => ({
             id: question.id || `question-${Date.now()}`,
             type: question.type || 'short_answer',
-            label: question.label || 'Untitled Question',
+            label: question.label || '',
             placeholder: question.placeholder || '',
             required: question.required !== undefined ? question.required : false,
             options: question.options || [],
@@ -804,7 +929,7 @@ const FormBuilder: React.FC = () => {
     const newQuestion: FormQuestion = {
       id: `question-${Date.now()}`,
       type,
-      label: `New ${type.charAt(0).toUpperCase() + type.slice(1)} Question`,
+      label: '',
       placeholder: `Enter ${type}`,
       required: false,
       helpText: '',
@@ -1149,6 +1274,73 @@ const FormBuilder: React.FC = () => {
                 </span>
               )}
 
+              {/* Notifications */}
+              <div className="relative" ref={notificationsDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowNotifications((v) => !v)}
+                  className="relative flex items-center justify-center w-9 h-9 bg-[#1a1a1a] border border-[#333] text-[#aaa] rounded-md hover:border-[#555] hover:text-white transition-colors"
+                  aria-label="Notifications"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#8B5CF6] text-white text-[10px] font-semibold flex items-center justify-center">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {showNotifications && (
+                  <div className="absolute top-full right-0 mt-2 w-80 max-w-[calc(100vw-1rem)] bg-[#111] border border-[#2a2a2a] rounded-xl shadow-2xl z-50 overflow-hidden">
+                    <div className="px-3 py-2 border-b border-[#1f1f1f] flex items-center justify-between">
+                      <div className="text-[12px] font-semibold text-white">Notifications</div>
+                      <button
+                        type="button"
+                        onClick={() => setShowNotifications(false)}
+                        className="text-[11px] text-[#777] hover:text-white"
+                      >
+                        Close
+                      </button>
+                    </div>
+                    <div className="max-h-[320px] overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="px-3 py-4 text-[12px] text-[#777]">No new notifications.</div>
+                      ) : (
+                        <div className="p-1">
+                          {notifications.map((n) => (
+                            <button
+                              key={n.id}
+                              type="button"
+                              onClick={() => {
+                                markNotificationRead(n.id);
+                                setShowNotifications(false);
+                              }}
+                              className="w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-[#1f1f1f] transition-colors"
+                            >
+                              <div className="w-7 h-7 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center flex-shrink-0">
+                                <svg className="w-4 h-4 text-[#8B5CF6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[12px] text-white font-medium truncate">
+                                  New lead on your form
+                                </div>
+                                <div className="text-[11px] text-[#777]">
+                                  {n.createdAt.toLocaleString()}
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Publish - always visible */}
               <button
                 onClick={publishForm}
@@ -1376,10 +1568,12 @@ const FormBuilder: React.FC = () => {
                       <div className="space-y-6">
                         {currentBlock.questions.map((question) => (
                           <div key={question.id} className="space-y-2">
-                            <label className="block text-sm font-medium text-white">
-                              {question.label}
-                              {question.required && <span className="text-red-500 ml-1">*</span>}
-                            </label>
+                            {question.label?.trim() ? (
+                              <label className="block text-sm font-medium text-white">
+                                {question.label}
+                                {question.required && <span className="text-red-500 ml-1">*</span>}
+                              </label>
+                            ) : null}
                             
                             {question.helpText && (
                               <p className="text-sm text-[#A3A3A3]">{question.helpText}</p>
@@ -1639,6 +1833,16 @@ const FormBuilder: React.FC = () => {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <h5 className="font-medium text-white">Questions</h5>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowLeadViewer(true);
+                          setLeadViewerIndex(0);
+                        }}
+                        className="text-[11px] px-2 py-1 rounded-md bg-[#1a1a1a] border border-[#333] text-[#aaa] hover:text-white hover:border-[#555] transition-colors"
+                      >
+                        Lead Activity ({leadActivity.length})
+                      </button>
                     </div>
                     
                     {currentBlock.questions.length === 0 ? (
@@ -1669,7 +1873,7 @@ const FormBuilder: React.FC = () => {
                                 {getQuestionIcon(question.type)}
                               </div>
                               <div className="min-w-0">
-                                <h6 className="font-medium text-white text-[13px] truncate">{question.label}</h6>
+                                <h6 className="font-medium text-white text-[13px] truncate">{question.label?.trim() || 'Untitled Question'}</h6>
                                 <p className="text-[11px] text-[#A3A3A3] mt-0.5 truncate">
                                   {question.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} · {question.required ? 'Required' : 'Optional'}
                                 </p>
@@ -1719,6 +1923,15 @@ const FormBuilder: React.FC = () => {
         </div>
       )}
 
+      {/* Lead Activity Viewer */}
+      <LeadViewer
+        responses={leadActivity}
+        forms={form ? [form as any] : []}
+        isOpen={showLeadViewer}
+        onClose={() => setShowLeadViewer(false)}
+        initialIndex={leadViewerIndex}
+      />
+
       {/* Question Edit Modal */}
       {showQuestionModal && editingQuestion && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -1734,6 +1947,7 @@ const FormBuilder: React.FC = () => {
                     value={editingQuestion.label}
                     onChange={(e) => setEditingQuestion(prev => prev ? { ...prev, label: e.target.value } : null)}
                     className="w-full px-3 py-2 border border-[#333] rounded-lg focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent bg-[#222] text-white placeholder-[#A3A3A3]"
+                    placeholder="Untitled Question"
                   />
                 </div>
                 

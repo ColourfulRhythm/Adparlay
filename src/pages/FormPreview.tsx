@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, addDoc, collection, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, addDoc, collection, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getBaseUrl } from '../utils/getBaseUrl';
 import { motion } from 'framer-motion';
@@ -391,6 +391,22 @@ const FormPreview: React.FC = () => {
       
       // Save submission to Firestore
       const docRef = await addDoc(collection(db, 'formSubmissions'), submission);
+
+      // Create in-app notification for the form owner
+      try {
+        if (form.userId) {
+          await addDoc(collection(db, 'notifications'), {
+            userId: form.userId,
+            type: 'form_submission',
+            formId: form.id,
+            submissionId: docRef.id,
+            createdAt: serverTimestamp(),
+            read: false,
+          });
+        }
+      } catch (notificationError) {
+        console.error('Failed to create notification:', notificationError);
+      }
       
       // Update form submission count
       await updateDoc(doc(db, 'forms', form.id), {
