@@ -113,7 +113,7 @@ const FormAnalyticsPage: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">Unlock Question Analytics</h2>
+            <h2 className="text-2xl font-bold font-['Outfit'] text-white mb-3">Unlock Question Analytics</h2>
             <p className="text-[#888] mb-8">
               Upgrade to Premium to visualize how respondents are answering each specific question in your form. Generate beautiful charts and export your data.
             </p>
@@ -276,7 +276,7 @@ const FormAnalyticsPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Form Data Analysis</h1>
+            <h1 className="text-2xl font-bold font-['Outfit'] text-white mb-2">Form Data Analysis</h1>
             <p className="text-[#888]">Visualizing {submissions.length} total responses</p>
           </div>
         </div>
@@ -284,7 +284,7 @@ const FormAnalyticsPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {allQuestions.map(q => (
             <div key={q.id} className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6">
-              <h3 className="text-lg font-medium text-white mb-1">{q.label || 'Untitled Question'}</h3>
+              <h3 className="text-lg font-medium font-['Outfit'] text-white mb-1">{q.label || 'Untitled Question'}</h3>
               <p className="text-xs text-[#555] uppercase tracking-wider mb-6">Type: {q.type.replace('_', ' ')}</p>
               
               {renderQuestionVisualization(q)}

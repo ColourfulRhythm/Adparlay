@@ -1505,7 +1505,7 @@ const FormBuilder: React.FC = () => {
                     />
                   )}
                   
-                  <h2 className="text-2xl font-bold text-white mb-4">
+                  <h2 className="text-2xl font-bold font-['Outfit'] text-white mb-4">
                     {form.media.primaryDescription}
                   </h2>
                   
@@ -1517,7 +1517,7 @@ const FormBuilder: React.FC = () => {
                 </div>
               ) : (
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold text-white mb-4">
+                  <h2 className="text-2xl font-bold font-['Outfit'] text-white mb-4">
                     {form.media.primaryDescription}
                   </h2>
                   
@@ -1535,7 +1535,7 @@ const FormBuilder: React.FC = () => {
           <div className="w-full lg:w-1/2 bg-[#0d0d0d] flex flex-col">
             <div className="p-6 flex-1">
               <div className="max-w-2xl mx-auto">
-                <h1 className="text-3xl font-bold text-white mb-4">{form.title}</h1>
+                <h1 className="text-3xl font-bold font-['Outfit'] text-white mb-4">{form.title}</h1>
                 {form.description && (
                   <p className="text-lg text-[#A3A3A3] mb-8">{form.description}</p>
                 )}
@@ -1569,7 +1569,7 @@ const FormBuilder: React.FC = () => {
                     
                     {/* Current Block Preview */}
                     <div className="bg-[#1a1a1a] rounded-2xl border border-[#333] p-6">
-                      <h3 className="text-xl font-semibold text-white mb-4">{currentBlock.title}</h3>
+                      <h3 className="text-xl font-semibold font-['Outfit'] text-white mb-4">{currentBlock.title}</h3>
                       {currentBlock.description && (
                         <p className="text-[#A3A3A3] mb-6">{currentBlock.description}</p>
                       )}
@@ -1708,7 +1708,7 @@ const FormBuilder: React.FC = () => {
           {/* Left/Top Half - Static Media Section */}
           <div className="w-full lg:w-1/2 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col">
             <div className="p-6 flex-1">
-              <h3 className="text-lg font-semibold text-white mb-4">Media Section</h3>
+              <h3 className="text-lg font-semibold font-['Outfit'] text-white mb-4">Media Section</h3>
               
               {form.media.url ? (
                 <div className="space-y-4">
@@ -1946,7 +1946,7 @@ const FormBuilder: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-[#1a1a1a] rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-[#333]">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Edit Question</h3>
+              <h3 className="text-lg font-semibold font-['Outfit'] text-white mb-4">Edit Question</h3>
               
               <div className="space-y-4">
                 <div>
@@ -2272,7 +2272,7 @@ const FormBuilder: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-[#1a1a1a] rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-[#333]">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Edit Block</h3>
+              <h3 className="text-lg font-semibold font-['Outfit'] text-white mb-4">Edit Block</h3>
               
               <div className="space-y-4">
                 <div>
@@ -2320,7 +2320,7 @@ const FormBuilder: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-[#1a1a1a] rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#333]">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Add Media</h3>
+              <h3 className="text-lg font-semibold font-['Outfit'] text-white mb-4">Add Media</h3>
               
               {/* Media Error Display */}
               {mediaError && (
@@ -2482,7 +2482,7 @@ const FormBuilder: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-[#1a1a1a] rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[#333]">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-6">Form Settings</h3>
+              <h3 className="text-lg font-semibold font-['Outfit'] text-white mb-6">Form Settings</h3>
               
               <div className="space-y-6">
                 {/* Color Customization - Premium Only */}
@@ -2797,7 +2797,7 @@ const FormBuilder: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-[#1a1a1a] rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-[#333]">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Select Question Type</h3>
+              <h3 className="text-lg font-semibold font-['Outfit'] text-white mb-4">Select Question Type</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
@@ -2877,7 +2877,7 @@ const FormBuilder: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-[#1a1a1a] rounded-2xl shadow-xl max-w-2xl w-full border border-[#333]">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Share & Embed Form</h3>
+              <h3 className="text-lg font-semibold font-['Outfit'] text-white mb-4">Share & Embed Form</h3>
               
               {/* Tabs */}
               <div className="flex space-x-1 mb-6 bg-[#222] p-1 rounded-lg">

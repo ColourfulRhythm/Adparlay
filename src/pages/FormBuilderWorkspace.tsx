@@ -30,7 +30,7 @@ const FormBuilderWorkspace: React.FC = () => {
       <div className="px-3 sm:px-6 py-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-5">
-            <h1 className="text-[20px] sm:text-2xl font-semibold text-white">Builder Workspace</h1>
+            <h1 className="text-[20px] sm:text-2xl font-semibold font-['Outfit'] text-white">Builder Workspace</h1>
             <p className="text-[13px] text-[#777] mt-1">Lead Activity and Team Collaboration are managed here.</p>
           </div>
 
@@ -134,7 +134,7 @@ const FormBuilderWorkspace: React.FC = () => {
                     <div className="w-10 h-10 rounded-full bg-[#8B5CF6]/10 flex items-center justify-center mb-3 border border-[#8B5CF6]/20">
                       <svg className="w-5 h-5 text-[#8B5CF6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     </div>
-                    <h3 className="text-[14px] font-semibold text-white mb-1">Detailed Question-Level Analysis</h3>
+                    <h3 className="text-[14px] font-semibold font-['Outfit'] text-white mb-1">Detailed Question-Level Analysis</h3>
                     <p className="text-[11px] text-[#555] mb-4 text-center max-w-xs">Deep dive into respondent behavior for each specific question with visual charts.</p>
                     <Link to={`/builder/${formId}/analytics`} className="inline-flex items-center gap-2 px-5 py-2 bg-[#8B5CF6] text-white text-[12px] font-semibold rounded-lg hover:bg-[#7C3AED] transition-colors shadow-lg shadow-[#8B5CF6]/10">
                       View Full Analytics Report
@@ -158,7 +158,7 @@ const FormBuilderWorkspace: React.FC = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
                     </div>
-                    <h3 className="text-[15px] font-semibold text-white mb-2">Unlock Advanced Analytics</h3>
+                    <h3 className="text-[15px] font-semibold font-['Outfit'] text-white mb-2">Unlock Advanced Analytics</h3>
                     <p className="text-[13px] text-[#888] mb-6">Upgrade to Premium to visualize form performance, track conversions, and generate custom business intelligence reports.</p>
                     <Link to="/pricing" className="inline-flex items-center justify-center px-4 py-2 bg-white text-black text-[13px] font-semibold rounded-lg hover:bg-[#eee] transition-colors">
                       Upgrade to Premium
