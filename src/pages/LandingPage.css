@@ -99,6 +99,7 @@
   .btn-cta:hover { background:#e8e8e8; transform:translateY(-2px); box-shadow:0 8px 40px rgba(255,255,255,0.12); }
   .btn-cta svg { transition:transform 0.2s; }
   .btn-cta:hover svg { transform:translateX(4px); }
+  .hero-trusted-text { margin-top: 14px; font-size: 0.85rem; color: #888888; font-weight: 500; letter-spacing: 0.5px; animation:fadeUp 0.8s ease 0.9s both; }
 
   .hero-card {
     margin-top:56px; background:var(--surface2);
