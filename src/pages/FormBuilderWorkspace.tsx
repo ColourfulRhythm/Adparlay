@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const FormBuilderWorkspace: React.FC = () => {
   const { formId } = useParams();
+  const { currentUser } = useAuth();
+  const isPremium = currentUser?.subscription === 'premium';
   const backToBuilderPath = formId ? `/builder/${formId}` : '/builder';
 
   return (
@@ -90,6 +93,79 @@ const FormBuilderWorkspace: React.FC = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Data Analysis Section */}
+          <div className="mt-4 bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden min-h-[300px]">
+            <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#1f1f1f]">
+              <div className="w-6 h-6 rounded-md bg-[#1a1a1a] flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-[#777]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-medium text-white">Advanced Data Analysis</div>
+                <div className="text-[11px] text-[#555]">Business intelligence & reporting</div>
+              </div>
+              {!isPremium && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500">Premium Only</span>}
+            </div>
+            
+            <div className="p-4 h-full">
+              {isPremium ? (
+                <div className="h-full flex flex-col gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-[#1a1a1a] rounded-lg p-4 border border-[#2a2a2a]">
+                      <div className="text-[11px] text-[#777] mb-1">Conversion Rate</div>
+                      <div className="text-2xl font-bold text-white">42.8%</div>
+                      <div className="text-[10px] text-green-400 mt-2">↑ 12% vs last month</div>
+                    </div>
+                    <div className="bg-[#1a1a1a] rounded-lg p-4 border border-[#2a2a2a]">
+                      <div className="text-[11px] text-[#777] mb-1">Average Time to Complete</div>
+                      <div className="text-2xl font-bold text-white">1m 24s</div>
+                      <div className="text-[10px] text-green-400 mt-2">↓ 5s vs last month</div>
+                    </div>
+                    <div className="bg-[#1a1a1a] rounded-lg p-4 border border-[#2a2a2a]">
+                      <div className="text-[11px] text-[#777] mb-1">Total Views</div>
+                      <div className="text-2xl font-bold text-white">12,450</div>
+                      <div className="text-[10px] text-green-400 mt-2">↑ 8% vs last month</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-2">
+                    <div className="lg:col-span-2 bg-[#1a1a1a] rounded-lg p-4 border border-[#2a2a2a] min-h-[200px] flex items-center justify-center">
+                      <div className="text-center">
+                        <svg className="w-8 h-8 text-[#333] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                        <span className="text-[12px] text-[#555]">Submission Trend Chart Loading...</span>
+                      </div>
+                    </div>
+                    <div className="bg-[#1a1a1a] rounded-lg p-4 border border-[#2a2a2a] min-h-[200px] flex items-center justify-center">
+                      <div className="text-center">
+                        <svg className="w-8 h-8 text-[#333] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                        <span className="text-[12px] text-[#555]">Traffic Sources Loading...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-full min-h-[250px] flex flex-col items-center justify-center text-center p-6 relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-10 blur-sm pointer-events-none grid grid-cols-3 gap-4 p-4">
+                    <div className="bg-[#333] rounded-lg"></div>
+                    <div className="bg-[#333] rounded-lg"></div>
+                    <div className="bg-[#333] rounded-lg"></div>
+                    <div className="col-span-2 bg-[#333] rounded-lg h-[150px]"></div>
+                    <div className="bg-[#333] rounded-lg h-[150px]"></div>
+                  </div>
+                  
+                  <div className="relative z-10 max-w-sm mx-auto">
+                    <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4 border border-amber-500/20">
+                      <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 className="text-[15px] font-semibold text-white mb-2">Unlock Advanced Analytics</h3>
+                    <p className="text-[13px] text-[#888] mb-6">Upgrade to Premium to visualize form performance, track conversions, and generate custom business intelligence reports.</p>
+                    <Link to="/pricing" className="inline-flex items-center justify-center px-4 py-2 bg-white text-black text-[13px] font-semibold rounded-lg hover:bg-[#eee] transition-colors">
+                      Upgrade to Premium
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
