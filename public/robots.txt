@@ -1,6 +1,11 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://adparlay.com/sitemap.xml
+
+User-agent: *
+Allow: /
+
 # Allow all search engines to crawl all content
 Disallow: /admin
 Disallow: /api/

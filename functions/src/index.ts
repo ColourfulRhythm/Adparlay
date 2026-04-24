@@ -70,10 +70,10 @@ app.get(
         id: doc.id,
         ...doc.data(),
       }));
-      res.json(forms);
+      return res.json(forms);
     } catch (error) {
       console.error("Error fetching forms:", error);
-      res.status(500).json({error: "Failed to fetch forms"});
+      return res.status(500).json({error: "Failed to fetch forms"});
     }
   });
 
@@ -94,10 +94,10 @@ app.post(
         .firestore()
         .collection("forms")
         .add(formData);
-      res.json({id: docRef.id, ...formData});
+      return res.json({id: docRef.id, ...formData});
     } catch (error) {
       console.error("Error creating form:", error);
-      res.status(500).json({error: "Failed to create form"});
+      return res.status(500).json({error: "Failed to create form"});
     }
   });
 

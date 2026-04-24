@@ -1,10 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo, useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import AetherFlowCanvas from '../components/AetherFlowCanvas';
+import Seo from '../components/Seo';
 import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
   const [billingMode, setBillingMode] = useState<'monthly' | 'annual'>('monthly');
+  const location = useLocation();
+
+  const pageTarget = useMemo(() => {
+    const path = location.pathname.toLowerCase();
+    if (path === '/features') return 'features';
+    if (path === '/pricing') return 'pricing';
+    if (path === '/about') return 'about';
+    return undefined;
+  }, [location.pathname]);
+
+  const seo = useMemo(() => {
+    const base = {
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'AdParlay',
+          url: 'https://adparlay.com/',
+          logo: 'https://adparlay.com/logoreal2.png',
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'AdParlay',
+          url: 'https://adparlay.com/',
+        },
+      ],
+    };
+
+    if (location.pathname === '/features') {
+      return {
+        ...base,
+        title: 'AdParlay Features — Lead capture + analytics',
+        description:
+          'Explore AdParlay features for building high-converting forms, capturing leads, and turning submissions into actionable insights.',
+        canonicalPath: '/features',
+      };
+    }
+
+    if (location.pathname === '/pricing') {
+      return {
+        ...base,
+        title: 'AdParlay Pricing — Simple, transparent plans',
+        description:
+          'See AdParlay pricing plans. Start free, then upgrade for unlimited forms, advanced analytics, and premium features.',
+        canonicalPath: '/pricing',
+      };
+    }
+
+    if (location.pathname === '/about') {
+      return {
+        ...base,
+        title: 'About AdParlay — Built for lead capture teams',
+        description:
+          'Learn about AdParlay and how we help marketing and business teams capture leads and align on data-driven outcomes.',
+        canonicalPath: '/about',
+      };
+    }
+
+    return {
+      ...base,
+      title: 'AdParlay — Build forms that tell your story',
+      description:
+        'AdParlay is the central hub for lead capture—build forms, capture leads, and connect marketing and business teams with real-time insights.',
+      canonicalPath: '/',
+    };
+  }, [location.pathname]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
@@ -18,19 +86,41 @@ const LandingPage: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const hash = location.hash?.replace('#', '');
+    const target = hash || pageTarget;
+    if (!target) return;
+
+    // Wait a tick so layout has mounted before scrolling.
+    const t = window.setTimeout(() => {
+      const el = document.getElementById(target);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
+
+    return () => window.clearTimeout(t);
+  }, [location.hash, pageTarget]);
+
   return (
     <div className="landing-container">
+      <Seo
+        title={seo.title}
+        description={seo.description}
+        canonicalPath={seo.canonicalPath}
+        jsonLd={seo.jsonLd}
+      />
 
 
 <nav>
   <div className="nav-brand">
-    <img src="/logoreal2.png" alt="AdParlay logo" className="nav-brand-logo" />
-    <span>AdParlay</span>
+    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}>
+      <img src="/logoreal2.png" alt="AdParlay logo" className="nav-brand-logo" />
+      <span>AdParlay</span>
+    </Link>
   </div>
   <div className="nav-links">
-    <a href="#features">Features</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#about">About</a>
+    <Link to="/features">Features</Link>
+    <Link to="/pricing">Pricing</Link>
+    <Link to="/about">About</Link>
   </div>
   <div className="nav-auth">
     <Link to="/login" className="btn-ghost" style={{ textDecoration: "none" }}>Sign In</Link>
@@ -41,7 +131,6 @@ const LandingPage: React.FC = () => {
 <section className="hero" id="hero">
   <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }}><AetherFlowCanvas /></div>
   <div className="hero-inner">
-    <div className="hero-badge"><span className="dot"></span> AdParlay</div>
     <h1 className="hero-title">
       <span className="line-dim">Business Intelligence</span>
       <span className="line-built">built around</span>
@@ -357,20 +446,29 @@ const LandingPage: React.FC = () => {
     </div>
     <div className="footer-col">
       <h4>Product</h4>
-      <a href="#">Features</a><a href="#">Pricing</a><a href="#">Templates</a>
+      <Link to="/features">Features</Link>
+      <Link to="/pricing">Pricing</Link>
+      <Link to="/register">Get started</Link>
     </div>
     <div className="footer-col">
       <h4>Company</h4>
-      <a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a>
+      <Link to="/about">About</Link>
+      <Link to="/blog">Blog</Link>
+      <a href="mailto:hello@adparlay.com">Contact</a>
     </div>
     <div className="footer-col">
       <h4>Support</h4>
-      <a href="#">Help Center</a><a href="#">Contact</a><a href="#">Status</a>
+      <Link to="/helpcenter">Help Center</Link>
+      <a href="mailto:support@adparlay.com">Support</a>
+      <Link to="/privacy">Privacy</Link>
     </div>
   </div>
   <div className="footer-bottom">
     <span>© 2024 AdParlay. All rights reserved.</span>
-    <div className="footer-legal"><a href="#">Terms & Conditions</a><a href="#">Privacy Policy</a></div>
+    <div className="footer-legal">
+      <Link to="/terms">Terms & Conditions</Link>
+      <Link to="/privacy">Privacy Policy</Link>
+    </div>
   </div>
 </footer>
 

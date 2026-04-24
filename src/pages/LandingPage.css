@@ -37,9 +37,9 @@
   .nav-links a { color:var(--gray-2); text-decoration:none; font-size:0.9rem; transition:color 0.2s; }
   .nav-links a:hover { color:var(--white); }
   .nav-auth { display:flex; gap:12px; align-items:center; }
-  .btn-ghost { color:var(--gray-2); background:none; border:none; cursor:pointer; font-family:'Epilogue',sans-serif; font-size:0.9rem; padding:8px 16px; border-radius:8px; transition:color 0.2s; }
+  .btn-ghost { color:var(--gray-2); background:none; border:none; cursor:pointer; font-family:'Epilogue',sans-serif; font-size:0.9rem; padding:8px 16px; border-radius:8px; transition:color 0.2s; white-space: nowrap; }
   .btn-ghost:hover { color:var(--white); }
-  .btn-primary { background:var(--white); color:#000; border:none; cursor:pointer; font-family:'Epilogue',sans-serif; font-size:0.9rem; font-weight:700; padding:9px 20px; border-radius:8px; transition:all 0.2s; }
+  .btn-primary { background:var(--white); color:#000; border:none; cursor:pointer; font-family:'Epilogue',sans-serif; font-size:0.9rem; font-weight:700; padding:9px 20px; border-radius:8px; transition:all 0.2s; white-space: nowrap; }
   .btn-primary:hover { background:#ddd; transform:translateY(-1px); }
 
   /* HERO */
@@ -60,14 +60,7 @@
     pointer-events: none;
     z-index: -1;
   }
-  .hero-badge {
-    display:inline-flex; align-items:center; gap:8px;
-    padding:6px 16px; border-radius:999px;
-    background:var(--purple-dim); border:1px solid rgba(191,128,255,0.22);
-    font-size:0.82rem; color:#d4a0ff; font-weight:500; margin-bottom:32px;
-    animation: fadeUp 0.7s ease 0.2s both;
-  }
-  .dot { width:6px; height:6px; border-radius:50%; background:var(--purple); box-shadow:0 0 8px var(--purple); }
+
   h1.hero-title {
     font-family:'Outfit',sans-serif;
     font-size: clamp(3rem, 8vw, 7rem);
@@ -490,4 +483,13 @@
     .pricing-grid { grid-template-columns:1fr; }
     .cta-section, .hero { padding:80px 20px; }
     footer { padding:48px 20px 24px; }
+  }
+
+  /* Ultra-small phones (e.g. 360px wide) */
+  @media (max-width:390px) {
+    nav { padding: 14px 14px; }
+    .nav-brand { font-size: 1.1rem; gap: 8px; }
+    .nav-auth { gap: 8px; flex-wrap: nowrap; }
+    .btn-ghost { padding: 7px 10px; font-size: 0.85rem; }
+    .btn-primary { padding: 8px 12px; font-size: 0.85rem; }
   }
