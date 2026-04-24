@@ -6,6 +6,7 @@ import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
   const [billingMode, setBillingMode] = useState<'monthly' | 'annual'>('monthly');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   const pageTarget = useMemo(() => {
@@ -113,8 +114,8 @@ const LandingPage: React.FC = () => {
 <nav>
   <div className="nav-brand">
     <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'inherit' }}>
-      <img src="/logoreal2.png" alt="AdParlay logo" className="nav-brand-logo" />
-      <span>AdParlay</span>
+      <img src="/logoreal.png" alt="AdParlay logo" className="nav-brand-logo" />
+      <span className="nav-brand-text">AdParlay</span>
     </Link>
   </div>
   <div className="nav-links">
@@ -126,7 +127,35 @@ const LandingPage: React.FC = () => {
     <Link to="/login" className="btn-ghost" style={{ textDecoration: "none" }}>Sign In</Link>
     <Link to="/register" className="btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>Get Started</Link>
   </div>
+  <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {isMobileMenuOpen ? (
+        <>
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </>
+      ) : (
+        <>
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </>
+      )}
+    </svg>
+  </button>
 </nav>
+
+{isMobileMenuOpen && (
+  <div className="mobile-menu">
+    <Link to="/features" onClick={() => setIsMobileMenuOpen(false)}>Features</Link>
+    <Link to="/pricing" onClick={() => setIsMobileMenuOpen(false)}>Pricing</Link>
+    <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>About</Link>
+    <div className="mobile-menu-auth">
+      <Link to="/login" className="btn-ghost" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
+      <Link to="/register" className="btn-primary" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
+    </div>
+  </div>
+)}
 
 <section className="hero" id="hero">
   <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }}><AetherFlowCanvas /></div>
