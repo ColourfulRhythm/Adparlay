@@ -6,7 +6,7 @@ import { db } from '../firebase';
 import { 
   PieChart, Pie, Cell, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  Legend, DonutChart as RechartsDonut // Not actually a Recharts component, we'll use Pie with innerRadius
+  Legend
 } from 'recharts';
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
