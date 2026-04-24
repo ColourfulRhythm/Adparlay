@@ -108,7 +108,7 @@ const FormAnalyticsPage: React.FC = () => {
         
         canvas.toBlob((blob) => {
           if (blob) {
-            saveAs(blob, `${form.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_full_report.png`);
+            saveAs(blob, `${form?.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'form'}_full_report.png`);
           }
         });
       } catch (err) {
