@@ -852,8 +852,16 @@ const Dashboard: React.FC = () => {
                             trigger={<button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"><MoreVertical className="w-4 h-4"/></button>}
                             items={[
                               {
+                                name: 'Edit',
+                                link: `/builder/${form.id}`
+                              },
+                              {
                                 name: 'View',
                                 onClick: () => window.open(`/form/${form.id}`, '_blank')
+                              },
+                              {
+                                name: 'Responses',
+                                link: '/responses'
                               },
                               {
                                 name: 'Share Link',
@@ -947,12 +955,20 @@ const Dashboard: React.FC = () => {
                             trigger={<button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"><MoreVertical className="w-4 h-4"/></button>}
                             items={[
                               {
+                                name: 'Edit',
+                                link: `/landing-builder?id=${landingPage.id}`
+                              },
+                              {
                                 name: 'View Live',
                                 onClick: () => { window.open(`/landing/${landingPage.id}`, '_blank'); }
                               },
                               {
                                 name: 'Responses',
                                 link: '/landing-responses'
+                              },
+                              {
+                                name: 'Share Link',
+                                onClick: () => copyToClipboard(`${window.location.origin}/landing/${landingPage.id}`)
                               },
                               {
                                 name: deletingLandingPages.has(landingPage.id) ? 'Deleting...' : 'Delete Page',
@@ -1048,8 +1064,16 @@ const Dashboard: React.FC = () => {
                             trigger={<button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"><MoreVertical className="w-4 h-4"/></button>}
                             items={[
                               {
+                                name: 'Edit',
+                                link: `/link-organizer-builder/${linkOrganizer.id}`
+                              },
+                              {
                                 name: 'View Live',
                                 onClick: () => { window.open(linkOrganizer.username ? `/${linkOrganizer.username}` : `/link/${linkOrganizer.id}`, '_blank'); }
+                              },
+                              {
+                                name: 'Share Link',
+                                onClick: () => copyToClipboard(linkOrganizer.username ? `${window.location.origin}/${linkOrganizer.username}` : `${window.location.origin}/link/${linkOrganizer.id}`)
                               },
                               {
                                 name: deletingLinkOrganizers.has(linkOrganizer.id) ? 'Deleting...' : 'Delete Organizer',

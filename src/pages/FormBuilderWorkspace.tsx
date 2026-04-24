@@ -18,7 +18,7 @@ const FormBuilderWorkspace: React.FC = () => {
             </Link>
             <Link
               to={backToBuilderPath}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#1a1a1a] border border-[#333] text-[13px] text-[#ddd] hover:text-white hover:border-[#555] transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-[#333] text-[13px] font-['Outfit'] font-bold text-[#ddd] hover:text-white hover:border-[#555] transition-all shadow-lg shadow-black/5"
             >
               <span>←</span>
               Back to Builder
@@ -30,8 +30,8 @@ const FormBuilderWorkspace: React.FC = () => {
       <div className="px-3 sm:px-6 py-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-5">
-            <h1 className="text-[20px] sm:text-2xl font-semibold font-['Outfit'] text-white">Builder Workspace</h1>
-            <p className="text-[13px] text-[#777] mt-1">Lead Activity and Team Collaboration are managed here.</p>
+            <h1 className="text-[20px] sm:text-2xl font-black font-['Outfit'] text-white">Builder Workspace</h1>
+            <p className="text-[13px] font-['Outfit'] font-medium text-[#777] mt-1">Lead Activity and Team Collaboration are managed here.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -136,7 +136,7 @@ const FormBuilderWorkspace: React.FC = () => {
                     </div>
                     <h3 className="text-[14px] font-semibold font-['Outfit'] text-white mb-1">Detailed Question-Level Analysis</h3>
                     <p className="text-[11px] text-[#555] mb-4 text-center max-w-xs">Deep dive into respondent behavior for each specific question with visual charts.</p>
-                    <Link to={`/builder/${formId}/analytics`} className="inline-flex items-center gap-2 px-5 py-2 bg-[#8B5CF6] text-white text-[12px] font-semibold rounded-lg hover:bg-[#7C3AED] transition-colors shadow-lg shadow-[#8B5CF6]/10">
+                    <Link to={`/builder/${formId}/analytics`} className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8B5CF6] text-white text-[12px] font-['Outfit'] font-black rounded-xl hover:bg-[#7C3AED] transition-all shadow-lg shadow-[#8B5CF6]/20">
                       View Full Analytics Report
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </Link>
@@ -160,7 +160,7 @@ const FormBuilderWorkspace: React.FC = () => {
                     </div>
                     <h3 className="text-[15px] font-semibold font-['Outfit'] text-white mb-2">Unlock Advanced Analytics</h3>
                     <p className="text-[13px] text-[#888] mb-6">Upgrade to Premium to visualize form performance, track conversions, and generate custom business intelligence reports.</p>
-                    <Link to="/pricing" className="inline-flex items-center justify-center px-4 py-2 bg-white text-black text-[13px] font-semibold rounded-lg hover:bg-[#eee] transition-colors">
+                    <Link to="/pricing" className="inline-flex items-center justify-center px-5 py-2.5 bg-white text-black text-[13px] font-['Outfit'] font-black rounded-xl hover:bg-[#eee] transition-all shadow-lg shadow-white/5">
                       Upgrade to Premium
                     </Link>
                   </div>

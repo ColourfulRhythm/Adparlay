@@ -91,7 +91,7 @@ const FormAnalyticsPage: React.FC = () => {
               </Link>
               <Link
                 to={`/builder/${formId}`}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#1a1a1a] border border-[#333] text-[13px] text-[#ddd] hover:text-white hover:border-[#555] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-[#333] text-[13px] font-['Outfit'] font-bold text-[#ddd] hover:text-white hover:border-[#555] transition-all shadow-lg shadow-black/5"
               >
                 <span>←</span>
                 Back to Builder
@@ -119,7 +119,7 @@ const FormAnalyticsPage: React.FC = () => {
             </p>
             <Link 
               to="/pricing" 
-              className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg"
+              className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white font-['Outfit'] font-black rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[#8B5CF6]/20"
             >
               Upgrade to Premium
             </Link>
@@ -263,7 +263,7 @@ const FormAnalyticsPage: React.FC = () => {
               </div>
               <Link
                 to={`/builder/${formId}`}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#1a1a1a] border border-[#333] text-[13px] text-[#ddd] hover:text-white hover:border-[#555] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-[#333] text-[13px] font-['Outfit'] font-bold text-[#ddd] hover:text-white hover:border-[#555] transition-all shadow-lg shadow-black/5"
               >
                 <span>←</span>
                 Back to Builder
@@ -276,8 +276,8 @@ const FormAnalyticsPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold font-['Outfit'] text-white mb-2">Form Data Analysis</h1>
-            <p className="text-[#888]">Visualizing {submissions.length} total responses</p>
+            <h1 className="text-3xl font-black font-['Outfit'] text-white mb-2">Form Data Analysis</h1>
+            <p className="text-[#888] font-['Outfit'] font-medium">Visualizing {submissions.length} total responses</p>
           </div>
         </div>
 
@@ -285,7 +285,7 @@ const FormAnalyticsPage: React.FC = () => {
           {allQuestions.map(q => (
             <div key={q.id} className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6">
               <h3 className="text-lg font-medium font-['Outfit'] text-white mb-1">{q.label || 'Untitled Question'}</h3>
-              <p className="text-xs text-[#555] uppercase tracking-wider mb-6">Type: {q.type.replace('_', ' ')}</p>
+              <p className="text-xs text-[#555] font-['Outfit'] font-black uppercase tracking-[0.15em] mb-6">Type: {q.type.replace('_', ' ')}</p>
               
               {renderQuestionVisualization(q)}
             </div>
