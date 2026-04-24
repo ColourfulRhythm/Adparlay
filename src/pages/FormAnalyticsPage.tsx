@@ -265,16 +265,16 @@ const FormAnalyticsPage: React.FC = () => {
                     <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 ) : (
-                  <PieChart>
+                  <PieChart margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
                     <Pie
                       data={data}
                       cx="50%"
-                      cy="45%"
-                      innerRadius={type === 'donut' ? 60 : 0}
-                      outerRadius={80}
+                      cy="50%"
+                      innerRadius={type === 'donut' ? 50 : 0}
+                      outerRadius={70}
                       paddingAngle={5}
                       dataKey="value"
-                      label={false}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     >
                       {data.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -283,12 +283,6 @@ const FormAnalyticsPage: React.FC = () => {
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#111', border: '1px solid #2a2a2a', borderRadius: '8px' }}
                       itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
-                    />
-                    <Legend 
-                      verticalAlign="bottom" 
-                      height={36} 
-                      iconType="circle"
-                      wrapperStyle={{ fontSize: '11px', paddingTop: '20px', color: exportTheme === 'light' ? '#333' : '#777' }}
                     />
                   </PieChart>
                 )}
