@@ -5,8 +5,11 @@ import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firesto
 import { db } from '../firebase';
 import { 
   PieChart, Pie, Cell, 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Legend, DonutChart as RechartsDonut // Not actually a Recharts component, we'll use Pie with innerRadius
 } from 'recharts';
+import html2canvas from 'html2canvas';
+import { saveAs } from 'file-saver';
 
 interface FormQuestion {
   id: string;
@@ -38,6 +41,9 @@ const FormAnalyticsPage: React.FC = () => {
   const [form, setForm] = useState<Form | null>(null);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chartPreferences, setChartPreferences] = useState<Record<string, 'pie' | 'bar' | 'donut'>>({});
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportTheme, setExportTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
     if (!formId) return;
@@ -62,6 +68,56 @@ const FormAnalyticsPage: React.FC = () => {
 
     fetchData();
   }, [formId]);
+
+  const exportSingleChart = async (id: string, label: string) => {
+    const element = document.getElementById(`chart-${id}`);
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        backgroundColor: exportTheme === 'dark' ? '#0d0d0d' : '#ffffff',
+        scale: 2,
+        logging: false,
+        useCORS: true
+      });
+      
+      canvas.toBlob((blob) => {
+        if (blob) {
+          saveAs(blob, `${label.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_analytics.png`);
+        }
+      });
+    } catch (err) {
+      console.error("Error exporting chart:", err);
+    }
+  };
+
+  const exportAllCharts = async () => {
+    const element = document.getElementById('analytics-report');
+    if (!element) return;
+
+    setIsExporting(true);
+    // Give time for layout adjustment if needed
+    setTimeout(async () => {
+      try {
+        const canvas = await html2canvas(element, {
+          backgroundColor: exportTheme === 'dark' ? '#0d0d0d' : '#ffffff',
+          scale: 2,
+          logging: false,
+          useCORS: true
+        });
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            saveAs(blob, `${form.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_full_report.png`);
+          }
+        });
+      } catch (err) {
+        console.error("Error exporting report:", err);
+      } finally {
+        setIsExporting(false);
+      }
+    }, 500);
+  };
 
   if (loading) {
     return (
@@ -148,7 +204,8 @@ const FormAnalyticsPage: React.FC = () => {
 
     // Multiple Choice, Dropdown, Checkboxes
     if (['multiple_choice', 'dropdown', 'checkboxes'].includes(question.type)) {
-      // Flatten arrays if checkboxes
+      const type = chartPreferences[question.id] || 'donut';
+      
       const flatAnswers = question.type === 'checkboxes' 
         ? answers.flatMap(a => Array.isArray(a) ? a : [a]) 
         : answers;
@@ -164,30 +221,80 @@ const FormAnalyticsPage: React.FC = () => {
       })).sort((a, b) => b.value - a.value);
 
       return (
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                labelLine={false}
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', color: '#fff' }}
-                itemStyle={{ color: '#fff' }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="h-full flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex bg-[#1a1a1a] p-1 rounded-lg border border-[#2a2a2a]">
+              {(['donut', 'pie', 'bar'] as const).map(t => (
+                <button
+                  key={t}
+                  onClick={() => setChartPreferences(prev => ({ ...prev, [question.id]: t }))}
+                  className={`px-3 py-1 text-[11px] font-['Outfit'] font-bold rounded-md transition-all ${
+                    type === t ? 'bg-[#8B5CF6] text-white shadow-lg' : 'text-[#777] hover:text-[#aaa]'
+                  }`}
+                >
+                  {t.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => exportSingleChart(question.id, question.label)}
+              className="text-[11px] font-['Outfit'] font-bold text-[#555] hover:text-[#8B5CF6] transition-colors"
+            >
+              DOWNLOAD
+            </button>
+          </div>
+          <div className="flex-1 h-64 overflow-x-auto">
+            <div className="min-w-[300px] h-full" id={`chart-${question.id}`}>
+              <ResponsiveContainer width="100%" height="100%">
+                {type === 'bar' ? (
+                  <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 40 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={exportTheme === 'light' ? '#eee' : '#2a2a2a'} vertical={false} />
+                    <XAxis 
+                      dataKey="name" 
+                      stroke={exportTheme === 'light' ? '#333' : '#777'} 
+                      tick={{ fill: exportTheme === 'light' ? '#333' : '#777', fontSize: 10 }} 
+                      angle={-45} 
+                      textAnchor="end"
+                      height={60}
+                    />
+                    <YAxis stroke={exportTheme === 'light' ? '#333' : '#777'} tick={{ fill: exportTheme === 'light' ? '#333' : '#777', fontSize: 10 }} allowDecimals={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#111', border: '1px solid #2a2a2a', borderRadius: '8px' }}
+                      itemStyle={{ color: '#8B5CF6', fontSize: '12px', fontWeight: 'bold' }}
+                    />
+                    <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                ) : (
+                  <PieChart>
+                    <Pie
+                      data={data}
+                      cx="50%"
+                      cy="45%"
+                      innerRadius={type === 'donut' ? 60 : 0}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                      label={false}
+                    >
+                      {data.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#111', border: '1px solid #2a2a2a', borderRadius: '8px' }}
+                      itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
+                    />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      height={36} 
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: '11px', paddingTop: '20px', color: exportTheme === 'light' ? '#333' : '#777' }}
+                    />
+                  </PieChart>
+                )}
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       );
     }
@@ -215,36 +322,62 @@ const FormAnalyticsPage: React.FC = () => {
       }));
 
       return (
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
-              <XAxis dataKey="name" stroke="#777" tick={{ fill: '#777' }} />
-              <YAxis stroke="#777" tick={{ fill: '#777' }} allowDecimals={false} />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', color: '#fff' }}
-                cursor={{ fill: '#2a2a2a' }}
-              />
-              <Bar dataKey="count" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="h-full flex flex-col">
+          <div className="flex items-center justify-end mb-4">
+            <button
+              onClick={() => exportSingleChart(question.id, question.label)}
+              className="text-[11px] font-['Outfit'] font-bold text-[#555] hover:text-[#8B5CF6] transition-colors"
+            >
+              DOWNLOAD
+            </button>
+          </div>
+          <div className="flex-1 h-64 overflow-x-auto">
+            <div className="min-w-[300px] h-full" id={`chart-${question.id}`}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: -20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={exportTheme === 'light' ? '#eee' : '#2a2a2a'} vertical={false} />
+                  <XAxis dataKey="name" stroke={exportTheme === 'light' ? '#333' : '#777'} tick={{ fill: exportTheme === 'light' ? '#333' : '#777' }} />
+                  <YAxis stroke={exportTheme === 'light' ? '#333' : '#777'} tick={{ fill: exportTheme === 'light' ? '#333' : '#777' }} allowDecimals={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#111', border: '1px solid #2a2a2a', borderRadius: '8px' }}
+                    itemStyle={{ color: '#8B5CF6', fontSize: '12px', fontWeight: 'bold' }}
+                    cursor={{ fill: exportTheme === 'light' ? '#f5f5f5' : '#2a2a2a' }}
+                  />
+                  <Bar dataKey="count" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       );
     }
 
     // Text inputs (short answer, paragraph, email, etc.)
     return (
-      <div className="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] overflow-hidden max-h-64 overflow-y-auto">
-        <ul className="divide-y divide-[#2a2a2a]">
-          {answers.slice(0, 50).map((ans, i) => (
-            <li key={i} className="px-4 py-3 text-sm text-[#ddd]">
-              {String(ans)}
-            </li>
-          ))}
-          {answers.length === 0 && (
-            <li className="px-4 py-3 text-sm text-[#777]">No text responses yet.</li>
-          )}
-        </ul>
+      <div className="h-full flex flex-col">
+        <div className="flex items-center justify-end mb-4">
+          <button
+            onClick={() => exportSingleChart(question.id, question.label)}
+            className="text-[11px] font-['Outfit'] font-bold text-[#555] hover:text-[#8B5CF6] transition-colors"
+          >
+            DOWNLOAD
+          </button>
+        </div>
+        <div 
+          id={`chart-${question.id}`}
+          className={`rounded-lg border overflow-hidden max-h-64 overflow-y-auto flex-1 ${exportTheme === 'light' ? 'bg-white border-gray-200' : 'bg-[#1a1a1a] border-[#2a2a2a]'}`}
+        >
+          <ul className={`divide-y ${exportTheme === 'light' ? 'divide-gray-100' : 'divide-[#2a2a2a]'}`}>
+            {answers.slice(0, 50).map((ans, i) => (
+              <li key={i} className={`px-4 py-3 text-sm ${exportTheme === 'light' ? 'text-gray-700' : 'text-[#ddd]'}`}>
+                {String(ans)}
+              </li>
+            ))}
+            {answers.length === 0 && (
+              <li className={`px-4 py-3 text-sm ${exportTheme === 'light' ? 'text-gray-400' : 'text-[#777]'}`}>No text responses yet.</li>
+            )}
+          </ul>
+        </div>
       </div>
     );
   };
@@ -273,19 +406,59 @@ const FormAnalyticsPage: React.FC = () => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 flex items-center justify-between">
+      <div 
+        className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transition-colors duration-300 ${exportTheme === 'light' ? 'bg-white text-black' : 'bg-[#0d0d0d] text-white'}`} 
+        id="analytics-report"
+      >
+        {/* Export Header (Visible only in export or when watermarking) */}
+        <div className="mb-6 flex items-center justify-between border-b border-[#1f1f1f] pb-4">
+          <div className="flex items-center gap-3">
+            <img src="/logoreal.png" alt="AdParlay" className="h-6 w-auto" />
+            <span className="text-[10px] font-['Outfit'] font-black text-[#555] uppercase tracking-widest">Analytics Report</span>
+          </div>
+          <div className="text-[10px] font-['Outfit'] font-bold text-[#555]">
+            Generated on {new Date().toLocaleDateString()}
+          </div>
+        </div>
+
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-black font-['Outfit'] text-white mb-2">Form Data Analysis</h1>
+            <h1 className="text-3xl font-black font-['Outfit'] text-white mb-2">{form.title}</h1>
             <p className="text-[#888] font-['Outfit'] font-medium">Visualizing {submissions.length} total responses</p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex bg-[#111] border border-[#1f1f1f] p-1 rounded-xl">
+              <button 
+                onClick={() => setExportTheme('dark')}
+                className={`px-4 py-1.5 rounded-lg text-[11px] font-['Outfit'] font-black transition-all ${exportTheme === 'dark' ? 'bg-white text-black' : 'text-[#555] hover:text-white'}`}
+              >
+                DARK
+              </button>
+              <button 
+                onClick={() => setExportTheme('light')}
+                className={`px-4 py-1.5 rounded-lg text-[11px] font-['Outfit'] font-black transition-all ${exportTheme === 'light' ? 'bg-white text-black' : 'text-[#555] hover:text-white'}`}
+              >
+                LIGHT
+              </button>
+            </div>
+            
+            <button
+              onClick={exportAllCharts}
+              disabled={isExporting}
+              className="px-6 py-2.5 bg-[#8B5CF6] text-white font-['Outfit'] font-black rounded-xl hover:bg-[#7C3AED] transition-all shadow-lg shadow-[#8B5CF6]/20 flex items-center gap-2"
+            >
+              {isExporting ? 'EXPORTING...' : 'DOWNLOAD FULL REPORT'}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {allQuestions.map(q => (
-            <div key={q.id} className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6">
-              <h3 className="text-lg font-medium font-['Outfit'] text-white mb-1">{q.label || 'Untitled Question'}</h3>
-              <p className="text-xs text-[#555] font-['Outfit'] font-black uppercase tracking-[0.15em] mb-6">Type: {q.type.replace('_', ' ')}</p>
+            <div key={q.id} className={`rounded-xl p-6 border transition-all ${exportTheme === 'light' ? 'bg-gray-50 border-gray-200 shadow-sm' : 'bg-[#111] border-[#1f1f1f]'}`}>
+              <h3 className={`text-lg font-medium font-['Outfit'] mb-1 ${exportTheme === 'light' ? 'text-gray-900' : 'text-white'}`}>{q.label || 'Untitled Question'}</h3>
+              <p className={`text-xs font-['Outfit'] font-black uppercase tracking-[0.15em] mb-6 ${exportTheme === 'light' ? 'text-gray-400' : 'text-[#555]'}`}>Type: {q.type.replace('_', ' ')}</p>
               
               {renderQuestionVisualization(q)}
             </div>
