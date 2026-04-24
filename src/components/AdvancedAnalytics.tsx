@@ -781,11 +781,10 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ userId, isProUser
           ))}
         </div>
       ) : (
-        <div className="bg-purple-50 border border-purple-100 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group">
-          <div className="absolute right-0 top-0 w-64 h-64 bg-purple-100/50 rounded-full -mr-20 -mt-20 blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group">
           <div className="relative z-10 max-w-xl">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="px-2 py-1 bg-purple-600 text-white rounded-md text-[10px] font-black uppercase tracking-widest">Premium</div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="px-2.5 py-1 bg-gray-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest">Pro Feature</div>
               <h3 className="font-['Outfit'] font-black text-2xl text-gray-900">Unlock Pro Analytics</h3>
             </div>
             <p className="text-gray-600 font-medium leading-relaxed">Get deep insights into device types, geographical distribution, completion times, and full conversion funnels.</p>
@@ -896,19 +895,19 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ userId, isProUser
 
       {/* Pro User Upgrade Message */}
       {!isProUser && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 p-8 text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm">
+          <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Unlock Advanced Analytics</h3>
-          <p className="text-gray-600 mb-4">
+          <h3 className="text-2xl font-black font-['Outfit'] text-gray-900 mb-3">Unlock Advanced Analytics</h3>
+          <p className="text-gray-500 font-medium mb-8 max-w-md mx-auto">
             Upgrade to Pro to access detailed form performance, device analytics, geographic insights, and PDF export capabilities.
           </p>
           <button 
             onClick={() => setShowPaymentModal(true)}
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all"
+            className="px-10 py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all shadow-xl shadow-black/10"
           >
             Upgrade to Pro
           </button>

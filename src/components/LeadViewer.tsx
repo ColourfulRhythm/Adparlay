@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Download, Eye, EyeOff } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Download, Eye, EyeOff, Globe, Clock, FileText } from 'lucide-react';
 
 interface FormSubmission {
   id: string;

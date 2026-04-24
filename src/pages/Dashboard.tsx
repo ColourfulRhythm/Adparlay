@@ -9,6 +9,7 @@ import PaystackPayment from '../components/PaystackPayment';
 import AIBuilder from '../components/AIBuilder';
 import ExportModal from '../components/ExportModal';
 import BrandedLoadingScreen from '../components/BrandedLoadingScreen';
+import toast from 'react-hot-toast';
 
 import { useSEO } from '../hooks/useSEO';
 import AnimatedDropdown from '../components/ui/AnimatedDropdown';
@@ -48,6 +49,16 @@ const Dashboard: React.FC = () => {
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Link copied to clipboard!');
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      toast.error('Error copying to clipboard. Please try again.');
+    }
+  };
   const [showAIBuilderModal, setShowAIBuilderModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [deletingForms, setDeletingForms] = useState<Set<string>>(new Set());
@@ -841,18 +852,15 @@ const Dashboard: React.FC = () => {
                             trigger={<button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"><MoreVertical className="w-4 h-4"/></button>}
                             items={[
                               {
-                                name: 'Edit Flow',
-                                icon: <FileText className="w-4 h-4" />,
-                                link: `/builder/${form.id}`
+                                name: 'View',
+                                onClick: () => window.open(`/form/${form.id}`, '_blank')
                               },
                               {
-                                name: 'Workspace',
-                                icon: <LayoutTemplate className="w-4 h-4" />,
-                                link: `/workspace/${form.id}`
+                                name: 'Share Link',
+                                onClick: () => copyToClipboard(`${window.location.origin}/form/${form.id}`)
                               },
                               {
                                 name: deletingForms.has(form.id) ? 'Deleting...' : 'Delete Form',
-                                icon: <Trash2 className="w-4 h-4" />,
                                 destructive: true,
                                 onClick: () => { if (!deletingForms.has(form.id)) deleteForm(form.id); }
                               }
@@ -940,17 +948,14 @@ const Dashboard: React.FC = () => {
                             items={[
                               {
                                 name: 'View Live',
-                                icon: <Eye className="w-4 h-4" />,
                                 onClick: () => { window.open(`/landing/${landingPage.id}`, '_blank'); }
                               },
                               {
                                 name: 'Responses',
-                                icon: <FileText className="w-4 h-4" />,
                                 link: '/landing-responses'
                               },
                               {
                                 name: deletingLandingPages.has(landingPage.id) ? 'Deleting...' : 'Delete Page',
-                                icon: <Trash2 className="w-4 h-4" />,
                                 destructive: true,
                                 onClick: () => { if (!deletingLandingPages.has(landingPage.id)) deleteLandingPage(landingPage.id); }
                               }
@@ -1044,12 +1049,10 @@ const Dashboard: React.FC = () => {
                             items={[
                               {
                                 name: 'View Live',
-                                icon: <Eye className="w-4 h-4" />,
                                 onClick: () => { window.open(linkOrganizer.username ? `/${linkOrganizer.username}` : `/link/${linkOrganizer.id}`, '_blank'); }
                               },
                               {
                                 name: deletingLinkOrganizers.has(linkOrganizer.id) ? 'Deleting...' : 'Delete Organizer',
-                                icon: <Trash2 className="w-4 h-4" />,
                                 destructive: true,
                                 onClick: () => { if (!deletingLinkOrganizers.has(linkOrganizer.id)) deleteLinkOrganizer(linkOrganizer.id); }
                               }

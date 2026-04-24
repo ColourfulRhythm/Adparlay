@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "ad-promoter-36ef7",
+    "default": "adparlaysaas",
     "adparlaybackend": "ad-promoter-36ef7"
   },
   "targets": {},
