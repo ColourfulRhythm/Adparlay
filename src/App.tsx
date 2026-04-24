@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import FormBuilder from './pages/FormBuilder';
 import FormBuilderWorkspace from './pages/FormBuilderWorkspace';
+import FormAnalyticsPage from './pages/FormAnalyticsPage';
 import FormPreview from './pages/FormPreview';
 import ViewResponses from './pages/ViewResponses';
 import Blog from './pages/Blog';
@@ -87,6 +88,12 @@ function App() {
             <Route path="/builder/:formId/workspace" element={
               <ProtectedRoute>
                 <FormBuilderWorkspace />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/builder/:formId/analytics" element={
+              <ProtectedRoute>
+                <FormAnalyticsPage />
               </ProtectedRoute>
             } />
             

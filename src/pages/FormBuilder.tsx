@@ -1293,7 +1293,7 @@ const FormBuilder: React.FC = () => {
                 </button>
 
                 {showNotifications && (
-                  <div className="absolute top-full right-0 mt-2 w-80 max-w-[calc(100vw-1rem)] bg-[#111] border border-[#2a2a2a] rounded-xl shadow-2xl z-50 overflow-hidden">
+                  <div className="absolute top-full right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 lg:left-auto lg:translate-x-0 lg:right-0 mt-2 w-80 max-w-[calc(100vw-1rem)] bg-[#111] border border-[#2a2a2a] rounded-xl shadow-2xl z-50 overflow-hidden">
                     <div className="px-3 py-2 border-b border-[#1f1f1f] flex items-center justify-between">
                       <div className="text-[12px] font-semibold text-white">Notifications</div>
                       <button
@@ -1386,13 +1386,22 @@ const FormBuilder: React.FC = () => {
                         Share
                       </button>
                       {form?.id && (
-                        <button
-                          onClick={() => { navigate(`/builder/${form.id}/workspace`); setShowMobileMenu(false); }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors"
-                        >
-                          <svg className="w-4 h-4 text-violet-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h18M3 12h18M3 19h18" /></svg>
-                          Activity & Team
-                        </button>
+                        <>
+                          <button
+                            onClick={() => { navigate(`/builder/${form.id}/workspace`); setShowMobileMenu(false); }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors"
+                          >
+                            <svg className="w-4 h-4 text-violet-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h18M3 12h18M3 19h18" /></svg>
+                            Activity & Team
+                          </button>
+                          <button
+                            onClick={() => { navigate(`/builder/${form.id}/analytics`); setShowMobileMenu(false); }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 text-[13px] text-[#ccc] hover:bg-[#1f1f1f] hover:text-white rounded-lg transition-colors"
+                          >
+                            <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                            Advanced Data Analysis
+                          </button>
+                        </>
                       )}
                       <div className="h-px bg-[#222] my-1" />
                       <div className="px-3 py-1 text-[10px] uppercase tracking-widest text-[#555] font-semibold">Integrations</div>

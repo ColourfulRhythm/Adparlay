@@ -129,19 +129,17 @@ const FormBuilderWorkspace: React.FC = () => {
                       <div className="text-[10px] text-green-400 mt-2">↑ 8% vs last month</div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-2">
-                    <div className="lg:col-span-2 bg-[#1a1a1a] rounded-lg p-4 border border-[#2a2a2a] min-h-[200px] flex items-center justify-center">
-                      <div className="text-center">
-                        <svg className="w-8 h-8 text-[#333] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
-                        <span className="text-[12px] text-[#555]">Submission Trend Chart Loading...</span>
-                      </div>
+                  
+                  <div className="mt-4 flex flex-col items-center justify-center py-6 border border-dashed border-[#2a2a2a] rounded-xl bg-[#161616]/50">
+                    <div className="w-10 h-10 rounded-full bg-[#8B5CF6]/10 flex items-center justify-center mb-3 border border-[#8B5CF6]/20">
+                      <svg className="w-5 h-5 text-[#8B5CF6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     </div>
-                    <div className="bg-[#1a1a1a] rounded-lg p-4 border border-[#2a2a2a] min-h-[200px] flex items-center justify-center">
-                      <div className="text-center">
-                        <svg className="w-8 h-8 text-[#333] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-                        <span className="text-[12px] text-[#555]">Traffic Sources Loading...</span>
-                      </div>
-                    </div>
+                    <h3 className="text-[14px] font-semibold text-white mb-1">Detailed Question-Level Analysis</h3>
+                    <p className="text-[11px] text-[#555] mb-4 text-center max-w-xs">Deep dive into respondent behavior for each specific question with visual charts.</p>
+                    <Link to={`/builder/${formId}/analytics`} className="inline-flex items-center gap-2 px-5 py-2 bg-[#8B5CF6] text-white text-[12px] font-semibold rounded-lg hover:bg-[#7C3AED] transition-colors shadow-lg shadow-[#8B5CF6]/10">
+                      View Full Analytics Report
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </Link>
                   </div>
                 </div>
               ) : (
