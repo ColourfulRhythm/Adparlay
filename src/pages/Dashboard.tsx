@@ -411,8 +411,8 @@ const Dashboard: React.FC = () => {
       id: 'real-estate',
       name: 'Real Estate',
       description: 'Property listing and inquiry form',
-      icon: '🏠',
-      color: 'from-blue-500 to-blue-600',
+      icon: <FileText className="w-6 h-6" />,
+      color: 'from-blue-50 to-blue-100 text-blue-600',
       questions: [
         { type: 'short_answer', label: 'Property Address', required: true, placeholder: 'Enter the full property address' },
         { type: 'dropdown', label: 'Property Type', required: true, options: ['House', 'Apartment', 'Condo', 'Townhouse', 'Land'] },
@@ -425,9 +425,9 @@ const Dashboard: React.FC = () => {
     {
       id: 'hr',
       name: 'HR & Recruitment',
-      description: 'Job application and employee onboarding',
-      icon: '👔',
-      color: 'from-green-500 to-green-600',
+      description: 'Job application and onboarding',
+      icon: <LayoutTemplate className="w-6 h-6" />,
+      color: 'from-green-50 to-green-100 text-green-600',
       questions: [
         { type: 'short_answer', label: 'Full Name', required: true, placeholder: 'Enter your full name' },
         { type: 'email', label: 'Email Address', required: true, placeholder: 'Enter your email address' },
@@ -439,10 +439,10 @@ const Dashboard: React.FC = () => {
     },
     {
       id: 'house-party',
-      name: 'House Party',
+      name: 'Event RSVP',
       description: 'Event RSVP and guest management',
-      icon: '🎉',
-      color: 'from-purple-500 to-purple-600',
+      icon: <FileText className="w-6 h-6" />,
+      color: 'from-purple-50 to-purple-100 text-purple-600',
       questions: [
         { type: 'short_answer', label: 'Your Name', required: true, placeholder: 'Enter your full name' },
         { type: 'email', label: 'Email Address', required: true, placeholder: 'Enter your email address' },
@@ -456,8 +456,8 @@ const Dashboard: React.FC = () => {
       id: 'basic',
       name: 'Basic Contact',
       description: 'Simple contact and inquiry form',
-      icon: '📝',
-      color: 'from-gray-500 to-gray-600',
+      icon: <FileText className="w-6 h-6" />,
+      color: 'from-gray-50 to-gray-100 text-gray-600',
       questions: [
         { type: 'short_answer', label: 'Name', required: true, placeholder: 'Enter your name' },
         { type: 'email', label: 'Email', required: true, placeholder: 'Enter your email address' },
@@ -469,9 +469,9 @@ const Dashboard: React.FC = () => {
     {
       id: 'customer-feedback',
       name: 'Customer Feedback',
-      description: 'Product and service feedback collection',
-      icon: '⭐',
-      color: 'from-yellow-500 to-yellow-600',
+      description: 'Product and service feedback',
+      icon: <FileText className="w-6 h-6" />,
+      color: 'from-orange-50 to-orange-100 text-orange-600',
       questions: [
         { type: 'short_answer', label: 'Customer Name', required: true, placeholder: 'Enter your name' },
         { type: 'email', label: 'Email Address', required: true, placeholder: 'Enter your email address' },
@@ -518,19 +518,20 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
       {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-white/70 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
-              <img src="/logoreal.png" alt="AdParlay" className="h-7 w-auto" />
+              <img src="/logoreal.png" alt="AdParlay" className="h-6 w-auto" />
+              <span className="font-['Outfit'] font-bold text-lg tracking-tight">AdParlay</span>
             </div>
             
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="px-4 py-2 text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors"
               >
-                Logout
+                Sign Out
               </button>
             </div>
           </div>
@@ -540,79 +541,95 @@ const Dashboard: React.FC = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="mb-6">
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">Welcome back, {currentUser?.displayName || 'User'}!</h1>
-            <p className="text-gray-600 text-lg leading-relaxed bg-white/50 inline-block px-3 py-1 rounded-lg">
-              {currentUser?.subscription === 'premium' 
-                ? 'You are on the Premium plan with unlimited forms and leads'
-                : `You are on the Free plan. You can create up to ${currentUser?.maxForms} forms and collect up to ${currentUser?.maxLeads} leads.`
-              }
-            </p>
+        <div className="mb-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h1 className="font-['Outfit'] text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Dashboard</h1>
+              <p className="text-gray-500 font-medium">Manage your capture flows and analytics</p>
+            </div>
+            <div className="flex items-center gap-2 bg-white border border-gray-100 p-1.5 rounded-xl shadow-sm">
+              <span className={`px-3 py-1 rounded-lg text-[12px] font-bold uppercase tracking-wider ${
+                currentUser?.subscription === 'premium' ? 'bg-purple-50 text-purple-600' : 'bg-gray-50 text-gray-500'
+              }`}>
+                {currentUser?.subscription === 'premium' ? 'Premium Plan' : 'Free Plan'}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white/90 backdrop-blur-sm rounded-xl p-6 border border-gray-100 hover:border-gray-300 transition-all shadow-sm flex flex-col items-center justify-center text-center"
+            transition={{ duration: 0.4 }}
+            className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group"
           >
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Total Forms</p>
-            <p className="text-4xl font-light text-gray-800 tracking-tight">{stats.totalForms}</p>
+            <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+              <FileText className="w-12 h-12 text-gray-900" />
+            </div>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.1em] mb-4">Total Forms</p>
+            <p className="font-['Outfit'] text-4xl font-black text-gray-900 tracking-tight">{stats.totalForms}</p>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white/90 backdrop-blur-sm rounded-xl p-6 border border-gray-100 hover:border-gray-300 transition-all shadow-sm flex flex-col items-center justify-center text-center"
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group"
           >
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Total Submissions</p>
-            <p className="text-4xl font-light text-gray-800 tracking-tight">{stats.totalSubmissions}</p>
+            <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Eye className="w-12 h-12 text-gray-900" />
+            </div>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.1em] mb-4">Total Submissions</p>
+            <p className="font-['Outfit'] text-4xl font-black text-gray-900 tracking-tight">{stats.totalSubmissions}</p>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white/90 backdrop-blur-sm rounded-xl p-6 border border-gray-100 hover:border-gray-300 transition-all shadow-sm flex flex-col items-center justify-center text-center"
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group"
           >
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Avg Submissions / Form</p>
-            <p className="text-4xl font-light text-gray-800 tracking-tight">{stats.conversionRate}</p>
+            <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+              <LayoutTemplate className="w-12 h-12 text-gray-900" />
+            </div>
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.1em] mb-4">Engagement</p>
+            <p className="font-['Outfit'] text-4xl font-black text-gray-900 tracking-tight">{stats.conversionRate}<span className="text-lg font-bold text-gray-300 ml-1">avg</span></p>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-[#1a1a1a] rounded-xl p-6 border border-[#333] hover:border-[#8B5CF6] transition-all flex flex-col items-center justify-center text-center shadow-md"
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="bg-gray-900 rounded-2xl p-6 border border-gray-800 shadow-xl relative overflow-hidden"
           >
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">This Month</p>
-            <p className="text-4xl font-light text-white tracking-tight">{stats.thisMonthSubmissions}</p>
+            <div className="absolute top-0 right-0 p-3 opacity-10">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
+            </div>
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.1em] mb-4">This Month</p>
+            <p className="font-['Outfit'] text-4xl font-black text-white tracking-tight">{stats.thisMonthSubmissions}</p>
           </motion.div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-8">
+        <div className="flex gap-2 p-1.5 bg-gray-100/50 border border-gray-100 rounded-2xl mb-10">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`flex-1 min-h-[44px] py-3 px-6 rounded-lg font-medium transition-all ${
+            className={`flex-1 py-3 px-6 rounded-xl font-bold text-[13px] uppercase tracking-wider transition-all ${
               activeTab === 'overview'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-gray-900 shadow-sm border border-gray-200/50'
+                : 'text-gray-400 hover:text-gray-600'
             }`}
           >
             Overview
           </button>
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`flex-1 min-h-[44px] py-3 px-6 rounded-lg font-medium transition-all ${
+            className={`flex-1 py-3 px-6 rounded-xl font-bold text-[13px] uppercase tracking-wider transition-all ${
               activeTab === 'analytics'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-gray-900 shadow-sm border border-gray-200/50'
+                : 'text-gray-400 hover:text-gray-600'
             }`}
           >
             Advanced Analytics
@@ -640,18 +657,18 @@ const Dashboard: React.FC = () => {
                        currentUser?.daysTillExpiry && 
                        currentUser?.daysTillExpiry <= 15 && 
                        currentUser?.daysTillExpiry > 0 && (
-                <div className="mb-4 p-3 bg-blue-900/20 border border-blue-500/50 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span className="text-blue-400 text-sm font-medium">
-                      ⏰ Premium expires in {currentUser.daysTillExpiry} day{currentUser.daysTillExpiry === 1 ? '' : 's'}
-                    </span>
                   </div>
-                  <p className="text-blue-300 text-xs mt-1">
-                    Renew your subscription to avoid service interruptions. Upgrade today!
-                  </p>
+                  <div>
+                    <h3 className="font-['Outfit'] font-bold text-blue-900 text-sm">Subscription Renewing Soon</h3>
+                    <p className="text-blue-700 text-xs mt-1 font-medium leading-relaxed">
+                      Your premium plan expires in {currentUser.daysTillExpiry} day{currentUser.daysTillExpiry === 1 ? '' : 's'}. Renew now to maintain uninterrupted access.
+                    </p>
+                  </div>
                 </div>
                 );
               })()}
@@ -664,18 +681,18 @@ const Dashboard: React.FC = () => {
                 if (isTestAccount) return null;
                 
                 return currentUser?.paymentStatus === 'grace' && (
-                <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-500/50 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                <div className="mb-6 p-4 bg-orange-50 border border-orange-100 rounded-2xl flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span className="text-yellow-400 text-sm font-medium">
-                      ⚠️ Grace Period Active: Your subscription expired but you have limited time left.
-                    </span>
                   </div>
-                  <p className="text-yellow-300 text-xs mt-1">
-                    Some features are limited. Upgrade immediately to maintain full access.
-                  </p>
+                  <div>
+                    <h3 className="font-['Outfit'] font-bold text-orange-900 text-sm">Grace Period Active</h3>
+                    <p className="text-orange-700 text-xs mt-1 font-medium leading-relaxed">
+                      Your subscription has expired but you have a temporary extension. Upgrade now to keep your forms active.
+                    </p>
+                  </div>
                 </div>
                 );
               })()}
@@ -688,18 +705,16 @@ const Dashboard: React.FC = () => {
                 if (isTestAccount) return null;
                 
                 return (currentUser?.paymentStatus === 'expired' || (currentUser?.subscription === 'free' && currentUser?.maxLeads === 100)) && (
-                <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
-                    <span className="text-red-400 text-sm font-medium">
-                      Subscription Expired: Upgrade to create new forms and landing pages.
-                    </span>
                   </div>
-                  <p className="text-red-300 text-xs mt-1">
-                    You can view existing content but cannot create new items. Renew subscription now.
-                  </p>
+                  <div>
+                    <span className="block font-['Outfit'] font-bold text-red-900 text-sm">Subscription Expired</span>
+                    <p className="text-red-700 text-xs mt-0.5 font-medium">Your access is currently limited. Renew your subscription to continue creating.</p>
+                  </div>
                 </div>
                 );
               })()}
@@ -724,10 +739,11 @@ const Dashboard: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <AnimatedDropdown 
                   text="+ Create New"
+                  triggerClassName="bg-gray-900 text-white hover:bg-black font-bold text-[14px] rounded-xl px-8 shadow-lg shadow-black/10"
                   items={[
                     {
                       name: 'Form',
-                      icon: <FileText className="w-4 h-4" />,
+                      icon: <FileText className="w-4 h-4 text-purple-500" />,
                       onClick: () => {
                         if (currentUser?.subscription === 'free' && forms.length >= (currentUser?.maxForms || 3)) {
                           alert('You have reached your form limit. Please delete some forms or upgrade to Premium.');
@@ -738,33 +754,29 @@ const Dashboard: React.FC = () => {
                     },
                     {
                       name: 'Landing Page',
-                      icon: <LayoutTemplate className="w-4 h-4" />,
+                      icon: <LayoutTemplate className="w-4 h-4 text-blue-500" />,
                       link: '/landing-builder'
                     },
                     {
                       name: 'Link Organizer',
-                      icon: <LinkIcon className="w-4 h-4" />,
+                      icon: <LinkIcon className="w-4 h-4 text-pink-500" />,
                       link: '/link-organizer-builder'
                     }
                   ]}
                 />
                 {currentUser?.subscription === 'premium' ? (
-                  <div className="min-h-[44px] px-6 py-3 bg-green-100 text-green-800 rounded-xl font-medium flex items-center justify-center">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <div className="px-6 py-3 bg-purple-50 text-purple-600 border border-purple-100 rounded-xl font-bold text-[14px] flex items-center justify-center">
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    Premium Active
-                    {currentUser?.daysTillExpiry && currentUser.daysTillExpiry <= 30 && (
-                      <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">
-                        Expires in {currentUser.daysTillExpiry} days
-                      </span>
-                    )}
+                    Premium Access Active
                   </div>
                 ) : (
                   <button
                     onClick={() => setShowPaymentModal(true)}
-                    className="min-h-[44px] px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all"
+                    className="px-8 py-3 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-[14px] hover:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2"
                   >
+                    <img src="/logoreal.png" alt="" className="w-4 h-4" />
                     Upgrade to Premium
                   </button>
                 )}
@@ -810,50 +822,33 @@ const Dashboard: React.FC = () => {
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {forms.map((form) => (
                     <motion.div
                       key={form.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition-all shadow-sm"
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="group bg-white rounded-3xl p-6 border border-gray-100 hover:border-purple-200 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between"
                     >
-                      <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                        {/* Form Info - Flexible width */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">{form.title}</h3>
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{form.description}</p>
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                            <span className="whitespace-nowrap">Created: {form.createdAt.toLocaleDateString()}</span>
-                            <span className="whitespace-nowrap">Submissions: {form.submissions}</span>
-                            {form.lastSubmission && (
-                              <span className="whitespace-nowrap">Last: {form.lastSubmission.toLocaleDateString()}</span>
-                            )}
+                      <div>
+                        <div className="flex items-start justify-between mb-6">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${getStatusColor(form.status)} shadow-[0_0_8px_currentColor]`}></div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{form.status}</span>
                           </div>
-                        </div>
-                        
-                        {/* Action Buttons - Fixed width, properly aligned */}
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          <div className="hidden sm:flex items-center gap-2 mr-2">
-                            <span className={`w-3 h-3 rounded-full ${getStatusColor(form.status)}`}></span>
-                            <span className="text-xs text-gray-500 capitalize">{form.status}</span>
-                          </div>
-                          
-                          <Link
-                            to={`/builder/${form.id}`}
-                            className="h-10 px-4 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
-                          >
-                            Edit
-                          </Link>
-                          
                           <AnimatedDropdown 
                             align="right"
-                            trigger={<button className="h-10 w-10 flex items-center justify-center border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"><MoreVertical className="w-5 h-5"/></button>}
+                            trigger={<button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"><MoreVertical className="w-4 h-4"/></button>}
                             items={[
                               {
-                                name: 'View Responses',
-                                icon: <Eye className="w-4 h-4" />,
-                                link: '/responses'
+                                name: 'Edit Flow',
+                                icon: <FileText className="w-4 h-4" />,
+                                link: `/builder/${form.id}`
+                              },
+                              {
+                                name: 'Workspace',
+                                icon: <LayoutTemplate className="w-4 h-4" />,
+                                link: `/workspace/${form.id}`
                               },
                               {
                                 name: deletingForms.has(form.id) ? 'Deleting...' : 'Delete Form',
@@ -864,6 +859,21 @@ const Dashboard: React.FC = () => {
                             ]}
                           />
                         </div>
+                        <h3 className="font-['Outfit'] font-extrabold text-xl text-gray-900 mb-2 truncate">{form.title}</h3>
+                        <p className="text-gray-500 text-[13px] font-medium mb-8 line-clamp-2 leading-relaxed">{form.description || 'Premium data collection flow.'}</p>
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-6 border-t border-gray-50">
+                        <div>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Submissions</p>
+                          <p className="font-['Outfit'] font-black text-2xl text-gray-900">{form.submissions}</p>
+                        </div>
+                        <Link
+                          to={`/builder/${form.id}`}
+                          className="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-[12px] font-bold hover:bg-black transition-all shadow-lg shadow-black/5"
+                        >
+                          Edit
+                        </Link>
                       </div>
                     </motion.div>
                   ))}
@@ -910,41 +920,23 @@ const Dashboard: React.FC = () => {
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {landingPages.map((landingPage) => (
                     <motion.div
                       key={landingPage.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="bg-white rounded-xl p-6 border border-gray-200 hover:border-green-300 transition-all shadow-sm"
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="group bg-white rounded-3xl p-6 border border-gray-100 hover:border-green-200 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between"
                     >
-                      <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                        {/* Landing Page Info - Flexible width */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">{landingPage.title}</h3>
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{landingPage.headline}</p>
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                            <span className="whitespace-nowrap">Created: {landingPage.createdAt.toLocaleDateString()}</span>
-                            <span className="whitespace-nowrap">Views: {landingPage.views}</span>
-                            <span className="whitespace-nowrap">Submissions: {landingPage.submissions}</span>
-                            <span className="whitespace-nowrap">Status: <span className={`capitalize px-2 py-1 rounded-full text-xs ${
-                              landingPage.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                            }`}>{landingPage.status}</span></span>
+                      <div>
+                        <div className="flex items-start justify-between mb-6">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${landingPage.status === 'published' ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-yellow-500 shadow-[0_0_8px_#eab308]'}`}></div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{landingPage.status}</span>
                           </div>
-                        </div>
-                        
-                        {/* Action Buttons - Fixed width, properly aligned */}
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          <Link
-                            to={`/landing-builder?edit=${landingPage.id}`}
-                            className="h-10 px-4 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
-                          >
-                            Edit
-                          </Link>
-                          
                           <AnimatedDropdown 
                             align="right"
-                            trigger={<button className="h-10 w-10 flex items-center justify-center border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"><MoreVertical className="w-5 h-5"/></button>}
+                            trigger={<button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"><MoreVertical className="w-4 h-4"/></button>}
                             items={[
                               {
                                 name: 'View Live',
@@ -952,7 +944,7 @@ const Dashboard: React.FC = () => {
                                 onClick: () => { window.open(`/landing/${landingPage.id}`, '_blank'); }
                               },
                               {
-                                name: 'View Responses',
+                                name: 'Responses',
                                 icon: <FileText className="w-4 h-4" />,
                                 link: '/landing-responses'
                               },
@@ -965,6 +957,27 @@ const Dashboard: React.FC = () => {
                             ]}
                           />
                         </div>
+                        <h3 className="font-['Outfit'] font-extrabold text-xl text-gray-900 mb-2 truncate">{landingPage.title}</h3>
+                        <p className="text-gray-500 text-[13px] font-medium mb-8 line-clamp-2 leading-relaxed">{landingPage.headline || 'High-converting landing experience.'}</p>
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-6 border-t border-gray-50">
+                        <div className="flex gap-4">
+                          <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Views</p>
+                            <p className="font-['Outfit'] font-black text-xl text-gray-900">{landingPage.views}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Leads</p>
+                            <p className="font-['Outfit'] font-black text-xl text-gray-900">{landingPage.submissions}</p>
+                          </div>
+                        </div>
+                        <Link
+                          to={`/landing-builder?edit=${landingPage.id}`}
+                          className="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-[12px] font-bold hover:bg-black transition-all shadow-lg shadow-black/5"
+                        >
+                          Edit
+                        </Link>
                       </div>
                     </motion.div>
                   ))}
@@ -1011,38 +1024,23 @@ const Dashboard: React.FC = () => {
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {linkOrganizers.map((linkOrganizer) => (
                     <motion.div
                       key={linkOrganizer.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="bg-white rounded-xl p-6 border border-gray-200 hover:border-orange-300 transition-all shadow-sm"
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="group bg-white rounded-3xl p-6 border border-gray-100 hover:border-orange-200 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between"
                     >
-                      <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                        {/* Link Organizer Info - Flexible width */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">{linkOrganizer.title}</h3>
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{linkOrganizer.description}</p>
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                            <span className="whitespace-nowrap">Created: {linkOrganizer.createdAt.toLocaleDateString()}</span>
-                            <span className="whitespace-nowrap">Links: {linkOrganizer.links.length}</span>
-                            <span className="whitespace-nowrap">Products: {linkOrganizer.products.length}</span>
+                      <div>
+                        <div className="flex items-start justify-between mb-6">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_#f97316]"></div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Active</span>
                           </div>
-                        </div>
-                        
-                        {/* Action Buttons - Fixed width, properly aligned */}
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          <Link
-                            to={`/link-organizer-builder/${linkOrganizer.id}`}
-                            className="h-10 px-4 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
-                          >
-                            Edit
-                          </Link>
-                          
                           <AnimatedDropdown 
                             align="right"
-                            trigger={<button className="h-10 w-10 flex items-center justify-center border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"><MoreVertical className="w-5 h-5"/></button>}
+                            trigger={<button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"><MoreVertical className="w-4 h-4"/></button>}
                             items={[
                               {
                                 name: 'View Live',
@@ -1058,6 +1056,21 @@ const Dashboard: React.FC = () => {
                             ]}
                           />
                         </div>
+                        <h3 className="font-['Outfit'] font-extrabold text-xl text-gray-900 mb-2 truncate">{linkOrganizer.title}</h3>
+                        <p className="text-gray-500 text-[13px] font-medium mb-8 line-clamp-2 leading-relaxed">{linkOrganizer.description || 'Professional link collection.'}</p>
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-6 border-t border-gray-50">
+                        <div>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Links</p>
+                          <p className="font-['Outfit'] font-black text-2xl text-gray-900">{linkOrganizer.links.length}</p>
+                        </div>
+                        <Link
+                          to={`/link-organizer-builder/${linkOrganizer.id}`}
+                          className="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-[12px] font-bold hover:bg-black transition-all shadow-lg shadow-black/5"
+                        >
+                          Edit
+                        </Link>
                       </div>
                     </motion.div>
                   ))}
@@ -1082,77 +1095,61 @@ const Dashboard: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-white/40 backdrop-blur-xl flex items-center justify-center z-50 p-4"
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              initial={{ scale: 0.98, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="bg-[#0d0d0d] rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)] max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-white/10"
+              exit={{ scale: 0.98, opacity: 0, y: 10 }}
+              className="bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-100"
             >
-              <div className="p-6 sm:p-8">
-                <div className="flex items-center justify-between mb-8">
+              <div className="p-8 sm:p-10">
+                <div className="flex items-center justify-between mb-10">
                   <div>
-                    <h3 className="text-2xl font-bold font-['Outfit'] text-white">Choose a Template</h3>
-                    <p className="text-[#b8b8b8] font-['Epilogue'] mt-1 text-sm">Start with a pre-built template or build from scratch.</p>
+                    <h3 className="text-3xl font-black font-['Outfit'] text-gray-900 tracking-tight">Choose Template</h3>
+                    <p className="text-gray-500 font-medium mt-1">Select a starting point for your new form.</p>
                   </div>
                   <button
                     onClick={() => setShowTemplateModal(false)}
-                    className="text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 p-2 rounded-full"
+                    className="text-gray-400 hover:text-gray-900 transition-colors bg-gray-50 p-2 rounded-full"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
                 
-                {/* Templates Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                   {formTemplates.map((template) => (
                     <motion.div
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ y: -4, shadow: "0 10px 25px rgba(0,0,0,0.05)" }}
                       key={template.id}
-                      className="relative border border-white/10 bg-[#141414] rounded-2xl p-5 cursor-pointer overflow-hidden group"
+                      className="group border border-gray-100 bg-white rounded-2xl p-6 cursor-pointer transition-all hover:border-purple-200"
                       onClick={() => handleTemplateSelect(template)}
                     >
-                      {/* Subtle hover gradient background */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
-                      <div className="relative z-10">
-                        <div className={`w-14 h-14 bg-gradient-to-br ${template.color} rounded-xl flex items-center justify-center text-2xl mb-4 shadow-lg`}>
-                          {template.icon}
-                        </div>
-                        <h4 className="font-bold text-white mb-2 font-['Outfit'] text-lg">{template.name}</h4>
-                        <p className="text-sm text-[#b8b8b8] mb-4 font-['Epilogue']">{template.description}</p>
-                        <div className="inline-flex items-center text-xs font-medium bg-white/5 text-gray-300 px-3 py-1.5 rounded-full">
-                          {template.questions.length} questions
-                        </div>
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 bg-gradient-to-br ${template.color}`}>
+                        {template.icon}
                       </div>
+                      <h4 className="font-['Outfit'] font-bold text-lg text-gray-900 mb-2">{template.name}</h4>
+                      <p className="text-sm text-gray-500 leading-relaxed font-medium">{template.description}</p>
                     </motion.div>
                   ))}
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-white/10 pt-8">
-                  {/* AI Builder Option */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-10 border-t border-gray-100">
                   <motion.div 
-                    whileHover={{ scale: 1.02 }}
-                    className="relative rounded-2xl overflow-hidden p-[1px] group"
+                    whileHover={{ scale: 1.01 }}
+                    className="relative rounded-2xl overflow-hidden p-[1px] bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 shadow-lg shadow-purple-500/10"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative bg-[#0d0d0d] h-full rounded-[15px] p-6 flex flex-col justify-between">
+                    <div className="relative bg-white h-full rounded-[15px] p-7 flex flex-col justify-between">
                       <div>
-                        <div className="flex items-center space-x-2 mb-3">
-                          <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                          </svg>
-                          <span className="text-white font-bold font-['Outfit'] text-lg">AI Builder</span>
-                          {currentUser?.subscription === 'premium' && (
-                            <span className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-pink-500/30 text-pink-300 text-xs px-2 py-0.5 rounded-full font-medium">Premium</span>
-                          )}
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                            <img src="/logoreal.png" alt="" className="w-5 h-5" />
+                          </div>
+                          <span className="font-['Outfit'] font-extrabold text-xl text-gray-900">AI Builder</span>
                         </div>
-                        <p className="text-[#b8b8b8] text-sm font-['Epilogue'] mb-6">Describe your form and let AI build it for you instantly.</p>
+                        <p className="text-gray-500 font-medium text-sm leading-relaxed mb-8">Describe your vision and let our AI engine generate a complete capture flow in seconds.</p>
                       </div>
                       
                       {currentUser?.subscription === 'premium' ? (
@@ -1161,9 +1158,9 @@ const Dashboard: React.FC = () => {
                             setShowTemplateModal(false);
                             setShowAIBuilderModal(true);
                           }}
-                          className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:from-purple-500 hover:to-indigo-500 transition-all shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+                          className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all shadow-xl shadow-black/10"
                         >
-                          Use AI Builder
+                          Generate with AI
                         </button>
                       ) : (
                         <button
@@ -1171,31 +1168,30 @@ const Dashboard: React.FC = () => {
                             setShowTemplateModal(false);
                             setShowPaymentModal(true);
                           }}
-                          className="w-full py-3 bg-white/5 text-white/50 rounded-xl font-medium hover:bg-white/10 hover:text-white transition-all border border-white/10"
+                          className="w-full py-4 bg-gray-50 text-gray-400 border border-gray-100 rounded-xl font-bold text-sm hover:bg-gray-100 hover:text-gray-900 transition-all"
                         >
-                          Upgrade to Premium
+                          Unlock AI with Premium
                         </button>
                       )}
                     </div>
                   </motion.div>
                   
-                  {/* Build from Scratch Option */}
                   <motion.div 
-                    whileHover={{ scale: 1.02 }}
-                    className="border border-white/10 bg-[#141414] rounded-2xl p-6 flex flex-col justify-between"
+                    whileHover={{ scale: 1.01 }}
+                    className="border border-gray-100 bg-gray-50/30 rounded-2xl p-7 flex flex-col justify-between"
                   >
                     <div>
-                      <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-gray-400 mb-4 border border-white/5">
+                      <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-gray-400 mb-5 border border-gray-100 shadow-sm">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                         </svg>
                       </div>
-                      <h4 className="font-bold text-white mb-2 font-['Outfit'] text-lg">Build from Scratch</h4>
-                      <p className="text-[#b8b8b8] text-sm font-['Epilogue'] mb-6">Start with a blank canvas and add fields manually.</p>
+                      <h4 className="font-['Outfit'] font-bold text-xl text-gray-900 mb-2">Build from Scratch</h4>
+                      <p className="text-gray-500 font-medium text-sm leading-relaxed mb-8">Start with a blank canvas and piece together your ideal form field by field.</p>
                     </div>
                     <button
                       onClick={handleBuildFromScratch}
-                      className="w-full py-3 bg-white text-black rounded-xl font-medium hover:bg-gray-200 transition-all"
+                      className="w-full py-4 bg-white text-gray-900 border border-gray-200 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all shadow-sm"
                     >
                       Start Blank Form
                     </button>

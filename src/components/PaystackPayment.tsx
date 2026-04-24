@@ -178,97 +178,83 @@ const PaystackPayment: React.FC<PaystackPaymentProps> = ({ onSuccess, onClose })
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 max-w-md mx-auto">
-      <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
+    <div className="bg-white rounded-[28px] border border-gray-100 p-10 max-w-lg mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+      <div className="text-center mb-10">
+        <div className="w-20 h-20 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+          <img src="/logoreal.png" alt="AdParlay" className="w-10 h-10" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">Upgrade to Premium</h3>
-        <p className="text-gray-600">Unlock unlimited forms, leads, and advanced analytics</p>
+        <h3 className="text-3xl font-black font-['Outfit'] text-gray-900 tracking-tight mb-3">Elevate to Premium</h3>
+        <p className="text-gray-500 font-medium leading-relaxed">Unlock the full power of AdParlay with unlimited forms, lead capture, and deep analytics.</p>
       </div>
 
-      <div className="mb-6">
-        <div className="bg-gray-50 rounded-lg p-4 mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-lg font-semibold text-gray-900">Premium Plan</span>
-            <span className="text-2xl font-bold text-blue-600">₦2,099</span>
+      <div className="mb-10">
+        <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-6 mb-8 flex items-center justify-between">
+          <div>
+            <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Premium Plan</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-3xl font-black font-['Outfit'] text-gray-900 tracking-tight">₦2,099</span>
+              <span className="text-gray-400 font-medium text-sm">/ month</span>
+            </div>
           </div>
-          <span className="text-sm text-gray-500">per month</span>
+          <div className="px-3 py-1 bg-purple-50 text-purple-600 rounded-lg text-[11px] font-bold uppercase tracking-wider border border-purple-100">
+            Best Value
+          </div>
         </div>
 
-        <div className="space-y-3 mb-6">
-          <div className="flex items-center space-x-3">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-700">Unlimited forms</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-700">Unlimited leads</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-700">Advanced analytics</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-700">PDF export</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-700">AI-powered form building</span>
-          </div>
+        <div className="grid grid-cols-1 gap-4 mb-10">
+          {[
+            'Unlimited forms & landing pages',
+            'Unlimited lead submissions',
+            'Advanced Data Analysis engine',
+            'Premium PDF & Data Export',
+            'AI-powered flow building'
+          ].map((feat, i) => (
+            <div key={i} className="flex items-center space-x-3">
+              <div className="w-5 h-5 rounded-full bg-purple-50 flex items-center justify-center border border-purple-100">
+                <svg className="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className="text-gray-600 font-medium text-sm">{feat}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <div className="flex items-center space-x-2">
-          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span className="text-sm text-blue-800">
-            <strong>Secure Payment:</strong> Your payment is processed securely by Paystack
-          </span>
-        </div>
-      </div>
-
-      <button
-        onClick={handlePayment}
-        disabled={loading}
-        className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-      >
-        {loading ? (
-          <>
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-            <span>Processing...</span>
-          </>
-        ) : (
-          <>
-            <span>💳</span>
-            <span>Upgrade to Pro (₦2,099)</span>
-          </>
-        )}
-      </button>
-
-      {onClose && (
+      <div className="space-y-4">
         <button
-          onClick={onClose}
-          className="w-full mt-4 px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+          onClick={handlePayment}
+          disabled={loading}
+          className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all shadow-xl shadow-black/10 flex items-center justify-center gap-3 disabled:opacity-50"
         >
-          Maybe later
+          {loading ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white"></div>
+          ) : (
+            <>
+              <span>Upgrade Now</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7-7 7M5 12h16" />
+              </svg>
+            </>
+          )}
         </button>
-      )}
+
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="w-full py-3 text-gray-400 hover:text-gray-900 font-bold text-sm transition-colors"
+          >
+            Continue with Free Plan
+          </button>
+        )}
+      </div>
+
+      <div className="mt-8 pt-8 border-t border-gray-100 flex items-center justify-center gap-2">
+        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Secure Payment via Paystack</span>
+      </div>
     </div>
   );
 };

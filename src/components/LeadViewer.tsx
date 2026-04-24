@@ -286,7 +286,7 @@ const LeadViewer: React.FC<LeadViewerProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
+      className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 font-['Epilogue']"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -294,143 +294,148 @@ const LeadViewer: React.FC<LeadViewerProps> = ({
       }}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col"
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 20, scale: 0.98 }}
+        className="bg-white rounded-[32px] shadow-[0_30px_100px_rgba(0,0,0,0.12)] w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col border border-gray-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-              Lead {currentIndex + 1} of {responses.length}
-            </h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowImages(!showImages)}
-                className={`p-2 rounded-lg transition-colors ${
-                  showImages 
-                    ? 'bg-blue-100 text-blue-600' 
-                    : 'bg-gray-100 text-gray-600'
-                }`}
-                title={showImages ? 'Hide images' : 'Show images'}
-              >
-                {showImages ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+        <div className="flex items-center justify-between px-8 py-6 border-b border-gray-50">
+          <div className="flex items-center gap-6">
+            <div>
+              <h2 className="text-2xl font-black font-['Outfit'] text-gray-900 tracking-tight">
+                Lead Insight
+              </h2>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="px-2 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] font-black uppercase tracking-widest">
+                  #{currentIndex + 1} of {responses.length}
+                </span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
-              onClick={downloadCurrentLead}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Download this lead"
+              onClick={() => setShowImages(!showImages)}
+              className={`p-2.5 rounded-xl transition-all border ${
+                showImages 
+                  ? 'bg-purple-50 border-purple-100 text-purple-600' 
+                  : 'bg-white border-gray-100 text-gray-400'
+              }`}
+              title={showImages ? 'Hide Visuals' : 'Show Visuals'}
             >
-              <Download className="w-4 h-4" />
+              {showImages ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
             <button
-              onClick={onClose}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              onClick={downloadCurrentLead}
+              className="p-2.5 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all border border-gray-100"
+              title="Download Data"
             >
-              <X className="w-4 h-4" />
+              <Download className="w-5 h-5" />
+            </button>
+            <div className="w-px h-8 bg-gray-100 mx-2" />
+            <button
+              onClick={onClose}
+              className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+            >
+              <X className="w-6 h-6" />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6" style={{ maxHeight: 'calc(95vh - 140px)' }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentResponse.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-6"
-            >
-              {/* Lead Info */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="font-medium text-gray-700">Form:</span>
-                    <div className="text-gray-900">{currentResponse.formTitle}</div>
-                  </div>
-                  <div>
-                    <span className="font-medium text-gray-700">Submitted:</span>
-                    <div className="text-gray-900">
-                      {currentResponse.submittedAt.toLocaleDateString()} at {currentResponse.submittedAt.toLocaleTimeString()}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="font-medium text-gray-700">Device:</span>
-                    <div className="text-gray-900">{getDeviceInfo(currentResponse.userAgent)}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Form Responses - Horizontal Layout */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Responses</h3>
-                {(() => {
-                  const form = forms.find(f => f.id === currentResponse.formId);
-                  if (!form || !form.blocks) {
-                    // Fallback to original behavior if no form structure
-                    const entries = Object.entries(currentResponse.formData);
-                    return (
-                      <div className="overflow-x-auto pb-4">
-                        <div className="flex gap-4 min-w-max">
-                          {entries.map(([key, value]) => {
-                            const questionLabel = getQuestionLabel(currentResponse.formId, key);
-                            return (
-                              <div key={key} className="flex-shrink-0 w-80 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                                <div className="font-medium text-gray-900 mb-3 pb-2 border-b border-gray-100">
-                                  {questionLabel}
-                                </div>
-                                <div className="text-gray-700">
-                                  {typeof value === 'object' && value !== null ? (
-                                    renderFilePreview(value, questionLabel)
-                                  ) : (
-                                    <div className="whitespace-pre-wrap break-words">
-                                      {typeof value === 'string' ? value : JSON.stringify(value)}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
+        <div className="flex-1 overflow-y-auto bg-[#fafafa]">
+          <div className="max-w-4xl mx-auto p-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentResponse.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="space-y-10"
+              >
+                {/* Meta Summary */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[
+                    { label: 'Origin', value: currentResponse.formTitle, icon: <Globe className="w-4 h-4" /> },
+                    { label: 'Timestamp', value: `${currentResponse.submittedAt.toLocaleDateString()} at ${currentResponse.submittedAt.toLocaleTimeString()}`, icon: <Clock className="w-4 h-4" /> },
+                    { label: 'Platform', value: getDeviceInfo(currentResponse.userAgent), icon: <Eye className="w-4 h-4" /> }
+                  ].map((stat, i) => (
+                    <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-2 text-gray-400 mb-2">
+                        {stat.icon}
+                        <span className="text-[10px] font-black uppercase tracking-widest">{stat.label}</span>
                       </div>
-                    );
-                  }
+                      <div className="font-bold text-gray-900 truncate">{stat.value}</div>
+                    </div>
+                  ))}
+                </div>
 
-                  // Get all questions in order
-                  const orderedQuestions: Array<{id: string, label: string, type: string}> = [];
-                  form.blocks.forEach(block => {
-                    if (block.questions) {
-                      orderedQuestions.push(...block.questions);
-                    }
-                  });
+                {/* Responses Grid */}
+                <div>
+                  <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6 pl-1">Data Flow</h3>
+                  {(() => {
+                    const form = forms.find(f => f.id === currentResponse.formId);
+                    const entries = form && form.blocks 
+                      ? form.blocks.flatMap(b => b.questions || []).filter(q => currentResponse.formData[q.id] !== undefined)
+                      : Object.entries(currentResponse.formData).map(([id]) => ({ id, label: getQuestionLabel(currentResponse.formId, id), type: 'unknown' }));
 
-                  const questionsWithAnswers = orderedQuestions.filter(question => 
-                    currentResponse.formData[question.id] !== undefined
-                  );
-
-                  return (
-                    <div className="overflow-x-auto pb-4">
-                      <div className="flex gap-4 min-w-max">
-                        {questionsWithAnswers.map((question, index) => {
-                          const value = currentResponse.formData[question.id];
-                          
+                    return (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {entries.map((q, index) => {
+                          const value = currentResponse.formData[q.id];
                           return (
-                            <div key={question.id} className="flex-shrink-0 w-80 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                              <div className="font-medium text-gray-900 mb-3 pb-2 border-b border-gray-100">
-                                {index + 1}. {question.label}
+                            <div key={q.id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group">
+                              <div className="flex items-center gap-3 mb-4">
+                                <span className="w-6 h-6 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400">
+                                  {index + 1}
+                                </span>
+                                <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest truncate">{q.label}</div>
                               </div>
-                              <div className="text-gray-700">
+                              <div className="text-gray-900">
                                 {typeof value === 'object' && value !== null ? (
-                                  renderFilePreview(value, question.label)
+                                  <div className="mt-2">
+                                    {isImageFile(value) ? (
+                                      <div className="space-y-4">
+                                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                          <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                                              <Download className="w-4 h-4 text-purple-600" />
+                                            </div>
+                                            <span className="text-xs font-bold text-gray-600 truncate max-w-[120px]">{value.fileName}</span>
+                                          </div>
+                                          <button 
+                                            onClick={() => downloadFile(value)}
+                                            className="text-[10px] font-black uppercase text-purple-600 hover:text-purple-700"
+                                          >
+                                            Download
+                                          </button>
+                                        </div>
+                                        {showImages && value.fileData && (
+                                          <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-inner bg-white">
+                                            <img
+                                              src={`data:${value.fileType};base64,${value.fileData}`}
+                                              alt=""
+                                              className="w-full h-auto max-h-64 object-cover"
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl group-hover:bg-white group-hover:border-purple-100 border border-transparent transition-all">
+                                        <div className="flex items-center gap-3">
+                                          <FileText className="w-5 h-5 text-gray-400" />
+                                          <span className="text-sm font-bold text-gray-700">{value.fileName}</span>
+                                        </div>
+                                        <button onClick={() => downloadFile(value)} className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg">
+                                          <Download className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
                                 ) : (
-                                  <div className="whitespace-pre-wrap break-words">
+                                  <div className="text-base font-bold text-gray-800 leading-relaxed break-words pl-1">
                                     {typeof value === 'string' ? value : JSON.stringify(value)}
                                   </div>
                                 )}
@@ -439,49 +444,52 @@ const LeadViewer: React.FC<LeadViewerProps> = ({
                           );
                         })}
                       </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            </motion.div>
-          </AnimatePresence>
+                    );
+                  })()}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Navigation - Mobile Optimized */}
-        <div className="flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 border-t border-gray-200 bg-gray-50 gap-4">
-          {/* Previous Button */}
+        {/* Footer Navigation */}
+        <div className="px-8 py-6 border-t border-gray-50 bg-white flex items-center justify-between">
           <button
             onClick={goToPrevious}
             disabled={currentIndex === 0}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            className="flex items-center gap-2 px-6 py-3 bg-white text-gray-900 border border-gray-100 rounded-2xl font-bold text-sm hover:bg-gray-50 disabled:opacity-30 disabled:grayscale transition-all"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" />
             <span>Previous</span>
           </button>
 
-          {/* Page Indicators */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {responses.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === currentIndex 
-                    ? 'bg-blue-600' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-              />
-            ))}
+          <div className="hidden sm:flex items-center gap-2">
+            {responses.length <= 10 ? (
+              responses.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentIndex 
+                      ? 'bg-gray-900 w-6' 
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                />
+              ))
+            ) : (
+              <span className="text-sm font-black text-gray-400 uppercase tracking-widest">
+                Entry {currentIndex + 1} of {responses.length}
+              </span>
+            )}
           </div>
 
-          {/* Next Button */}
           <button
             onClick={goToNext}
             disabled={currentIndex === responses.length - 1}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            className="flex items-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold text-sm hover:bg-black transition-all shadow-xl shadow-black/10 disabled:opacity-30 disabled:grayscale"
           >
             <span>Next</span>
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </motion.div>

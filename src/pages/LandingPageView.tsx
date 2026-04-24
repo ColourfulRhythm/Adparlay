@@ -305,13 +305,12 @@ const LandingPageView: React.FC = () => {
   return (
     <div className="landing-page-wrapper">
       <style dangerouslySetInnerHTML={{ __html: `
-        .landing-page-wrapper * { margin: 0; padding: 0; box-sizing: border-box; }
+        .landing-page-wrapper * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Epilogue', sans-serif; }
         
         .landing-page-wrapper { 
-            font-family: '${landingPage.fontFamily}', -apple-system, BlinkMacSystemFont, sans-serif; 
             line-height: 1.6; 
             color: #1e293b; 
-            background: #f8fafc;
+            background: #ffffff;
             overflow-x: hidden;
             min-height: 100vh;
         }
@@ -324,40 +323,29 @@ const LandingPageView: React.FC = () => {
         
         .lp-header { 
             text-align: center; 
-            padding: 124px 0 104px; 
-            background: linear-gradient(135deg, ${landingPage.primaryColor}0a 0%, ${landingPage.secondaryColor}10 100%);
+            padding: 140px 0 120px; 
+            background: radial-gradient(circle at 50% 0%, ${landingPage.primaryColor}08 0%, transparent 70%);
             position: relative;
-            border-bottom: 1px solid rgba(255,255,255,0.8);
-            animation: fadeIn 1s ease-out;
+            animation: fadeIn 1.2s ease-out;
         }
         
         .lp-header::before {
             content: '';
             position: absolute;
-            top: -50%; left: -50%; right: -50%; bottom: -50%;
-            background: radial-gradient(circle at center, ${landingPage.primaryColor}15 0%, transparent 50%);
-            z-index: 0;
-            pointer-events: none;
-            animation: pulse 8s ease-in-out infinite alternate;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, #eee, transparent);
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.1); opacity: 1; }
-        }
-        
-        .lp-header > * { position: relative; z-index: 1; }
-
         .logo-container {
             display: flex;
             width: 100%;
             align-items: center;
-            margin-bottom: 28px;
+            margin-bottom: 40px;
         }
 
         .logo-container img {
-            max-height: 80px;
-            max-width: 200px;
+            max-height: 60px;
+            max-width: 180px;
             width: auto;
             height: auto;
             object-fit: contain;
@@ -365,71 +353,69 @@ const LandingPageView: React.FC = () => {
         }
         
         .lp-headline { 
-            font-size: clamp(3rem, 6vw, 5.5rem); 
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(3.2rem, 8vw, 6rem); 
             font-weight: 900; 
             color: #0f172a;
-            margin-bottom: 18px; 
-            line-height: 1.05;
-            letter-spacing: -0.03em;
-            background: linear-gradient(135deg, ${landingPage.primaryColor}, ${landingPage.secondaryColor});
+            margin-bottom: 24px; 
+            line-height: 1;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, #000, #444);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: slideUp 1s ease-out;
-            padding: 0 16px;
-            max-width: 14ch;
+            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 0 20px;
+            max-width: 16ch;
             margin-left: auto;
             margin-right: auto;
         }
         
         .lp-tagline { 
-            font-size: clamp(1.2rem, 2.5vw, 1.5rem); 
-            color: #475569; 
-            max-width: 750px; 
+            font-size: clamp(1.1rem, 2.2vw, 1.4rem); 
+            color: #64748b; 
+            max-width: 800px; 
             margin: 0 auto; 
-            font-weight: 400;
-            animation: slideUp 1s ease-out 0.2s both;
-            padding: 0 16px;
+            font-weight: 500;
+            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+            padding: 0 20px;
+            line-height: 1.5;
         }
         
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
         .lp-media-section { 
             padding: 0 20px;
-            margin-top: -80px;
+            margin-top: -60px;
             text-align: center; 
             position: relative;
             z-index: 10;
-            animation: slideUp 1s ease-out 0.4s both;
+            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
         }
         
         .lp-media-container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
-            border-radius: 24px;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            padding: 12px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255,255,255,0.8) inset;
-            transform: perspective(1000px) rotateX(2deg);
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 40px;
+            background: #ffffff;
+            padding: 16px;
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.08), 0 0 0 1px #f1f1f1;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         .lp-media-container:hover {
-            transform: perspective(1000px) rotateX(0deg) translateY(-10px);
+            transform: scale(1.01);
         }
         
         .lp-media-placeholder { 
             width: 100%; 
             height: auto;
             aspect-ratio: 16/9;
-            background: #f1f5f9;
-            border-radius: 16px; 
+            background: #fdfdfd;
+            border-radius: 28px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -449,267 +435,192 @@ const LandingPageView: React.FC = () => {
         }
         
         .lp-body-section { 
-            padding: 100px 0; 
+            padding: 120px 0; 
             background: #ffffff;
-            position: relative;
         }
         
         .lp-body-content { 
-            max-width: 800px; 
+            max-width: 900px; 
             margin: 0 auto; 
             text-align: center; 
-            font-size: 1.25rem;
-            color: #334155;
-            line-height: 1.8;
-            padding: 0 20px;
-        }
-        
-        .lp-body-content ul { 
-            list-style: none; 
-            text-align: left; 
-            display: inline-block; 
-            margin-top: 40px;
-            width: 100%;
-            max-width: 600px;
+            font-size: 1.3rem;
+            color: #475569;
+            line-height: 1.7;
+            padding: 0 24px;
         }
         
         .lp-body-content li { 
-            margin-bottom: 24px; 
+            margin-bottom: 20px; 
             position: relative; 
-            background: #f8fafc;
-            padding: 24px 24px 24px 72px;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            background: #fcfcfc;
+            padding: 32px 32px 32px 80px;
+            border-radius: 24px;
+            border: 1px solid #f1f1f1;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         .lp-body-content li:hover {
-            transform: translateX(10px);
-            background: #ffffff;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
-            border-color: ${landingPage.primaryColor}40;
+            transform: translateY(-4px);
+            border-color: ${landingPage.primaryColor}30;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.03);
         }
         
         .lp-body-content li:before { 
-            content: "✨"; 
+            content: "✦"; 
             position: absolute; 
-            left: 24px; 
+            left: 32px; 
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            color: ${landingPage.primaryColor};
         }
         
         .lp-cta-section { 
-            padding: 104px 0; 
+            padding: 140px 0; 
             text-align: center; 
-            background: #0f172a;
-            color: white;
+            background: #fafafa;
             position: relative;
-            overflow: hidden;
-        }
-        
-        .lp-cta-section::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; right: -50%; bottom: -50%;
-            background: radial-gradient(circle at 50% 50%, ${landingPage.primaryColor}40 0%, transparent 60%);
-            z-index: 0;
-            pointer-events: none;
+            border-top: 1px solid #f1f1f1;
         }
         
         .lp-form-container { 
-            max-width: 680px; 
+            max-width: 720px; 
             margin: 0 auto; 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            padding: 48px; 
-            border-radius: 28px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: #ffffff; 
+            padding: 64px; 
+            border-radius: 48px; 
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.06);
+            border: 1px solid #f1f1f1;
             position: relative;
             z-index: 10;
         }
         
         .lp-form-container h2 { 
-            color: #ffffff; 
-            margin-bottom: 30px; 
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-        }
-        
-        .lp-form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            font-family: 'Outfit', sans-serif;
+            color: #0f172a; 
+            margin-bottom: 40px; 
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
         }
         
         .lp-form-group { 
             text-align: left; 
+            margin-bottom: 24px;
         }
         
         .lp-form-group label { 
             display: block; 
-            margin-bottom: 10px; 
-            font-weight: 600; 
-            color: #cbd5e1; 
-            font-size: 0.95rem;
+            margin-bottom: 12px; 
+            font-weight: 700; 
+            color: #0f172a; 
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
         
-        .lp-form-group input, 
-        .lp-form-group textarea { 
+        .lp-form-group input { 
             width: 100%; 
-            padding: 18px 24px; 
-            border: 1px solid rgba(255,255,255,0.15); 
-            border-radius: 16px; 
+            padding: 20px 24px; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 18px; 
             font-size: 16px; 
             transition: all 0.3s ease; 
-            background: rgba(0,0,0,0.2);
-            color: white;
-            font-family: inherit;
+            background: #f9fafb;
+            color: #0f172a;
+            font-weight: 500;
         }
         
         .lp-form-group input:focus { 
             outline: none; 
             border-color: ${landingPage.primaryColor};
-            background: rgba(0,0,0,0.4);
-            /* Removed glow as requested */
-            box-shadow: none;
-        }
-        
-        .lp-form-group input::placeholder {
-            color: rgba(255,255,255,0.4);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px ${landingPage.primaryColor}10;
         }
         
         .lp-submit-btn { 
             width: 100%; 
-            padding: 20px 32px; 
-            background: linear-gradient(135deg, ${landingPage.primaryColor}, ${landingPage.secondaryColor}); 
+            padding: 22px 32px; 
+            background: #0f172a; 
             color: white; 
             border: none; 
-            border-radius: 16px; 
+            border-radius: 20px; 
             font-size: 1.1rem; 
-            font-weight: 700; 
+            font-weight: 800; 
             cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            box-shadow: 0 10px 25px -5px ${landingPage.primaryColor}60;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
         }
         
         .lp-submit-btn:hover { 
+            background: #000;
             transform: translateY(-2px); 
-            box-shadow: 0 20px 35px -5px ${landingPage.primaryColor}80;
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.15);
         }
         
         .lp-whatsapp-btn { 
-            display: inline-flex; 
+            display: flex; 
             align-items: center; 
             justify-content: center; 
             gap: 12px; 
             width: 100%; 
-            padding: 20px 32px; 
-            background: #25D366; 
-            color: white; 
+            padding: 22px 32px; 
+            background: #ffffff; 
+            color: #0f172a; 
             text-decoration: none; 
-            border-radius: 16px; 
-            font-weight: 700; 
+            border-radius: 20px; 
+            font-weight: 800; 
             font-size: 1.1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            box-shadow: 0 10px 25px -5px rgba(37, 211, 102, 0.4);
-            border: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            border: 1px solid #e5e7eb;
         }
         
         .lp-whatsapp-btn:hover { 
-            background: #22c55e; 
+            background: #f9fafb;
             transform: translateY(-2px); 
-            box-shadow: 0 20px 35px -5px rgba(37, 211, 102, 0.6);
-        }
-        
-        .lp-cta-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        
-        .lp-button-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-top: 24px;
         }
         
         .lp-cta-btn {
             display: inline-block;
-            padding: 20px 32px;
-            background: linear-gradient(135deg, ${landingPage.primaryColor}, ${landingPage.secondaryColor});
+            padding: 22px 32px;
+            background: #0f172a;
             color: white;
             text-decoration: none;
-            border-radius: 16px;
-            font-weight: 700;
+            border-radius: 20px;
+            font-weight: 800;
             font-size: 1.1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px -5px ${landingPage.primaryColor}60;
-            border: none;
-            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             width: 100%;
             text-align: center;
         }
         
         .lp-cta-btn:hover {
+            background: #000;
             transform: translateY(-2px);
-            box-shadow: 0 20px 35px -5px ${landingPage.primaryColor}80;
         }
 
-        .lp-thank-you { 
-            text-align: center; 
-            padding: 40px 20px; 
-        }
-        
         .lp-thank-you h2 { 
-            color: #ffffff; 
+            font-family: 'Outfit', sans-serif;
+            color: #0f172a; 
             margin-bottom: 20px; 
-            font-size: 2.5rem;
+            font-size: 3rem;
+            font-weight: 900;
         }
 
         .lp-thank-you p {
-            color: #cbd5e1;
+            color: #64748b;
             font-size: 1.2rem;
-            margin-bottom: 32px;
-        }
-        
-        .lp-signup-btn { 
-            display: inline-block; 
-            padding: 16px 32px; 
-            background: linear-gradient(135deg, ${landingPage.primaryColor}, ${landingPage.secondaryColor});
-            color: white; 
-            text-decoration: none; 
-            border-radius: 12px; 
-            font-weight: 600; 
-            font-size: 18px; 
-            transition: all 0.3s ease; 
-            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-        }
-        
-        .lp-signup-btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            margin-bottom: 40px;
         }
         
         @media (max-width: 768px) { 
-            .lp-header { padding: 96px 0 76px; }
-            .logo-container { margin-bottom: 20px; }
-            .lp-headline { font-size: 2.2rem; margin-bottom: 14px; } 
-            .lp-tagline { font-size: 1.08rem; max-width: 92%; } 
-            .lp-media-section { margin-top: -40px; }
-            .lp-cta-section { padding: 84px 0; }
-            .lp-form-grid { grid-template-columns: 1fr; gap: 14px; }
-            .lp-button-grid { grid-template-columns: 1fr; }
-            .lp-form-container { padding: 30px 20px; border-radius: 22px; }
-            .lp-form-container h2 { margin-bottom: 22px; font-size: 1.7rem; }
-            .lp-body-content li { padding: 20px 20px 20px 56px; }
-            .lp-body-content li:before { left: 16px; }
+            .lp-header { padding: 100px 0 80px; }
+            .lp-headline { font-size: 2.8rem; } 
+            .lp-form-container { padding: 40px 24px; border-radius: 32px; }
+            .lp-media-container { border-radius: 24px; padding: 10px; }
+            .lp-body-content li { padding: 24px 24px 24px 64px; }
+            .lp-body-content li:before { left: 24px; }
         }
 ` }} />
       

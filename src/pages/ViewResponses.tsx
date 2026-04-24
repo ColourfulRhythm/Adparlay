@@ -571,15 +571,17 @@ const ViewResponses: React.FC = () => {
           
           if (isInGracePeriod) {
             return (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-yellow-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              <div className="mb-8 p-4 bg-orange-50 border border-orange-100 rounded-2xl flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-yellow-800">Grace Period Active</h3>
-                    <p className="text-sm text-yellow-700">Your subscription has expired but you're in a 5-day grace period. Some features are limited. Upgrade now to maintain full access.</p>
-                  </div>
+                </div>
+                <div>
+                  <h3 className="font-['Outfit'] font-bold text-orange-900 text-sm">Grace Period Active</h3>
+                  <p className="text-orange-700 text-xs mt-1 font-medium leading-relaxed">
+                    Your subscription expired but you have limited time left. Upgrade now to maintain full access to your leads and analytics.
+                  </p>
                 </div>
               </div>
             );
@@ -587,17 +589,17 @@ const ViewResponses: React.FC = () => {
           
           if (isSubscriptionExpired) {
             return (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-orange-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                   </svg>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-orange-800">Subscription Expired</h3>
-                    <p className="text-sm text-orange-700">
-                      You can view your existing forms and last 100 leads. Create new forms, landing pages, and view all leads by upgrading to Premium.
-                    </p>
-                  </div>
+                </div>
+                <div>
+                  <h3 className="font-['Outfit'] font-bold text-red-900 text-sm">Subscription Expired</h3>
+                  <p className="text-red-700 text-xs mt-1 font-medium leading-relaxed">
+                    You're currently limited to the last 100 leads. Unlock your full history and advanced export features by renewing your Premium plan.
+                  </p>
                 </div>
               </div>
             );

@@ -678,138 +678,124 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ userId, isProUser
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10 font-['Epilogue']">
       {/* Header with Export */}
-      <div className="space-y-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Advanced Analytics</h2>
-          <p className="text-gray-600">Comprehensive insights into your form performance</p>
+          <h2 className="text-4xl font-black font-['Outfit'] text-gray-900 tracking-tight">Intelligence</h2>
+          <p className="text-gray-500 font-medium mt-1">Real-time performance metrics and user insights.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={handleRefresh}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2 flex-shrink-0"
+            className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:text-gray-900 transition-colors border border-gray-100"
             title="Refresh analytics data"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span>Refresh</span>
           </button>
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent flex-shrink-0"
-          >
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 90 days</option>
-            <option value="365">Last year</option>
-          </select>
           
-          {/* Form Filter */}
           <div className="relative">
-          <button
-              onClick={() => setShowFormFilter(!showFormFilter)}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2"
+            <select
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              className="appearance-none pl-4 pr-10 py-3 bg-white border border-gray-100 rounded-xl font-bold text-sm text-gray-900 focus:ring-2 focus:ring-purple-500/10 focus:border-purple-500 outline-none shadow-sm cursor-pointer"
             >
-              <Filter className="w-4 h-4" />
-              <span>Filter by Form</span>
-            </button>
-            {showFormFilter && (
-              <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">Select Form</h3>
-                  <select
-                    value={selectedForm}
-                    onChange={(e) => setSelectedForm(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="all">All Forms</option>
-                    {analyticsData?.forms?.map((form) => (
-                      <option key={form.id} value={form.id}>
-                        {form.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="365">Last year</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
+          
+          <button
+            onClick={() => setShowFormFilter(!showFormFilter)}
+            className="px-5 py-3 bg-white border border-gray-100 rounded-xl font-bold text-sm text-gray-900 flex items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
+          >
+            <Filter className="w-4 h-4 text-gray-400" />
+            <span>{selectedForm === 'all' ? 'All Sources' : 'Filtered'}</span>
+          </button>
 
-          {/* Export Dropdown */}
           <div className="relative">
             <button
               onClick={() => setShowExportDropdown(!showExportDropdown)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+              className="px-6 py-3 bg-gray-900 text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-black transition-all shadow-lg shadow-black/10"
             >
               <Download className="w-4 h-4" />
               <span>Export</span>
             </button>
             {showExportDropdown && (
-              <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-                <div className="py-2">
+              <div className="absolute top-full right-0 mt-3 w-56 bg-white border border-gray-100 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] z-50 overflow-hidden py-2">
+                <button
+                  onClick={() => { exportToExcel(); setShowExportDropdown(false); }}
+                  className="w-full px-5 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-green-600" />
+                  <span className="font-bold text-sm text-gray-700">Excel Spreadsheet</span>
+                </button>
+                <button
+                  onClick={() => { downloadChartsAsImages(); setShowExportDropdown(false); }}
+                  className="w-full px-5 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                >
+                  <BarChart3 className="w-4 h-4 text-purple-600" />
+                  <span className="font-bold text-sm text-gray-700">Download Charts</span>
+                </button>
+                {isProUser && (
                   <button
-                    onClick={() => {
-                      exportToExcel();
-                      setShowExportDropdown(false);
-                    }}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-2"
+                    onClick={() => { exportToPDF(); setShowExportDropdown(false); }}
+                    className="w-full px-5 py-3 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors"
                   >
-                    <FileSpreadsheet className="w-4 h-4 text-green-600" />
-            <span>Export to Excel</span>
-          </button>
-                  <button
-                    onClick={() => {
-                      downloadChartsAsImages();
-                      setShowExportDropdown(false);
-                    }}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-2"
-                  >
-                    <BarChart3 className="w-4 h-4 text-purple-600" />
-                    <span>Download Charts</span>
-          </button>
-          {isProUser && (
-            <button
-                      onClick={() => {
-                        exportToPDF();
-                        setShowExportDropdown(false);
-                      }}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-2"
-                    >
-                      <FileText className="w-4 h-4 text-red-600" />
-              <span>Export to PDF</span>
-            </button>
-          )}
-                </div>
+                    <FileText className="w-4 h-4 text-red-600" />
+                    <span className="font-bold text-sm text-gray-700">PDF Report</span>
+                  </button>
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Key Metrics Grid - Pro Users Only */}
-      {isProUser && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+      {isProUser ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
-            { title: 'Total Forms', value: analyticsData.totalForms },
-            { title: 'Total Submissions', value: analyticsData.totalSubmissions },
-            { title: 'Landing Pages', value: analyticsData.totalLandingPages },
-            { title: 'Landing Page Views', value: analyticsData.totalLandingPageViews },
-            { title: 'Conversion Rate', value: `${analyticsData.conversionRate}%` },
-            { title: 'Avg Completion', value: `${analyticsData.averageCompletionTime}m` },
-          ].map((metric, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center text-center transition-all hover:border-gray-200"
-            >
-              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">{metric.title}</p>
-              <p className="text-4xl font-light text-gray-800 tracking-tight">{metric.value}</p>
-            </motion.div>
+            { title: 'Forms', value: analyticsData.totalForms, icon: <FileIcon className="w-4 h-4" /> },
+            { title: 'Submissions', value: analyticsData.totalSubmissions, icon: <ChartIcon className="w-4 h-4" /> },
+            { title: 'Landing Pages', value: analyticsData.totalLandingPages, icon: <Globe className="w-4 h-4" /> },
+            { title: 'Total Views', value: analyticsData.totalLandingPageViews, icon: <Eye className="w-4 h-4" /> },
+            { title: 'Conv. Rate', value: `${analyticsData.conversionRate}%`, icon: <TrendingUp className="w-4 h-4" /> },
+            { title: 'Avg. Time', value: `${analyticsData.averageCompletionTime}m`, icon: <Clock className="w-4 h-4" /> },
+          ].map((item, i) => (
+            <div key={i} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2 mb-2 text-gray-400">
+                {item.icon}
+                <span className="text-[10px] font-black uppercase tracking-widest">{item.title}</span>
+              </div>
+              <div className="font-['Outfit'] font-black text-2xl text-gray-900 tracking-tight">{item.value}</div>
+            </div>
           ))}
+        </div>
+      ) : (
+        <div className="bg-purple-50 border border-purple-100 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group">
+          <div className="absolute right-0 top-0 w-64 h-64 bg-purple-100/50 rounded-full -mr-20 -mt-20 blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+          <div className="relative z-10 max-w-xl">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="px-2 py-1 bg-purple-600 text-white rounded-md text-[10px] font-black uppercase tracking-widest">Premium</div>
+              <h3 className="font-['Outfit'] font-black text-2xl text-gray-900">Unlock Pro Analytics</h3>
+            </div>
+            <p className="text-gray-600 font-medium leading-relaxed">Get deep insights into device types, geographical distribution, completion times, and full conversion funnels.</p>
+          </div>
+          <button 
+            onClick={() => setShowPaymentModal(true)}
+            className="relative z-10 px-8 py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-black transition-all shadow-xl shadow-black/10 whitespace-nowrap"
+          >
+            Upgrade Now
+          </button>
         </div>
       )}
 

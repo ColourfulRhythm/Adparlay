@@ -267,69 +267,79 @@ const AIBuilder: React.FC<AIBuilderProps> = ({ onSuccess, onClose }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 font-['Epilogue']">
       {!isLoadingUsage && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-blue-800 font-medium">Daily Usage</span>
+        <div className="bg-purple-50/50 border border-purple-100 rounded-2xl p-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-white border border-purple-100 flex items-center justify-center shadow-sm">
+              <img src="/logoreal.png" alt="" className="w-5 h-5" />
             </div>
-            <span className="text-blue-600 font-semibold">{dailyUsage}/10</span>
+            <div>
+              <span className="block text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-0.5">Daily Allowance</span>
+              <div className="flex items-center gap-2">
+                <div className="h-1.5 w-24 bg-purple-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-purple-600 rounded-full transition-all duration-500"
+                    style={{ width: `${(dailyUsage / 10) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-purple-900 font-bold text-sm">{dailyUsage}/10</span>
+              </div>
+            </div>
           </div>
-          <p className="text-blue-700 text-sm mt-1">
-            You can generate up to 10 AI forms per day. Resets daily at midnight.
-          </p>
+          <div className="text-right">
+            <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Resets in</span>
+            <span className="block text-purple-900 font-bold text-xs">Midnight</span>
+          </div>
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Describe your form
+        <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3">
+          Describe your vision
         </label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="e.g., I need a real estate lead capture form for property inquiries, or a job application form for software developers..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-          rows={4}
+          placeholder="e.g., I need a high-converting real estate lead capture form for luxury property inquiries in Lagos..."
+          className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-[20px] focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 focus:bg-white transition-all resize-none font-medium text-gray-900 min-h-[160px] outline-none shadow-inner"
           disabled={isGenerating}
         />
-        <p className="text-sm text-gray-500 mt-1">
-          Be specific about the type of form, target audience, and key information you want to collect.
+        <p className="text-[11px] text-gray-400 font-bold mt-3 uppercase tracking-wider">
+          💡 Pro Tip: Mention your industry and target audience for better fields.
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
-            <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3"
+        >
+          <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
+            <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
-            <span className="text-red-800 font-medium">{error}</span>
           </div>
-        </div>
+          <span className="text-red-900 font-bold text-sm">{error}</span>
+        </motion.div>
       )}
 
-      <div className="flex space-x-3">
+      <div className="flex gap-4">
         <button
           onClick={generateForm}
           disabled={isGenerating || dailyUsage >= 10 || !description.trim()}
-          className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+          className="flex-1 py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm hover:bg-black transition-all shadow-xl shadow-black/10 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
         >
           {isGenerating ? (
             <>
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-              <span>Generating...</span>
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white"></div>
+              <span>Engineered by AI...</span>
             </>
           ) : (
             <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              <span>Generate Form</span>
+              <img src="/logoreal.png" alt="" className="w-4 h-4 brightness-0 invert opacity-50 group-hover:opacity-100 transition-opacity" />
+              <span>Generate Flow</span>
             </>
           )}
         </button>
@@ -337,20 +347,24 @@ const AIBuilder: React.FC<AIBuilderProps> = ({ onSuccess, onClose }) => {
         <button
           onClick={onClose}
           disabled={isGenerating}
-          className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-8 py-4 bg-white text-gray-400 hover:text-gray-900 border border-gray-100 rounded-2xl font-bold text-sm transition-all"
         >
           Cancel
         </button>
       </div>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <h4 className="font-medium text-gray-900 mb-2">💡 Tips for better results:</h4>
-        <ul className="text-sm text-gray-600 space-y-1">
-          <li>• Mention the industry or purpose (e.g., "real estate", "job application")</li>
-          <li>• Specify the target audience (e.g., "for software developers")</li>
-          <li>• Include key information you want to collect</li>
-          <li>• Be specific about the form type (e.g., "lead capture", "feedback")</li>
-        </ul>
+      <div className="bg-gray-50/50 border border-gray-100 rounded-[24px] p-6">
+        <h4 className="font-['Outfit'] font-black text-gray-900 uppercase tracking-widest text-[11px] mb-4">How it works</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-6 h-6 rounded-full bg-white border border-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400">1</div>
+            <p className="text-[11px] text-gray-500 font-medium leading-relaxed">AI analyzes your description and determines the ideal data flow.</p>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="w-6 h-6 rounded-full bg-white border border-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400">2</div>
+            <p className="text-[11px] text-gray-500 font-medium leading-relaxed">It generates industry-standard fields and conversion-focused logic.</p>
+          </div>
+        </div>
       </div>
     </div>
   );

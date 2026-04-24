@@ -2,13 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Epilogue:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --premium-purple: #8B5CF6;
+  --premium-pink: #EC4899;
+  --premium-bg: #fdfdfd;
+  --premium-surface: #ffffff;
+  --premium-border: rgba(0,0,0,0.06);
+  --premium-text-primary: #111827;
+  --premium-text-secondary: #4b5563;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Epilogue', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--premium-bg);
+  color: var(--premium-text-primary);
 }
 
 code {
